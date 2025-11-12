@@ -1,0 +1,12 @@
+{% for i in releve %}
+<div class="transaction-item px-4 py-3" data-bs-toggle="modal" data-bs-target="#transaction-detail" style="background:rgba(172, 255, 47, 0.304);">
+<div class="row align-items-center flex-row" id="{{i.id}}">
+    <div class="col-2 col-sm-1 text-center">
+    {{i.date|date:'d/m/Y H:i'}}
+    </div>
+    <div class="col col-sm-7"> <span class="d-block text-4">{{i.raison}}</span> </div>
+    <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span class="text-warning" data-bs-toggle="tooltip" title="" data-bs-original-title="In Progress" aria-label="In Progress"><i class="fas fa-ellipsis-h"></i></span> </div>
+    <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">{{i.amount}}</span></div>
+</div>
+</div>
+{% endfor %}

@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="/static/js/jquery.min.js"></script>
+  <link href="/static/css/alertify.min.css" rel="stylesheet" />
+  <link href="/static/css/bootstrap.css" rel="stylesheet" />
+  <link href="/static/css/bootstrap-icons.css" rel="stylesheet" />
+  <title>What and Why</title>
+  <style>
+    body { margin:0; font-family: Inter, system-ui, Arial; background:#0b0f13; color:#e6eef6; }
+    .app { display:flex; height:9999999999vh; width: 99999999999vw;}
+    .sidebar {position: fixed;right: 0; width:280px; background:#0f1720; padding:14px; box-sizing:border-box; border-right:1px solid rgba(255,255,255,0.03); z-index: 9999;}
+    .small { width:100%; padding:8px; margin-bottom:8px; border-radius:8px; background:#0b1220; color:#cbd5e1; border:1px solid rgba(255,255,255,0.03); }
+    .btn { width:100%; padding:8px; border-radius:8px; background:#f59e0b; color:#07101a; border:none; cursor:pointer; margin-bottom:8px; }
+    .canvas-wrap { flex:1; position:relative; overflow:scroll; }
+    .board { position:absolute; inset:0; background-image:linear-gradient(transparent 24px,#07202b 25px),linear-gradient(90deg,transparent 24px,#07202b 25px); background-size:25px 25px; }
+    .node:hover{
+      opacity:1;
+    }
+    .node     {position: absolute;
+      opacity:0.4;
+    padding: 10px;
+    border-radius: 10px;
+    background: black;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+    /* border: 1px solid rgba(255, 255, 255, 0.03); */
+    cursor: grab;
+    z-index: 99;
+    border: 1px solid;
+  }
+    .node.dragging { cursor:grabbing; opacity:0.95; }
+    .node .title { font-weight:600; margin-bottom:6px; }
+    .node .desc { font-size:12px; color:#9ca3af; }
+    .node img { width:100%; height:80px; object-fit:cover; border-radius:6px; margin-bottom:8px; }
+    /* SVG overlay: do not block clicks by default, only hit paths will accept pointer events */
+    svg.connections { position:absolute; inset:0; pointer-events:none; z-index:10; }
+    /* visible line (no pointer events) */
+    .connection-line {stroke-width:2; fill:none; pointer-events:none; }
+    /* thick transparent hit area that receives mouse events */
+    .connection-hit {
+      /* stroke: #f3bd5b; */
+      opacity: 0.02;
+      stroke-width: 4;
+      fill: none;
+      pointer-events: stroke;
+    }
+    .connection-label { fill: #f59e0b; font-size:12px; font-weight:600; text-anchor:middle; pointer-events:auto; }
+    .highlight { opacity: 1;}
+    .footer { position:absolute; left:16px; bottom:12px; font-size:12px; color:#9ca3af; }
+    .node-highlight {
+      opacity: 1 !important;
+      box-shadow: 5px 6px 10px 5px rgb(121 138 218);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    
+
+    <div class="canvas-wrap">
+      <!-- SVG overlay (pointer-events:none globally). Hit paths will receive events. -->
+      <svg class="connections" id="svg"></svg>
+
+      <!-- Board contains nodes (on top visually) -->
+      <div id="board" class="board"></div>
+
+    </div>
+    <aside class="sidebar">
+      <input id="title" class="small" placeholder="Name / clue" />
+      <input id="type" class="small" placeholder="type" />
+      <input id="imglink" class="small" placeholder="Image link" />
+      <input id="videolink" class="small" placeholder="video link" />
+      <textarea id="desc" class="small" rows="2" placeholder="Note (optional)"></textarea>
+      <input type="file" id="image" class="small" accept="image/*" />
+      
+      <button id="addBtn" class="btn">Add Node</button>
+      <button id="connectBtn" class="btn">Connect</button>
+      <button hidden id="saveBtn" class="btn">Save to DB</button>
+      <button hidden id="loadBtn" class="btn">Load from DB</button>
+      <!-- <div style="height:8px"></div> -->
+      <!-- <div style="font-size:12px;color:#9ca3af">Click <strong>Connect</strong> then click two nodes to draw a connection. Click a connection to edit/delete its label.</div> -->
+      <form class="nodedata" id="updatenode" method="post" enctype="multipart/form-data">
+        <img class="imgdata" src="" alt="Node Image" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:none;">
+        <input type="file" name="imagedata" class="imagedata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <input placeholder="titledata" name="titledata" class="titledata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <input placeholder="imglinkdata" name="imglinkdata" class="imglinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <input placeholder="videolinkdata" name="videolinkdata" class="videolinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <input hidden placeholder="iddata" name="iddata" class="iddata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <textarea placeholder="descdata" name="descdata" class="descdata form-control" style="font-size:14px;margin-bottom:6px;"></textarea>
+        <button class="btn btn-primary mt-2">Edit</button>
+      </form>
+      <div class="connectiondata" style="
+      overflow-y: scroll;
+      height: 21em;"></div>
+    </aside>
+  </div>
+
+  <script>
+    
+    /* --- state --- */
+    const board = document.getElementById('board');
+    const svg = document.getElementById('svg');
+    const addBtn = document.getElementById('addBtn');
+    const connectBtn = document.getElementById('connectBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
+    const titleInput = document.getElementById('title');
+    const imglinkInput = document.getElementById('imglink');
+    const videolinkInput = document.getElementById('videolink');
+    const descInput = document.getElementById('desc');
+    const imageInput = document.getElementById('image');
+    const typeInput = document.getElementById('type');
+    
+    let nodes = [];   // {id,x,y,title,description,img,type,el}
+    let links = [];   // {id,source,target,elVisible,elHit,labelEl,label}
+    let connectMode = false;
+    let awaiting = null;
+    let nodeCounter = 0;
+    
+    /* --- helpers --- */
+    function uid(prefix='n'){ return prefix + Math.random().toString(36).slice(2,9); }
+
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    $('.nodedata').on('submit', function(e){
+      e.preventDefault();
+      var formData = new FormData($('#updatenode')[0]);
+      let title = $('.titledata').val();
+      let id = $('.iddata').val();
+      let desc = $('.descdata').val();   // <-- fixed
+      let img = $('.imagedata').val();   // <-- fix: use file input, not .imgdata
+      console.log('rr', formData)
+      if (title.length >= 2) {
+        $.ajax({
+            type: 'POST',
+            url: '/updatenode',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (data)=>{
+                if(data.success){
+                  location.reload();
+                } else {
+                  alertify.error(data.error);
+                }
+            }
+        });
+      }
+    });
+    function updatelabel(id, event){
+      console.log('updatelabel', id, event)
+      $.get('/updatelabel?id=' + id,{'label':$(event.target).parent().find('input').val()});
+    }
+    function findNodeById(id) {
+      return nodes.find(n => n.id === id);
+    }
+
+    function showdata(id) {
+        $.ajax({
+            url: '/getnodedata?id=' + id ,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              $('.nodedata').removeClass('d-node')
+              $('.titledata').val(data.title)
+              $('.imglinkdata').val(data.imglink)
+              $('.videolinkdata').val(data.videolink)
+              $('.iddata').val(data.id)
+              $('.descdata').text(data.description)
+              if (data.image) {
+                  $('.imgdata').attr('src', data.image).show();
+              } else {
+                  $('.imgdata').hide();
+              }
+              $('.typedata').text(data.type)
+              $('.connectiondata').empty();
+              for (let i in data.connections) {
+                let conn = data.connections[i];
+                if (conn.target === data.title) {
+                  // Show clickable source
+                  $('.connectiondata').append(`
+                    <div style="margin-bottom:6px; border-bottom:1px solid white;">
+                      <button onclick="onSelectNode(findNodeById(${conn.source_id}))">${conn.source}</button>
+                    </div>
+                  `);
+                } else {
+                  // Editable label for outgoing connection
+                  $('.connectiondata').append(`
+                    <div style="margin-bottom:6px; border-bottom:1px solid white;">
+                      <input style="width: 25%;background: #0f18279c;border: #ffffff;color: white;border-radius: 10px" 
+                            value="${conn.label}" type=text>
+                      <button onclick="onSelectNode(findNodeById(${conn.target_id}))">${conn.target}</button>
+                      <button onclick="updatelabel(${conn.id}, event)"></button>
+                    </div>
+                  `);
+                }
+              }
+              // For simplicity, using alert to show data
+            },
+            error: function() {
+                alert('Error fetching node data.');
+            }
+        });
+    }
+    /* --- node creation / drag --- */
+    function createNode(data){
+      const n = Object.assign({x: 120 + Math.random()*300, y: 80 + Math.random()*150, title: 'Untitled', description:'', img:null, type:'note', imglink:null}, data);
+      const el = document.createElement('div');
+      el.className = 'node';
+      el.style.left = n.x + 'px';
+      el.style.top = n.y + 'px';
+      el.dataset.id = n.id;
+      //<div class="desc">${escapeHtml(n.description)}</div>
+      el.innerHTML = `
+        ${n.img || n.imglink ? `<img src="${n.img || n.imglink}" alt="">` : ''}
+        ${n.video || n.videolink ? `<video width="320" height="240" controls>
+            <source src="${n.video || n.videolink}" type="video/mp4">
+          </video>${n.video || n.videolink}` : ''}
+        <div class="title">${escapeHtml(n.title)}</div>
+      `;
+      n.el = el;
+      board.appendChild(el);
+      attachDrag(el);
+      el.addEventListener('click', ev => { ev.stopPropagation(); onSelectNode(n); });
+      nodes.push(n);
+      updateConnections();
+      return n;
+    }
+    
+    function attachDrag(el) {
+      let sx, sy, sl, st;
+      let dragging = false;
+    
+      el.addEventListener('pointerdown', e => {
+        el.setPointerCapture(e.pointerId);
+        sx = e.clientX;
+        sy = e.clientY;
+        sl = parseFloat(el.style.left) || 0;
+        st = parseFloat(el.style.top) || 0;
+        dragging = true;
+        el.classList.add('dragging');
+      });
+    
+      window.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const nx = sl + (e.clientX - sx);
+        const ny = st + (e.clientY - sy);
+        el.style.left = nx + 'px';
+        el.style.top = ny + 'px';
+        const node = nodes.find(x => x.el === el);
+        if (node) {
+          node.x = nx;
+          node.y = ny;
+        }
+        updateConnections();
+      });
+    
+      window.addEventListener('pointerup', e => {
+        if (!dragging) return;
+        dragging = false;
+        el.classList.remove('dragging');
+        try { el.releasePointerCapture(e.pointerId); } catch (e) {}
+    
+        // Save new position to DB
+        const node = nodes.find(x => x.el === el);
+        if (node) {
+          fetch(`/update_node/${node.id}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ x: node.x, y: node.y })
+          });
+        }
+      });
+    }
+    
+    /* --- selection / connect flow --- */
+    function onSelectNode(n){
+      if(connectMode){
+        if(!awaiting){
+          awaiting = n;
+          n.el.classList.add('selected');
+          return;
+        }
+        if(awaiting && awaiting !== n){
+          createLink(awaiting, n, '', '1', 'white');
+          awaiting.el.classList.remove('selected');
+          awaiting = null;
+          connectMode = false;
+          connectBtn.textContent = 'Connect';
+          return;
+        }
+      } else {
+        // Normal click -> highlight connections
+        clearHighlights();
+        highlightConnections(n.id);
+        // ensure single node has selected class as well (if you want)
+        nodes.forEach(x => x.el.classList.remove('selected'));
+        n.el.classList.add('selected');
+      }
+    }
+    
+    /* --- highlighting helpers --- */
+    function clearHighlights(){
+      // remove node highlights
+      nodes.forEach(n => {
+        n.el.classList.remove('node-highlight');
+        n.el.classList.remove('selected'); // keep previous behavior if you want
+      });
+      // remove link highlights
+      links.forEach(l => {
+        if (l.elVisible) l.elVisible.classList.remove('highlight');
+        if (l.elHit) l.elHit.classList.remove('highlight');
+        if (l.labelEl) l.labelEl.classList.remove('connection-label-highlight');
+      });
+    }
+    
+    function highlightConnections(nodeId){
+      const idStr = String(nodeId);
+    
+      // highlight clicked node
+      const clicked = nodes.find(n => String(n.id) === idStr);
+      if (clicked) {
+        clicked.el.classList.add('node-highlight');
+        showdata(nodeId)
+      }
+      // find and highlight connected links and other nodes
+      links.forEach(l => {
+        const s = String(l.source);
+        const t = String(l.target);
+        if (s === idStr || t === idStr) {
+          // highlight line
+          if (l.elVisible) l.elVisible.classList.add('highlight');
+          if (l.elHit) l.elHit.classList.add('highlight');
+          if (l.labelEl) l.labelEl.classList.add('connection-label-highlight');
+    
+          // highlight the other node
+          const otherId = (s === idStr) ? t : s;
+          const otherNode = nodes.find(n => String(n.id) === otherId);
+          if (otherNode) otherNode.el.classList.add('node-highlight');
+        }
+      });
+    }
+    
+    /* --- create link with visible path + hit path + label --- */
+    function createLink(a, b, labelText = '', saveToDb, color) {
+      const id = uid('link');
+      const gVisible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      gVisible.classList.add('connection-line');
+      //gVisible.style.stroke=color;
+      const gHit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      gHit.classList.add('connection-hit');
+      gHit.style.stroke=color;
+    
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.classList.add('connection-label');
+      //label.textContent = labelText || '';
+      label.style.cursor = "text"; // show it's editable
+    
+      // attach IDs to svg elements for debugging / future reference
+      gVisible.dataset.linkId = id;
+      gHit.dataset.linkId = id;
+      label.dataset.linkId = id;
+    
+      svg.appendChild(gVisible);
+      svg.appendChild(gHit);
+      svg.appendChild(label);
+    
+      const linkObj = {
+        id,
+        source: a.id,
+        target: b.id,
+        elVisible: gVisible,
+        elHit: gHit,
+        labelEl: label,
+        //label: labelText
+      };
+      links.push(linkObj);
+      updateConnections();
+    
+      if (saveToDb === '1') {
+        fetch("/create_connection/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ source: a.id, target: b.id, label: labelText })
+        })
+        .then(res => res.json())
+        .then(data => { if (data.status === "ok") linkObj.id = data.id; });
+      }
+    
+      /* --- Inline label editing --- */
+      label.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+    
+        // Input overlay
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = linkObj.label || "";
+        input.style.position = "absolute";
+    
+        // compute position using SVG label coords (fallback to mouse coords)
+        const lx = parseFloat(label.getAttribute("x")) || e.clientX;
+        const ly = parseFloat(label.getAttribute("y")) || e.clientY;
+        input.style.left = (lx - 40) + "px";
+        input.style.top = (ly - 10) + "px";
+        input.style.zIndex = 9999;
+        input.style.fontSize = "12px";
+        input.style.background = "#111";
+        input.style.color = "#f59e0b";
+        input.style.border = "1px solid #f59e0b";
+        input.style.padding = "2px 4px";
+        input.style.borderRadius = "4px";
+    
+        document.body.appendChild(input);
+        input.focus();
+    
+        const finish = () => {
+          const newLabel = input.value.trim();
+          label.textContent = newLabel;
+          linkObj.label = newLabel;
+          document.body.removeChild(input);
+    
+          // Save to DB if this connection exists server-side
+          if (linkObj.id) {
+            fetch(`/update_connection/${linkObj.id}/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ label: newLabel })
+            });
+          }
+        };
+    
+        input.addEventListener("blur", finish);
+        input.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") finish();
+        });
+      });
+    
+      // clicking a visible/hit path should select the link (and highlight it)
+      gHit.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        clearHighlights();
+        gVisible.classList.add('highlight');
+        if (linkObj.labelEl) linkObj.labelEl.classList.add('connection-label-highlight');
+      });
+    
+      return id;
+    }
+    
+    /* --- update all link geometry --- */
+    function updateConnections(){
+      // ensure svg covers board area (good practice)
+      const rect = board.getBoundingClientRect();
+      svg.setAttribute('width', rect.width);
+      svg.setAttribute('height', rect.height);
+    
+      links.forEach(l => {
+        const a = nodes.find(n => String(n.id) === String(l.source));
+        const b = nodes.find(n => String(n.id) === String(l.target));
+        if(!a || !b){
+          // remove stale
+          try{ l.elVisible.remove(); l.elHit.remove(); l.labelEl.remove(); }catch(e){}
+          return;
+        }
+        // compute points (use center of node)
+        const x1 = a.x + a.el.offsetWidth/2;
+        const y1 = a.y + a.el.offsetHeight/2;
+        const x2 = b.x + b.el.offsetWidth/2;
+        const y2 = b.y + b.el.offsetHeight/2;
+    
+        // cubic bezier for smooth curve
+        const dx = Math.abs(x2 - x1);
+        const cx1 = x1 + (x2 > x1 ? Math.min(160, dx/2) : -Math.min(160, dx/2));
+        const cx2 = x2 + (x2 > x1 ? -Math.min(160, dx/2) : Math.min(160, dx/2));
+        const d = `M ${x1} ${y1} C ${cx1} ${y1} ${cx2} ${y2} ${x2} ${y2}`;
+    
+        l.elVisible.setAttribute('d', d);
+        l.elHit.setAttribute('d', d);
+        // position label at midpoint of the curve (approx: midpoint of endpoints)
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        l.labelEl.setAttribute('x', midX);
+        l.labelEl.setAttribute('y', midY - 6);
+        l.labelEl.textContent = l.elVisible.dataset.label || l.label || '';
+      });
+    }
+    
+    /* --- collect / save / load --- */
+    function collectBoardData(){
+      return {
+        nodes: nodes.map((n, idx) => ({
+          id: n.id,
+          title: n.title,
+          description: n.description,
+          x: n.x,
+          y: n.y,
+          img: n.img,
+          file: n.file || null, // <-- keep File object
+          type: n.type,
+          imageField: n.file ? `image_${idx}` : null
+        })),
+        connections: links.map(l => ({
+          source: l.source,
+          target: l.target,
+          label: (l.elVisible && l.elVisible.dataset.label) || l.label || ''
+        }))
+      }
+    }
+    
+    
+    async function saveBoard() {
+      const boardData = collectBoardData();
+      const formData = new FormData();
+    
+      // Add nodes JSON (without base64 images)
+      formData.append("nodes", JSON.stringify(boardData.nodes.map((n, idx) => {
+        return {
+          id: n.id,
+          title: n.title,
+          description: n.description,
+          x: n.x,
+          y: n.y,
+          type: n.type,
+          imageField: `image_${idx}`
+        };
+      })));
+    
+      // Add connections JSON
+      formData.append("connections", JSON.stringify(boardData.connections));
+    
+      // Attach images separately
+      // boardData.nodes.forEach((n, idx) => {
+      //   if (n.file) {  // <-- we store the File object when creating node
+      //     formData.append(`image_${idx}`, n.file);
+      //   }
+      // });
+    
+      await fetch("/save_board/", {
+        method: "POST",
+        body: formData
+      });
+    
+      alert("Board saved to DB!");
+    }
+    
+    
+    async function loadBoard(){
+      const res = await fetch('/get_board_data');
+      const data = await res.json();
+    
+      // clear
+      nodes.forEach(n => n.el.remove());
+      nodes = [];
+      links.forEach(l => { try{ l.elVisible.remove(); l.elHit.remove(); l.labelEl.remove(); }catch(e){} });
+      links = [];
+      // build nodes
+      (data.nodes || []).forEach(n => createNode({
+        id: n.id,
+        title: n.title,
+        description: n.description,
+        x: n.x,
+        y: n.y,
+        type: n.type,
+        imglink: n.imglink,
+        videolink: n.videolink,
+        img: n.image ? n.image : null // use URL from Django
+        }));
+    
+      // build links
+      (data.connections || data.links || []).forEach(c => {
+        const a = nodes.find(n => String(n.id) === String(c.source));
+        const b = nodes.find(n => String(n.id) === String(c.target));
+        if(a && b){
+          createLink(a, b, c.label || c.name || '', '0', c.color); // <- prevent POST
+        }
+      });
+    
+      // ensure geometry is correct after nodes are in DOM
+      setTimeout(updateConnections, 10);
+    }
+    
+    /* --- UI wiring --- */
+    addBtn.addEventListener('click', () => {
+      const t = titleInput.value.trim() || 'Untitled';
+      const d = descInput.value.trim();
+      const typ = typeInput.value;
+      const imglink = imglinkInput.value;
+      const videolink = videolinkInput.value;
+    
+      const formData = new FormData();
+      formData.append("title", t);
+      formData.append("description", d);
+      formData.append("x", 500 + window.pageXOffset);
+      formData.append("y", 80 + window.pageYOffset);
+      formData.append("type", typ);
+      formData.append("imglink", imglink);
+      formData.append("videolink", videolink);
+    
+      if (imageInput.files && imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+    
+      fetch("/create_node/", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(nodeData => {
+        createNode({
+          id: nodeData.id,  // DB ID returned
+          title: nodeData.title,
+          description: nodeData.description,
+          type: nodeData.type,
+          imglink: nodeData.imglink,
+          videolink: nodeData.videolink,
+          x: parseFloat(nodeData.x),
+          y: parseFloat(nodeData.y),
+          img: nodeData.image || null
+        });
+    
+        // reset inputs
+        titleInput.value = '';
+        descInput.value = '';
+        imageInput.value = '';
+      });
+    });
+    connectBtn.addEventListener('click', ()=>{
+      connectMode = !connectMode;
+      awaiting = null;
+      connectBtn.textContent = connectMode ? 'Connecting... (click two nodes)' : 'Connect';
+    });
+    
+    saveBtn.addEventListener('click', saveBoard);
+    loadBtn.addEventListener('click', loadBoard);
+    
+    /* click on board to cancel a pending connection */
+    board.addEventListener('click', ()=>{
+      if(awaiting){ awaiting.el.classList.remove('selected'); awaiting = null; }
+      if(connectMode){ connectMode = false; connectBtn.textContent = 'Connect'; }
+      clearHighlights();
+    });
+    
+    /* initialize */
+    loadBoard();
+    window.addEventListener('resize', updateConnections);
+</script>
+</body>
+</html>

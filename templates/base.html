@@ -1,0 +1,145 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <title>reales | real estate web application</title>
+        <script src="{% static 'js/jquery.min.js'%}"></script>
+        <link href="{% static 'css/alertify.min.css'%}" rel="stylesheet" />
+        <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet" />
+        <link href="{% static 'css/bootstrap-icons.css'%}" rel="stylesheet" />
+        
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body class="">
+        <div class="container">
+            <!-- Content -->
+            {% block content %}
+            
+            {% endblock %}
+
+        </div>
+        <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'js/select2.min.js'%}"></script>
+    <script src="{% static 'js/main.js'%}"></script>
+    <script src="{% static 'js/alertify.min.js'%}"></script>
+    <script>
+            // const refresh = () => {
+            //     $.get('/getdata', (data) => {
+            //         console.log(data);
+
+            //         // Clear existing markers from the map if needed
+            //         // This will depend on your specific use case
+
+            //         data.forEach(element => {
+            //             const marker = new mapboxgl.Marker({
+            //                 'color': element['ishelped'] ? 'green' : 'red'
+            //             })
+            //             .setLngLat([element['long'], element['lat']])
+            //             .addTo(map);
+
+            //             // Use a closure to capture the correct 'element' value
+            //             marker.getElement().addEventListener('click', () => {
+            //                 new mapboxgl.Popup()
+            //                     .setLngLat([element['long'], element['lat']])
+            //                     .setHTML(`<h3>Marker Clicked</h3><p>Is Helped: ${element['ishelped']}</p>`)
+            //                     .addTo(map);
+            //             });
+            //         });
+            //     });
+            // };
+            const refresh = () => {
+                $.get('/getdata', (data) => {
+                    console.log(data);
+
+                    // Clear existing markers from the map if needed
+                    // This will depend on your specific use case
+
+                    // Create a GeoJSON FeatureCollection
+                    const geojson = {
+                        type: 'FeatureCollection',
+                        features: [],
+                    };
+
+                    data.forEach(element => {
+                        console.log(element['lat']);
+                        const feature = {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [element['long'], element['lat']]
+                            },
+                            properties: {
+                                color: element['ishelped'] ? 'green' : 'red',
+                                description:'<p> hi </p>'
+                            }
+                        };
+
+                        // Add the feature to the GeoJSON
+                        geojson.features.push(feature);
+                    });
+
+                    // Add the GeoJSON data to the map as a source and layer
+                    // map.getSource('dots-source').setData(geojson);
+                    map.addSource('places', {
+                        'type': 'geojson',
+                        'data': geojson
+                    })
+                    map.addLayer({
+                    'id': 'places',
+                    'type': 'circle',
+                    'source': 'places',
+                    'paint': {
+                    'circle-radius': 6,
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#ffffff'
+                    }
+                    });
+                    
+                    // Create a popup, but don't add it to the map yet.
+                    const popup = new mapboxgl.Popup({
+                    closeButton: false,
+                    closeOnClick: false
+                    });
+                    
+                    map.on('mouseenter', 'places', (e) => {
+                    // Change the cursor style as a UI indicator.
+                    map.getCanvas().style.cursor = 'pointer';
+                    
+                    // Copy coordinates array.
+                    const coordinates = e.features[0].geometry.coordinates.slice();
+                    const description = e.features[0].properties.description;
+                    
+                    // Ensure that if the map is zoomed out such that multiple
+                    // copies of the feature are visible, the popup appears
+                    // over the copy being pointed to.
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                    
+                    // Populate the popup and set its coordinates
+                    // based on the feature found.
+                    popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                    });
+                    
+                    map.on('mouseleave', 'places', () => {
+                    map.getCanvas().style.cursor = '';
+                    popup.remove();
+                    });
+                    
+                });
+            };
+
+
+
+        </script>
+        {% block js %}
+        {% endblock %}
+    </body>
+</html>

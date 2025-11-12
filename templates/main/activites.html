@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- activity form -->
+    <aside class="col-lg-3"> 
+       
+      
+        <div class="shadow-sm rounded text-center p-3 mb-4">
+            <a href="/" class="btn btn-primary"></a>
+            <button class="btn btn-success" onclick="createactivity()">+</button>
+        </div>
+        <div class="shadow-sm rounded text-center p-3 mb-4">
+            
+        </div>
+    </aside>
+    <!-- activities  -->
+    <aside class="col-lg-9"> 
+       
+      
+        <div class="shadow-sm rounded text-center p-3 mb-4">
+            <table class="table table-bordered table-dark">
+                <thead>
+                    <tr>
+                        <td>
+                            date
+                        </td>
+                        <td>
+                            wake
+                        </td>
+                        <td>
+                            prayer
+                        </td>
+                        <td>
+                            Quran
+                        </td>
+                        <td>
+                            working
+                        </td>
+                        <td>
+                            pushups
+                        </td>
+                        <td>
+                            Mast
+                        </td>
+                        <td>
+                            freelancing
+                        </td>
+                        <td>
+                            coding
+                        </td>
+                        <td>
+                            shower
+                        </td>
+                        
+                        <td>
+                            football
+                        </td>
+                        <td>
+                            run
+                        </td>
+                        
+                        
+                        
+                        
+                        <td>
+                            Sick
+                        </td>
+                        <td>
+                            sleep
+                        </td>
+                        <td>
+                            Events
+                        </td>
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    {% for i in activities %}
+                    <tr>
+                        <td>
+                            {{i.date|date:'D d/m/y'}}
+                            
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                            <input class="waketimeinp" type="time" value="{{i.wake|date:'H:i'}}">
+                            <button onclick="updatewaketime(event, '{{i.id}}')">+</button>
+                            </div>
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'prayer')" class="{% if i.prayer %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'quran')" class="{% if i.quran %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'working')" class="{% if i.working %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'pushups')" class="{% if i.pushups %} bg-success {% endif %}"></td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'mast')" class="{% if i.mast %} bg-danger {%else%}bg-success {% endif %}">
+                            {{ i.mast }}
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'freelancing')" class="{% if i.freelancing %} bg-success {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'coding')" class="{% if i.coding %} bg-success {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'shower')" class="{% if i.shower %} bg-success {% endif %}">
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'football')" class="{% if i.football %} bg-success {% endif %}">
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'run')" class="{% if i.run %} bg-success {% endif %}">
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'sick')" class="{% if i.sick %} bg-success {% endif %}">
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                            <input class="sleeptimeinp" type="time" value="{{i.sleep|date:'H:i'}}">
+                            <button onclick="updatesleeptime(event, '{{i.id}}')">+</button>
+                            </div>
+                        </td>
+                        <td>
+                            <textarea name="events" id="">{{i.events}}</textarea>
+                            <button onclick="addevents('{{i.id}}', event)">+</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </aside>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    function addevents(id, event){
+        events=$(event.target).parent().find('textarea').val()
+        $.get('addevents', {'events':events, 'id':id}, ()=>{
+
+        })
+    }
+    function updatesleeptime(event, id){
+        sleeptime=$(event.target).parent().find('.sleeptimeinp').val()
+        $.get('updatesleeptime', {'time':sleeptime, 'id':id}, ()=>{
+            //location.reload()
+        })
+    }
+    function updatewaketime(event, id){
+        waketime=$(event.target).parent().find('.waketimeinp').val()
+        $.get('updatewaketime', {'time':waketime, 'id':id}, ()=>{
+            //location.reload()
+        })
+    }
+    function createactivity(){
+        $.get('/createactivity', (data)=>{
+            location.reload()
+        })
+    }
+function updateactiv(event, id, activity){
+    $.get('/updateactiv',{'id':id, 'activity':activity}, (data)=>{
+        console.log($(this))
+        $(event.target).toggleClass('bg-success')
+    })
+}
+</script>
+{% endblock %}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Quran Memorization</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: "Scheherazade New", serif;
+      background: #f9f5ec;
+      margin: 0;
+      padding: 20px;
+    }
+    .quran-page {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      border: 3px solid #b89c6c;
+      border-radius: 15px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      column-count: 2;
+      column-gap: 40px;
+      direction: rtl;
+      text-align: justify;
+      line-height: 2.2;
+      font-size: 22px;
+    }
+    .verse {
+      display: block;
+      margin-bottom: 15px;
+    }
+    .blank {
+      border: 2px dashed #bbb;
+      min-height: 40px;
+      display: inline-block;
+      width: 100%;
+      background: #fafafa;
+      color: transparent;
+    }
+    .blank.active {
+      border-color: #5a4220;
+      background: #fef5e5;
+    }
+    .suggestions {
+      margin: 40px auto;
+      max-width: 900px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    .suggestion {
+      background: #fff;
+      border: 2px solid #b89c6c;
+      padding: 10px 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 18px;
+      max-width: 350px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .suggestion:hover {
+      background: #fdf7ed;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #5a4220;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      margin: 0 10px;
+      padding: 8px 16px;
+      border: none;
+      background: #b89c6c;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background: #a0804c;
+    }
+  </style>
+</head>
+<body style="display: flex;">
+  <div style="width: 70%;">
+
+    <h1>📖 Quran Memorization (Sequential Blanks)</h1>
+  
+    <div class="controls">
+      <button id="reveal">👁 Reveal Answers</button>
+    </div>
+  
+    <div class="quran-page" id="quranPage"></div>
+  </div>
+  <div style="width: 30%;">
+
+    <div class="suggestions" id="suggestions"></div>
+    <h2 style="text-align:center;margin-top:40px;">Suggestions</h2>
+    <button id="newPage">🔄 New Random Page</button>
+
+  </div>
+
+  <script>
+    const API_BASE = "https://api.quran.com/api/v4/quran/verses/uthmani?page_number=";
+    let blanked = {};
+    let blanksOrder = [];
+    let currentIndex = 0;
+
+    function randomPageNumber() {
+      return Math.floor(Math.random() * 10) + 1; // 1 to 604 pages
+    }
+
+    function loadRandomPage() {
+      const pageNum = randomPageNumber();
+      $("#quranPage").html("Loading...");
+      $("#suggestions").empty();
+
+      $.get(API_BASE + pageNum, function(res) {
+      console.log(res)
+        const verses = res.verses;
+        $("#quranPage").empty();
+        blanked = {};
+        blanksOrder = [];
+        currentIndex = 0;
+
+        verses.forEach(v => {
+          const blank = Math.random() < 0.4; // 40% chance to blank verse
+          if (blank) {
+            blanked[v.id] = v.text_uthmani;
+            $("#quranPage").append(`<span class="verse blank" data-id="${v.id}">____</span>`);
+            blanksOrder.push(v.id);
+          } else {
+            $("#quranPage").append(`<span class="verse">${v.text_uthmani}</span>`);
+          }
+        });
+
+        // Suggestions: shuffle blanked verses
+        const suggestionList = Object.values(blanked).sort(() => Math.random() - 0.5);
+        suggestionList.forEach(txt => {
+          $("#suggestions").append(`<div class="suggestion">${txt}</div>`);
+        });
+
+        setActiveBlank();
+        setupClicks();
+      });
+    }
+
+    function setActiveBlank() {
+      $(".blank").removeClass("active");
+      if (currentIndex < blanksOrder.length) {
+        $(`.blank[data-id="${blanksOrder[currentIndex]}"]`).addClass("active");
+      }
+    }
+
+    function setupClicks() {
+      $(".suggestion").click(function() {
+        if (currentIndex >= blanksOrder.length) return;
+
+        const verseText = $(this).text();
+        const activeId = blanksOrder[currentIndex];
+        const activeBlank = $(`.blank[data-id="${activeId}"]`);
+
+        if (blanked[activeId] === verseText) {
+          activeBlank.removeClass("blank active").text(verseText);
+          $(this).remove();
+          currentIndex++;
+          setActiveBlank(); // move to next blank
+        } else {
+          activeBlank.css("border-color", "red");
+          setTimeout(() => activeBlank.css("border-color", "#5a4220"), 1000);
+        }
+      });
+    }
+
+    $("#newPage").click(loadRandomPage);
+    $("#reveal").click(function() {
+      $(".blank").each(function() {
+        const id = $(this).data("id");
+        $(this).removeClass("blank active").text(blanked[id]);
+      });
+      $("#suggestions").empty();
+      currentIndex = blanksOrder.length;
+    });
+
+    // initial load
+    loadRandomPage();
+  </script>
+</body>
+</html>
