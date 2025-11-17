@@ -255,6 +255,7 @@ def get_board_data(request):
                 "type": n.type,
                 "imglink": n.imglink,
                 "videolink": n.videolink,
+                "ytlink": n.ytlink,
                 "image": n.image.url if n.image else None
             }
             for n in nodes
@@ -273,6 +274,7 @@ def create_node(request):
         y = request.POST.get("y", 100)
         imglink = request.POST.get("imglink", '')
         videolink = request.POST.get("videolink", '')
+        ytlink = request.POST.get("ytlink", '')
         type_ = request.POST.get("type", "note")
         image = request.FILES.get("image")
         node = Node.objects.create(
@@ -280,6 +282,7 @@ def create_node(request):
             description=description,
             imglink=imglink,
             videolink=videolink,
+            ytlink=ytlink,
             x=x,
             y=y,
             type=type_,
@@ -292,6 +295,7 @@ def create_node(request):
             "description": node.description,
             "imglink": node.imglink,
             "videolink": node.videolink,
+            "ytlink": node.ytlink,
             "x": node.x,
             "y": node.y,
             "type": node.type,
@@ -336,12 +340,14 @@ def updatenode(request):
     desc=request.POST.get('descdata')
     imglink=request.POST.get('imglinkdata')
     videolink=request.POST.get('videolinkdata')
+    ytlink=request.POST.get('ytlinkdata')
     img=request.FILES.get('imgdata')
     print('>> ids, img', id, img, request.POST)
     node=Node.objects.get(id=id)
     node.title=title
     node.imglink=imglink
     node.videolink=videolink
+    node.ytlink=ytlink
     node.description=desc
     if img:
         node.image=img
@@ -412,6 +418,7 @@ def getnodedata(request):
         'type': node.type,
         'imglink': node.imglink,
         'videolink': node.videolink,
+        'ytlink': node.ytlink,
         'image': node.image.url if node.image else None,
         'connections': [
             {

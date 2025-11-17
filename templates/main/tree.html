@@ -72,6 +72,7 @@
       <input id="type" class="small" placeholder="type" />
       <input id="imglink" class="small" placeholder="Image link" />
       <input id="videolink" class="small" placeholder="video link" />
+      <input id="ytlink" class="small" placeholder="yt link" />
       <textarea id="desc" class="small" rows="2" placeholder="Note (optional)"></textarea>
       <input type="file" id="image" class="small" accept="image/*" />
       
@@ -87,6 +88,7 @@
         <input placeholder="titledata" name="titledata" class="titledata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
         <input placeholder="imglinkdata" name="imglinkdata" class="imglinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
         <input placeholder="videolinkdata" name="videolinkdata" class="videolinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+        <input placeholder="ytlinkdata" name="ytlinkdata" class="ytlinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
         <input hidden placeholder="iddata" name="iddata" class="iddata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
         <textarea placeholder="descdata" name="descdata" class="descdata form-control" style="font-size:14px;margin-bottom:6px;"></textarea>
         <button class="btn btn-primary mt-2">Edit</button>
@@ -109,6 +111,7 @@
     const titleInput = document.getElementById('title');
     const imglinkInput = document.getElementById('imglink');
     const videolinkInput = document.getElementById('videolink');
+    const ytlinkInput = document.getElementById('ytlink');
     const descInput = document.getElementById('desc');
     const imageInput = document.getElementById('image');
     const typeInput = document.getElementById('type');
@@ -167,6 +170,7 @@
               $('.titledata').val(data.title)
               $('.imglinkdata').val(data.imglink)
               $('.videolinkdata').val(data.videolink)
+              $('.ytlinkdata').val(data.ytlink)
               $('.iddata').val(data.id)
               $('.descdata').text(data.description)
               if (data.image) {
@@ -215,9 +219,10 @@
       //<div class="desc">${escapeHtml(n.description)}</div>
       el.innerHTML = `
         ${n.img || n.imglink ? `<img src="${n.img || n.imglink}" alt="">` : ''}
-        ${n.video || n.videolink ? `<video width="320" height="240" controls>
+        ${n.videolink ? `<video width="320" height="240" controls>
             <source src="${n.video || n.videolink}" type="video/mp4">
-          </video>${n.video || n.videolink}` : ''}
+          </video>` : ''}
+        ${n.ytlink ? `${n.ytlink}` : ''}
         <div class="title">${escapeHtml(n.title)}</div>
       `;
       n.el = el;
@@ -564,6 +569,7 @@
         type: n.type,
         imglink: n.imglink,
         videolink: n.videolink,
+        ytlink: n.ytlink,
         img: n.image ? n.image : null // use URL from Django
         }));
     
@@ -587,6 +593,7 @@
       const typ = typeInput.value;
       const imglink = imglinkInput.value;
       const videolink = videolinkInput.value;
+      const ytlink = ytlinkInput.value;
     
       const formData = new FormData();
       formData.append("title", t);
@@ -596,6 +603,7 @@
       formData.append("type", typ);
       formData.append("imglink", imglink);
       formData.append("videolink", videolink);
+      formData.append("ytlink", ytlink);
     
       if (imageInput.files && imageInput.files[0]) {
         formData.append("image", imageInput.files[0]);
@@ -614,6 +622,7 @@
           type: nodeData.type,
           imglink: nodeData.imglink,
           videolink: nodeData.videolink,
+          ytlink: nodeData.ytlink,
           x: parseFloat(nodeData.x),
           y: parseFloat(nodeData.y),
           img: nodeData.image || null
