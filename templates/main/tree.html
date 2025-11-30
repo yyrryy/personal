@@ -50,6 +50,7 @@
     .highlight { opacity: 1;}
     .footer { position:absolute; left:16px; bottom:12px; font-size:12px; color:#9ca3af; }
     .node-highlight {
+      z-index: 9999 !important;
       opacity: 1 !important;
       box-shadow: 5px 6px 10px 5px rgb(121 138 218);
     }
@@ -65,37 +66,42 @@
 
       <!-- Board contains nodes (on top visually) -->
       <div id="board" class="board"></div>
-
-    </div>
-    <aside class="sidebar">
-      <input id="title" class="small" placeholder="Name / clue" />
-      <input id="type" class="small" placeholder="type" />
-      <input id="imglink" class="small" placeholder="Image link" />
-      <input id="videolink" class="small" placeholder="video link" />
-      <input id="ytlink" class="small" placeholder="yt link" />
-      <textarea id="desc" class="small" rows="2" placeholder="Note (optional)"></textarea>
-      <input type="file" id="image" class="small" accept="image/*" />
-      
-      <button id="addBtn" class="btn">Add Node</button>
-      <button id="connectBtn" class="btn">Connect</button>
-      <button hidden id="saveBtn" class="btn">Save to DB</button>
-      <button hidden id="loadBtn" class="btn">Load from DB</button>
-      <!-- <div style="height:8px"></div> -->
-      <!-- <div style="font-size:12px;color:#9ca3af">Click <strong>Connect</strong> then click two nodes to draw a connection. Click a connection to edit/delete its label.</div> -->
-      <form class="nodedata" id="updatenode" method="post" enctype="multipart/form-data">
-        <img class="imgdata" src="" alt="Node Image" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:none;">
-        <input type="file" name="imagedata" class="imagedata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <input placeholder="titledata" name="titledata" class="titledata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <input placeholder="imglinkdata" name="imglinkdata" class="imglinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <input placeholder="videolinkdata" name="videolinkdata" class="videolinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <input placeholder="ytlinkdata" name="ytlinkdata" class="ytlinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <input hidden placeholder="iddata" name="iddata" class="iddata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
-        <textarea placeholder="descdata" name="descdata" class="descdata form-control" style="font-size:14px;margin-bottom:6px;"></textarea>
-        <button class="btn btn-primary mt-2">Edit</button>
-      </form>
       <div class="connectiondata" style="
+      position: fixed;
+      right: 300px;
+      bottom: 20px;
+      width: 300px;
       overflow-y: scroll;
       height: 21em;"></div>
+    </div>
+    <aside class="sidebar">
+      
+        <input id="title" class="small" placeholder="Name / clue" />
+        <input id="type" class="small" placeholder="type" />
+        <input id="imglink" class="small" placeholder="Image link" />
+        <input id="videolink" class="small" placeholder="video link" />
+        <input id="ytlink" class="small" placeholder="yt link" />
+        <textarea id="desc" class="small" rows="2" placeholder="Note (optional)"></textarea>
+        <input type="file" id="image" class="small" accept="image/*" />
+        
+        <button id="addBtn" class="btn">Add Node</button>
+        <button id="connectBtn" class="btn">Connect</button>
+        <button hidden id="saveBtn" class="btn">Save to DB</button>
+        <button hidden id="loadBtn" class="btn">Load from DB</button>
+        <!-- <div style="height:8px"></div> -->
+        <!-- <div style="font-size:12px;color:#9ca3af">Click <strong>Connect</strong> then click two nodes to draw a connection. Click a connection to edit/delete its label.</div> -->
+        <form class="nodedata" id="updatenode" method="post" enctype="multipart/form-data">
+          <img class="imgdata" src="" alt="Node Image" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;display:none;">
+          <input type="file" name="imagedata" class="imagedata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <input placeholder="titledata" name="titledata" class="titledata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <input placeholder="imglinkdata" name="imglinkdata" class="imglinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <input placeholder="videolinkdata" name="videolinkdata" class="videolinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <input placeholder="ytlinkdata" name="ytlinkdata" class="ytlinkdata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <input hidden placeholder="iddata" name="iddata" class="iddata form-control" style="font-weight:600;font-size:16px;margin-bottom:6px;">
+          <textarea placeholder="descdata" name="descdata" class="descdata form-control" style="font-size:14px;margin-bottom:6px;"></textarea>
+          <button class="btn btn-primary mt-2">Edit</button>
+        </form>
+      
     </aside>
   </div>
 
@@ -144,7 +150,7 @@
             contentType: false,
             success: (data)=>{
                 if(data.success){
-                  location.reload();
+                  //location.reload();
                 } else {
                   alertify.error(data.error);
                 }
@@ -351,8 +357,9 @@
     /* --- create link with visible path + hit path + label --- */
     function createLink(a, b, labelText = '', saveToDb, color) {
       const id = uid('link');
-      const gVisible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const gVisible = document.createElementNS('http://www.w3.org/2000/svg', 'path');      
       gVisible.classList.add('connection-line');
+      gVisible.setAttribute("marker-end", "url(#arrowhead)");
       //gVisible.style.stroke=color;
       const gHit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       gHit.classList.add('connection-hit');

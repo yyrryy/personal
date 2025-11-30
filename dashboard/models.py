@@ -105,7 +105,6 @@ class Node(models.Model):
     image = models.ImageField(upload_to="node_images/", blank=True, null=True)
     x = models.FloatField(default=100)  # position on board
     y = models.FloatField(default=100)
-
     def __str__(self):
         return self.title
 
