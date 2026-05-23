@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from dashboard.models import Profile, Outraisons, Inraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Connection
+from dashboard.models import Profile, Outraisons, Inraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected
 from django.http import JsonResponse
 from itertools import chain
 from datetime import date, timedelta
@@ -8,12 +8,15 @@ from django.utils import timezone
 thismonth=date.today().month
 thisyear=date.today().year
 # Create your views here.
+def home(request):
+    return render(request, 'main/home.html')
 def main(request):
     profile=Profile.objects.get(pk=1)
     essances=list(Essance.objects.all())
     # litters=essances.aggregate(total=Sum('qty'))['total'] or 0
     distance=float(essances[-1].km)-float(essances[-2].km)
     previouslitter=essances[-2].qty
+    totalmoneyexpected = Moneyexpected.objects.aggregate(total=Sum('amount'))['total'] or 0
     print('>> dust', distance, previouslitter)
     lastlitter=essances[-1].qty
     # nextfill=(distance*lastlitter)/previouslitter
@@ -63,7 +66,8 @@ def main(request):
         key=lambda item: item[0].date,
         reverse=True  # Sort in descending order
     )
-    totalin=Inbalance.objects.exclude(raison_id=14).aggregate(Sum('amount'))['amount__sum']
+    #544R34RR
+    totalin=Inbalance.objects.exclude(raison__ignored=True).aggregate(Sum('amount'))['amount__sum']
     totalout=Outbalance.objects.aggregate(Sum('amount'))['amount__sum']
     print(totalin, totalout, totalin-totalout)
     ctx = {
@@ -83,9 +87,11 @@ def main(request):
         'netmonthbalance':netmonthbalance,
         'sold':sold,
         'ageindays':ageindays,
-        'fromlastmonth':fromlastmonth
+        'fromlastmonth':fromlastmonth,
+        "expectedmoney": Moneyexpected.objects.all(),
+        'totalmoneyexpected': totalmoneyexpected
     }
-    return render(request, 'main/main.html', ctx)
+    return render(request, 'main/main2.html', ctx)
 
 
 
@@ -140,7 +146,7 @@ def activities(request):
         'title':'Acttivities',
         'activities':Activity.objects.all().order_by('-date')
     }
-    return render(request, 'main/activites.html', ctx)
+    return render(request, 'main/activities.html', ctx)
 
 def createactivity(request):
     today = date.today()
@@ -232,8 +238,24 @@ def tree(request):
     ctx={
         'title':'tree',
     }
-    return render(request, 'main/tree.html', ctx)
+    return render(request, 'main/tree2.html', ctx)
+def addexpectedmoney(request):
+    amount=request.GET.get('amount')
+    raison=request.GET.get('raison')
+    note=request.GET.get('note')
+    Moneyexpected.objects.create(amount=amount, raison_id=raison, note=note)
+    return redirect('main:main')
 
+def receiveexpectedmoney(request):
+    id=request.GET.get('id')
+    money=Moneyexpected.objects.get(pk=id)
+    from_reason = Inraisons.objects.get(pk=money.raison_id,)
+    Inbalance.objects.create(amount=money.amount, raison_id=money.raison_id, note=money.note, date=timezone.now())
+    if from_reason.rest > 0:
+        from_reason.rest -= float(money.amount)
+        from_reason.save()
+    money.delete()
+    return redirect('main:main')
 # def getdata(request):
 #     villages = Village.objects.all()
 #     #"name": village.name,

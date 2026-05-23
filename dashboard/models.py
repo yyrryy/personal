@@ -51,6 +51,8 @@ class Inraisons(models.Model):
     raison=models.TextField()
     #ch!7al b9a 3ndo
     rest=models.FloatField(default=0.0)
+    #ignored means that I will not count it in the total balance(ref 544R34RR), but I want to keep it for record
+    ignored=models.BooleanField(default=False)
     def __str__(self) -> str:
         return self.raison
 
@@ -65,11 +67,18 @@ class Inbalance(models.Model):
     amount=models.FloatField()
     date=models.DateTimeField()
     raison=models.ForeignKey(Inraisons, on_delete=models.CASCADE)
+    note=models.TextField(default=None, null=True, blank=True)
+    
         
 class Activity(models.Model):
     date=models.DateField(default=timezone.now, null=True)
     events=models.TextField()
     prayer=models.BooleanField(default=False)
+    fajr=models.BooleanField(default=False)
+    duhr=models.BooleanField(default=False)
+    asr=models.BooleanField(default=False)
+    maghrib=models.BooleanField(default=False)
+    isha=models.BooleanField(default=False)
     shower=models.BooleanField(default=False)
     football=models.BooleanField(default=False)
     run=models.BooleanField(default=False)
@@ -122,3 +131,39 @@ class Item(models.Model):
     image=models.ImageField(upload_to="item_images/", blank=True, null=True)
     def __str__(self):
         return self.name
+class Roadmap(models.Model):
+    title = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    estimated_completion_date = models.DateTimeField(null=True, blank=True)
+    def __str__(self):
+        return self.title
+
+class RoadmapItem(models.Model):
+    # admin.site.register(models.Profile)
+    roadmap = models.ForeignKey(Roadmap, on_delete=models.CASCADE, related_name="items")
+
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    category = models.CharField(max_length=200, blank=True)  
+    # No fixed choices → flexible for any roadmap type
+
+    order = models.IntegerField(default=0)  
+    # You can use order instead of day_start/day_end to support ALL kinds of roadmaps
+
+    completed = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"{self.title} - {'Done' if self.completed else 'Pending'}"
+    
+class Moneyexpected(models.Model):
+    amount=models.FloatField()
+    raison=models.ForeignKey(Inraisons, on_delete=models.CASCADE)
+    # wether I get it or not
+    paid=models.BooleanField(default=False)
+    note=models.TextField(default=None, null=True, blank=True)
+    def __str__(self) -> str:
+        return f"{self.amount} expected from {self.raison.raison}"

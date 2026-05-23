@@ -32,6 +32,21 @@
                             prayer
                         </td>
                         <td>
+                            Fajr
+                        </td>
+                        <td>
+                            Dhuhr
+                        </td>
+                        <td>
+                            Asr
+                        </td>
+                        <td>
+                            Maghrib
+                        </td>
+                        <td>
+                            Isha
+                        </td>
+                        <td>
                             Quran
                         </td>
                         <td>
@@ -89,6 +104,16 @@
                             </div>
                         </td>
                         <td ondblclick="updateactiv(event, '{{i.id}}', 'prayer')" class="{% if i.prayer %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'fajr')" class="{% if i.fajr %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'duhr')" class="{% if i.duhr %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'asr')" class="{% if i.asr %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'maghrib')" class="{% if i.maghrib %} bg-success {%else%}bg-danger {% endif %}">
+                        </td>
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'isha')" class="{% if i.isha %} bg-success {%else%}bg-danger {% endif %}">
                         </td>
                         <td ondblclick="updateactiv(event, '{{i.id}}', 'quran')" class="{% if i.quran %} bg-success {%else%}bg-danger {% endif %}">
                         </td>

@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="/static/js/jquery.min.js"></script>
+  <link href="/static/css/bootstrap.css" rel="stylesheet" />
+  <link href="/static/css/bootstrap-icons.css" rel="stylesheet" />
+  <title>Tree Atlas</title>
+  <style>
+    :root {
+      --bg: #070a0e;
+      --panel: rgba(12, 18, 25, .86);
+      --soft: rgba(255,255,255,.065);
+      --line: rgba(255,255,255,.12);
+      --text: #ecf3f8;
+      --muted: #92a3b4;
+      --accent: #f2b544;
+      --green: #48d2a0;
+      --red: #ff6b6b;
+      --blue: #70a9ff;
+      --radius: 8px;
+      --shadow: 0 28px 90px rgba(0,0,0,.42);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(72,210,160,.12), transparent 28%),
+        radial-gradient(circle at 84% 8%, rgba(242,181,68,.13), transparent 30%),
+        linear-gradient(135deg, #070a0e, #0b1118 48%, #071115);
+    }
+    button, input, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    .atlas { display: grid; grid-template-columns: 1fr 350px; height: 100vh; overflow: hidden; }
+    .topbar {
+      position: fixed; top: 14px; left: 16px; right: 374px; z-index: 80;
+      display: flex; align-items: center; gap: 10px; padding: 10px;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: rgba(7,10,14,.74); backdrop-filter: blur(16px); box-shadow: var(--shadow);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 188px; padding-right: 10px; border-right: 1px solid var(--line); }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; color: #06120f; background: linear-gradient(135deg, var(--green), var(--accent)); }
+    .brand strong { display: block; font-size: 14px; }
+    .brand span { display: block; color: var(--muted); font-size: 11px; }
+    .search { position: relative; flex: 1; min-width: 180px; }
+    .search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .search input, .field {
+      width: 100%; min-height: 38px; color: var(--text); outline: none;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--soft); padding: 8px 10px;
+    }
+    .search input { padding-left: 36px; }
+    .search input:focus, .field:focus { border-color: rgba(242,181,68,.62); box-shadow: 0 0 0 3px rgba(242,181,68,.12); }
+    .toolbar { display: flex; gap: 8px; }
+    .zoom-chip {
+      display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 8px;
+      border: 1px solid var(--line); border-radius: 8px; background: var(--soft);
+    }
+    .zoom-chip .icon-btn { width: 30px; height: 28px; }
+    .zoom-chip span { min-width: 44px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .icon-btn, .mode-btn {
+      display: inline-grid; place-items: center; height: 38px; border-radius: 8px;
+      color: var(--text); background: var(--soft); border: 1px solid var(--line);
+    }
+    .icon-btn { width: 38px; }
+    .mode-btn { grid-auto-flow: column; gap: 8px; padding: 0 12px; font-weight: 800; }
+    .icon-btn:hover, .mode-btn:hover { background: rgba(255,255,255,.1); }
+    .mode-btn.active { color: #07100d; background: var(--accent); border-color: transparent; }
+    .workspace { position: relative; height: 100vh; overflow: auto; cursor: grab; }
+    .workspace.panning { cursor: grabbing; }
+    .board {
+      position: relative; width: 7200px; height: 4800px;
+      background-image:
+        linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px),
+        linear-gradient(rgba(72,210,160,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(72,210,160,.08) 1px, transparent 1px);
+      background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+    }
+    .empty {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 340px; padding: 18px; text-align: center; color: var(--muted);
+      border: 1px dashed rgba(255,255,255,.22); border-radius: var(--radius);
+      background: rgba(7,10,14,.68); pointer-events: none;
+    }
+    .empty strong { display: block; color: var(--text); margin-bottom: 4px; }
+    svg.connections { position: absolute; inset: 0; width: 7200px; height: 4800px; overflow: visible; pointer-events: none; z-index: 5; }
+    .connection-line { fill: none; stroke-width: 2.5; stroke-linecap: round; opacity: .76; filter: drop-shadow(0 8px 10px rgba(0,0,0,.45)); }
+    .connection-line.highlight { stroke-width: 4; opacity: 1; filter: drop-shadow(0 0 14px currentColor); }
+    .connection-hit { fill: none; stroke: transparent; stroke-width: 16; pointer-events: stroke; cursor: pointer; }
+    .connection-label-bg { fill: rgba(7,10,14,.9); stroke: var(--line); stroke-width: 1; rx: 6; }
+    .connection-label { fill: var(--text); font-size: 12px; font-weight: 800; text-anchor: middle; dominant-baseline: middle; pointer-events: auto; cursor: text; }
+    .node {
+      position: absolute; left: 0; top: 0; z-index: 20; min-height: 88px; overflow: hidden;
+      width: 260px; contain: layout paint style; content-visibility: auto; contain-intrinsic-size: 260px 156px;
+      border: 1px solid rgba(255,255,255,.13); border-radius: var(--radius);
+      background: rgba(11,16,22,.88); backdrop-filter: blur(12px);
+      box-shadow: 0 18px 52px rgba(0,0,0,.38); cursor: pointer;
+      transition: border-color .18s ease, opacity .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+    .node:hover { border-color: rgba(242,181,68,.6); }
+    .node.dragging { cursor: grabbing; opacity: .84; z-index: 100; }
+    .node.selected, .node.hot { border-color: rgba(242,181,68,.9); box-shadow: 0 0 0 2px rgba(242,181,68,.22), 0 26px 70px rgba(0,0,0,.54); z-index: 90; }
+    .node.dim { opacity: .25; }
+    .media { height: 132px; background: var(--soft); }
+    .media img, .media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .node-body { padding: 12px; }
+    .kicker { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .kicker span:first-child { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .degree { color: var(--green); }
+    .node-title { margin-top: 7px; font-size: 15px; font-weight: 850; line-height: 1.25; overflow-wrap: anywhere; }
+    .desc { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-note { margin-top: 9px; padding: 8px; border: 1px solid rgba(112,169,255,.22); border-radius: 8px; color: var(--blue); background: rgba(112,169,255,.08); font-size: 12px; overflow-wrap: anywhere; }
+    .side {
+      z-index: 100; height: 100vh; overflow-y: auto; border-left: 1px solid var(--line);
+      background: rgba(7,10,14,.88); backdrop-filter: blur(18px); box-shadow: -30px 0 80px rgba(0,0,0,.32);
+    }
+    .section { padding: 16px; border-bottom: 1px solid var(--line); }
+    .section-title { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .section-title h1, .section-title h2 { margin: 0; font-size: 15px; }
+    .section-title span { color: var(--muted); font-size: 12px; }
+    .fields { display: grid; gap: 9px; }
+    .two { grid-template-columns: 1fr 1fr; }
+    textarea.field { resize: vertical; }
+    .primary, .ghost {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 40px; width: 100%; border-radius: var(--radius); font-weight: 850;
+    }
+    .primary { color: #07100d; background: linear-gradient(135deg, var(--green), var(--accent)); }
+    .ghost { color: var(--text); background: var(--soft); border: 1px solid var(--line); }
+    .detail-image { width: 100%; height: 150px; object-fit: cover; border: 1px solid var(--line); border-radius: var(--radius); display: none; }
+    .connections-list { display: grid; gap: 8px; }
+    .conn-card { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.045); }
+    .conn-card input { min-width: 0; color: var(--text); border: 1px solid rgba(255,255,255,.1); border-radius: 7px; background: rgba(0,0,0,.22); padding: 6px 8px; }
+    .conn-card button { width: 32px; height: 32px; }
+    .child-grid { display: grid; grid-template-columns: repeat(3, 42px); justify-content: center; gap: 7px; margin-top: 10px; }
+    .child-grid .icon-btn { width: 42px; height: 42px; }
+    .child-grid [data-child-direction="top"] { grid-column: 2; }
+    .child-grid [data-child-direction="left"] { grid-column: 1; grid-row: 2; }
+    .child-grid [data-child-direction="bottom"] { grid-column: 2; grid-row: 2; }
+    .child-grid [data-child-direction="right"] { grid-column: 3; grid-row: 2; }
+    .stats {
+      position: fixed; left: 16px; bottom: 14px; z-index: 70; display: flex; align-items: center; gap: 8px;
+      padding: 8px; color: var(--muted); font-size: 12px; border: 1px solid var(--line); border-radius: var(--radius);
+      background: rgba(7,10,14,.76); backdrop-filter: blur(14px); box-shadow: var(--shadow);
+    }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; color: var(--text); font-weight: 800; border-radius: 7px; background: var(--soft); }
+    .minimap { position: fixed; right: 374px; bottom: 14px; z-index: 70; width: 190px; height: 126px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(7,10,14,.76); backdrop-filter: blur(14px); box-shadow: var(--shadow); overflow: hidden; }
+    .mini-node { position: absolute; width: 5px; height: 5px; border-radius: 99px; background: var(--green); box-shadow: 0 0 8px rgba(72,210,160,.72); }
+    .mini-view { position: absolute; border: 1px solid var(--accent); background: rgba(242,181,68,.08); border-radius: 4px; }
+    .pan-pad {
+      position: fixed; left: 16px; bottom: 72px; z-index: 75;
+      display: grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px);
+      gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius);
+      background: rgba(7,10,14,.76); backdrop-filter: blur(14px); box-shadow: var(--shadow);
+    }
+    .pan-pad .icon-btn { width: 38px; height: 38px; }
+    .pan-pad .pan-up { grid-column: 2; grid-row: 1; }
+    .pan-pad .pan-left { grid-column: 1; grid-row: 2; }
+    .pan-pad .pan-home { grid-column: 2; grid-row: 2; }
+    .pan-pad .pan-right { grid-column: 3; grid-row: 2; }
+    .pan-pad .pan-down { grid-column: 2; grid-row: 3; }
+    .toast { position: fixed; left: 50%; top: 78px; transform: translateX(-50%) translateY(-12px); z-index: 120; opacity: 0; max-width: min(460px, calc(100vw - 40px)); padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(7,10,14,.9); box-shadow: var(--shadow); transition: opacity .18s ease, transform .18s ease; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .inline-editor { position: fixed; z-index: 200; width: 180px; padding: 7px 9px; border: 1px solid rgba(242,181,68,.72); border-radius: 8px; background: #10151c; color: var(--text); box-shadow: var(--shadow); outline: none; }
+    @media (max-width: 980px) {
+      .atlas { grid-template-columns: 1fr; }
+      .side { position: fixed; right: 0; top: 0; width: min(350px, 92vw); transform: translateX(calc(100% - 48px)); transition: transform .2s ease; }
+      .side:hover, .side:focus-within { transform: translateX(0); }
+      .topbar { right: 64px; flex-wrap: wrap; }
+      .brand { min-width: auto; }
+      .brand div:last-child { display: none; }
+      .minimap { right: 64px; }
+      .pan-pad { left: 12px; bottom: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="atlas">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><i class="bi bi-diagram-3-fill"></i></div>
+        <div><strong>Tree Atlas</strong><span>nodes, claims, evidence</span></div>
+      </div>
+      <div class="search"><i class="bi bi-search"></i><input id="searchInput" type="search" placeholder="Search nodes on the board"></div>
+      <div class="toolbar">
+        <button id="focusBtn" class="icon-btn" title="Focus selected"><i class="bi bi-crosshair"></i></button>
+        <button id="fitBtn" class="icon-btn" title="Fit graph"><i class="bi bi-arrows-fullscreen"></i></button>
+        <button id="refreshBtn" class="icon-btn" title="Reload graph"><i class="bi bi-arrow-clockwise"></i></button>
+        <div class="zoom-chip" title="Zoom">
+          <button id="zoomOutBtn" class="icon-btn" title="Zoom out"><i class="bi bi-dash-lg"></i></button>
+          <span id="zoomLabel">100%</span>
+          <button id="zoomInBtn" class="icon-btn" title="Zoom in"><i class="bi bi-plus-lg"></i></button>
+        </div>
+        <button id="connectBtn" class="mode-btn" title="Connect two nodes"><i class="bi bi-bezier2"></i><span>Connect</span></button>
+      </div>
+    </header>
+
+    <main id="workspace" class="workspace">
+      <section id="board" class="board">
+        <svg id="svg" class="connections"></svg>
+        <div id="emptyState" class="empty"><strong>No nodes loaded</strong>Add a node from the side panel or reload the graph.</div>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section class="section">
+        <div class="section-title"><div><h1>Create Node</h1><span>Add an idea, person, claim, source, or clue</span></div></div>
+        <div class="fields">
+          <input id="title" class="field" placeholder="Name / clue">
+          <div class="fields two"><input id="type" class="field" placeholder="type"><input id="imglink" class="field" placeholder="Image link"></div>
+          <input id="videolink" class="field" placeholder="Video link">
+          <input id="ytlink" class="field" placeholder="YouTube / embed / note link">
+          <textarea id="desc" class="field" rows="3" placeholder="Note"></textarea>
+          <input type="file" id="image" class="field" accept="image/*">
+          <button id="addBtn" class="primary"><i class="bi bi-plus-lg"></i>Add Node</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <div><h2>Selected Node</h2><span id="selectedHint">Click a node to inspect it</span></div>
+          <button id="clearBtn" class="icon-btn" title="Clear selection"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form class="nodedata fields" id="updatenode" method="post" enctype="multipart/form-data">
+          <img class="imgdata detail-image" src="" alt="Node Image">
+          <input type="file" name="imagedata" class="imagedata field">
+          <input placeholder="title" name="titledata" class="titledata field">
+          <input placeholder="image link" name="imglinkdata" class="imglinkdata field">
+          <input placeholder="video link" name="videolinkdata" class="videolinkdata field">
+          <input placeholder="yt link" name="ytlinkdata" class="ytlinkdata field">
+          <input hidden name="iddata" class="iddata field">
+          <textarea placeholder="description" name="descdata" class="descdata field" rows="4"></textarea>
+          <button class="ghost" type="submit"><i class="bi bi-check2-circle"></i>Save Changes</button>
+        </form>
+        <div class="child-grid" aria-label="Create child node direction">
+          <button class="icon-btn" type="button" data-child-direction="top" title="Create child above"><i class="bi bi-arrow-up"></i></button>
+          <button class="icon-btn" type="button" data-child-direction="left" title="Create child left"><i class="bi bi-arrow-left"></i></button>
+          <button class="icon-btn" type="button" data-child-direction="bottom" title="Create child below"><i class="bi bi-arrow-down"></i></button>
+          <button class="icon-btn" type="button" data-child-direction="right" title="Create child right"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><div><h2>Connections</h2><span>Labels color the relationship</span></div></div>
+        <div id="connectiondata" class="connections-list"></div>
+      </section>
+    </aside>
+
+    <div class="stats">
+      <span class="pill"><i class="bi bi-record-circle"></i><span id="nodeCount">0</span> nodes</span>
+      <span class="pill"><i class="bi bi-bezier2"></i><span id="linkCount">0</span> links</span>
+      <span id="modeText">Explore mode</span>
+    </div>
+    <div class="pan-pad" aria-label="Move map controls">
+      <button id="panUpBtn" class="icon-btn pan-up" title="Move up"><i class="bi bi-chevron-up"></i></button>
+      <button id="panLeftBtn" class="icon-btn pan-left" title="Move left"><i class="bi bi-chevron-left"></i></button>
+      <button id="panHomeBtn" class="icon-btn pan-home" title="Fit graph"><i class="bi bi-bullseye"></i></button>
+      <button id="panRightBtn" class="icon-btn pan-right" title="Move right"><i class="bi bi-chevron-right"></i></button>
+      <button id="panDownBtn" class="icon-btn pan-down" title="Move down"><i class="bi bi-chevron-down"></i></button>
+    </div>
+    <div id="minimap" class="minimap"><div id="miniView" class="mini-view"></div></div>
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script>
+    const workspace = document.getElementById('workspace');
+    const board = document.getElementById('board');
+    const svg = document.getElementById('svg');
+    const emptyState = document.getElementById('emptyState');
+    const minimap = document.getElementById('minimap');
+    const miniView = document.getElementById('miniView');
+    const toastEl = document.getElementById('toast');
+    const addBtn = document.getElementById('addBtn');
+    const connectBtn = document.getElementById('connectBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const fitBtn = document.getElementById('fitBtn');
+    const focusBtn = document.getElementById('focusBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomLabel = document.getElementById('zoomLabel');
+    const panUpBtn = document.getElementById('panUpBtn');
+    const panLeftBtn = document.getElementById('panLeftBtn');
+    const panHomeBtn = document.getElementById('panHomeBtn');
+    const panRightBtn = document.getElementById('panRightBtn');
+    const panDownBtn = document.getElementById('panDownBtn');
+    const searchInput = document.getElementById('searchInput');
+    const modeText = document.getElementById('modeText');
+    const selectedHint = document.getElementById('selectedHint');
+    const childDirectionBtns = document.querySelectorAll('[data-child-direction]');
+    const titleInput = document.getElementById('title');
+    const typeInput = document.getElementById('type');
+    const imglinkInput = document.getElementById('imglink');
+    const videolinkInput = document.getElementById('videolink');
+    const ytlinkInput = document.getElementById('ytlink');
+    const descInput = document.getElementById('desc');
+    const imageInput = document.getElementById('image');
+
+    let nodes = [];
+    let links = [];
+    const nodeIndex = new Map();
+    const degreeIndex = new Map();
+    let connectMode = false;
+    let awaiting = null;
+    let selectedNodeId = null;
+    let toastTimer = null;
+    let zoom = 1;
+    let minimapNeedsDots = true;
+    let batchDepth = 0;
+    let miniFrame = 0;
+    const NODE_WIDTH = 260;
+    const NODE_FALLBACK_HEIGHT = 156;
+    const CHILD_GAP_X = 380;
+    const CHILD_GAP_Y = 260;
+    const CHILD_SPREAD = 190;
+    const relationColors = { support: '#48d2a0', against: '#ff6b6b', neutral: '#f2d16b', funds: '#70a9ff', default: '#f2b544' };
+
+    function uid(prefix = 'id') { return prefix + Math.random().toString(36).slice(2, 10); }
+    function escapeHtml(value) {
+      if (!value) return '';
+      return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+    function colorFor(label, fallback) { return fallback || relationColors[String(label || '').trim().toLowerCase()] || relationColors.default; }
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+    function findNodeById(id) { return nodeIndex.get(String(id)); }
+    function degree(id) { return degreeIndex.get(String(id)) || 0; }
+    function bumpDegree(id, amount = 1) {
+      const key = String(id);
+      degreeIndex.set(key, (degreeIndex.get(key) || 0) + amount);
+    }
+    function updateNodeSize(node) {
+      node.w = node.el ? node.el.offsetWidth || NODE_WIDTH : NODE_WIDTH;
+      node.h = node.el ? node.el.offsetHeight || NODE_FALLBACK_HEIGHT : NODE_FALLBACK_HEIGHT;
+    }
+    function setNodePosition(node, x, y) {
+      node.x = x;
+      node.y = y;
+      node.el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    }
+    function childDirection(parent, child) {
+      const dx = child.x - parent.x;
+      const dy = child.y - parent.y;
+      if (Math.abs(dx) >= Math.abs(dy)) return dx < 0 ? 'left' : 'right';
+      return dy < 0 ? 'top' : 'bottom';
+    }
+    function childrenInDirection(parent, direction) {
+      return links
+        .filter(link => String(link.source) === String(parent.id))
+        .map(link => findNodeById(link.target))
+        .filter(child => child && childDirection(parent, child) === direction);
+    }
+    function childPosition(parent, direction, slot) {
+      const offset = slot === 0 ? 0 : Math.ceil(slot / 2) * CHILD_SPREAD * (slot % 2 ? 1 : -1);
+      if (direction === 'left') return { x: Math.max(0, parent.x - CHILD_GAP_X), y: Math.max(0, parent.y + offset) };
+      if (direction === 'right') return { x: parent.x + CHILD_GAP_X, y: Math.max(0, parent.y + offset) };
+      if (direction === 'top') return { x: Math.max(0, parent.x + offset), y: Math.max(0, parent.y - CHILD_GAP_Y) };
+      return { x: Math.max(0, parent.x + offset), y: parent.y + CHILD_GAP_Y };
+    }
+    function nextChildPosition(parent, direction) {
+      return childPosition(parent, direction, childrenInDirection(parent, direction).length);
+    }
+    function normalizeDirectionalLayout() {
+      const placed = new Set();
+      const incoming = new Set(links.map(link => String(link.target)));
+      const roots = nodes.filter(node => !incoming.has(String(node.id)));
+      const queue = roots.length ? [...roots] : nodes.slice(0, 1);
+      queue.forEach(root => placed.add(String(root.id)));
+
+      while (queue.length) {
+        const parent = queue.shift();
+        const grouped = { top: [], bottom: [], left: [], right: [] };
+        links.forEach(link => {
+          if (String(link.source) !== String(parent.id)) return;
+          const child = findNodeById(link.target);
+          if (!child || placed.has(String(child.id))) return;
+          grouped[childDirection(parent, child)].push(child);
+        });
+        Object.entries(grouped).forEach(([direction, children]) => {
+          children.forEach((child, index) => {
+            const position = childPosition(parent, direction, index);
+            setNodePosition(child, position.x, position.y);
+            placed.add(String(child.id));
+            queue.push(child);
+          });
+        });
+      }
+    }
+    function requestMiniViewportUpdate() {
+      if (miniFrame) return;
+      miniFrame = requestAnimationFrame(() => {
+        miniFrame = 0;
+        updateMiniViewport();
+      });
+    }
+    function inBatch() { return batchDepth > 0; }
+    function sameLink(link, source, target) {
+      return (String(link.source) === String(source) && String(link.target) === String(target)) ||
+        (String(link.source) === String(target) && String(link.target) === String(source));
+    }
+    function findLinkBetween(source, target) { return links.find(l => sameLink(l, source, target)); }
+
+    function nodeMarkup(n) {
+      const media = n.img || n.imglink
+        ? `<div class="media"><img src="${escapeHtml(n.img || n.imglink)}" alt="" loading="lazy" decoding="async"></div>`
+        : n.videolink ? `<div class="media"><video controls preload="metadata"><source src="${escapeHtml(n.videolink)}" type="video/mp4"></video></div>` : '';
+      return `
+        ${media}
+        <div class="node-body">
+          <div class="kicker"><span>${escapeHtml(n.type || 'note')}</span><span class="degree"><i class="bi bi-bezier2"></i>${degree(n.id)}</span></div>
+          <div class="node-title">${escapeHtml(n.title || 'Untitled')}</div>
+          ${n.description ? `<div class="desc">${escapeHtml(n.description)}</div>` : ''}
+          ${n.ytlink ? `${n.ytlink}` : ''}
+           <div class="link-note">${escapeHtml(n.title)}</div>
+          
+        </div>`;
+    }
+
+    function createNode(data) {
+      if (findNodeById(data.id)) return findNodeById(data.id);
+      const n = Object.assign({ id: uid('n'), x: 500, y: 260, title: 'Untitled', description: '', type: 'note', img: null, imglink: '', videolink: '', ytlink: '' }, data);
+      n.x = parseFloat(n.x) || 0;
+      n.y = parseFloat(n.y) || 0;
+      const el = document.createElement('article');
+      el.className = 'node';
+      el.dataset.id = n.id;
+      el.innerHTML = nodeMarkup(n);
+      n.el = el;
+      setNodePosition(n, n.x, n.y);
+      board.appendChild(el);
+      updateNodeSize(n);
+      el.addEventListener('click', ev => { ev.stopPropagation(); onSelectNode(n); });
+      nodes.push(n);
+      nodeIndex.set(String(n.id), n);
+      minimapNeedsDots = true;
+      if (!inBatch()) updateEverything();
+      return n;
+    }
+
+    function attachDrag(el) {
+      let sx = 0, sy = 0, sl = 0, st = 0, dragging = false;
+      el.addEventListener('pointerdown', e => {
+        if (e.target.closest('button, input, textarea, video')) return;
+        el.setPointerCapture(e.pointerId);
+        sx = e.clientX; sy = e.clientY;
+        const node = findNodeById(el.dataset.id);
+        sl = node ? node.x : 0; st = node ? node.y : 0;
+        dragging = true; el.classList.add('dragging');
+      });
+      window.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const nx = Math.max(0, sl + e.clientX - sx);
+        const ny = Math.max(0, st + e.clientY - sy);
+        const node = findNodeById(el.dataset.id);
+        if (node) { setNodePosition(node, nx, ny); updateConnections(node.id); }
+        requestMiniViewportUpdate();
+      });
+      window.addEventListener('pointerup', e => {
+        if (!dragging) return;
+        dragging = false; el.classList.remove('dragging');
+        try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+        const node = findNodeById(el.dataset.id);
+        minimapNeedsDots = true;
+        updateMinimap();
+        if (node) fetch(`/update_node/${node.id}/`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ x: node.x, y: node.y })
+        }).catch(() => showToast('Position could not be saved'));
+      });
+    }
+
+    function createLink(a, b, labelText = '', saveToDb = '0', color = '') {
+      if (!a || !b || String(a.id) === String(b.id)) return null;
+      const existing = findLinkBetween(a.id, b.id);
+      if (existing) {
+        existing.label = labelText || existing.label || '';
+        existing.color = colorFor(existing.label, color || existing.color);
+        updateConnections(a.id);
+        return existing.id;
+      }
+      const id = uid('link');
+      const visible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const labelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      visible.classList.add('connection-line'); hit.classList.add('connection-hit');
+      labelBg.classList.add('connection-label-bg'); label.classList.add('connection-label');
+      visible.dataset.linkId = id; hit.dataset.linkId = id; label.dataset.linkId = id;
+      const linkObj = { id, source: a.id, target: b.id, label: labelText || '', color: colorFor(labelText, color), elVisible: visible, elHit: hit, labelBg, labelEl: label };
+      visible.style.stroke = linkObj.color;
+      svg.appendChild(visible); svg.appendChild(hit); svg.appendChild(labelBg); svg.appendChild(label);
+      links.push(linkObj);
+      bumpDegree(a.id);
+      bumpDegree(b.id);
+      if (!inBatch()) updateEverything();
+      if (saveToDb === '1') {
+        fetch('/create_connection/', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ source: a.id, target: b.id, label: labelText })
+        }).then(r => r.json()).then(data => { if (data.status === 'ok') linkObj.id = data.id; showToast('Connection created'); })
+          .catch(() => showToast('Connection could not be saved'));
+      }
+      hit.addEventListener('click', ev => { ev.stopPropagation(); clearHighlights(); visible.classList.add('highlight'); });
+      label.addEventListener('dblclick', ev => openLabelEditor(linkObj, ev));
+      return id;
+    }
+
+    function ensureConnectionFromData(conn) {
+      const a = findNodeById(conn.source_id);
+      const b = findNodeById(conn.target_id);
+      if (!a || !b) return null;
+      const existing = findLinkBetween(conn.source_id, conn.target_id);
+      if (existing) {
+        existing.id = conn.id;
+        existing.source = conn.source_id;
+        existing.target = conn.target_id;
+        existing.label = conn.label || existing.label || '';
+        existing.color = colorFor(existing.label, conn.color || existing.color);
+        updateConnections(existing.source);
+        return existing;
+      }
+      createLink(a, b, conn.label || '', '0', conn.color || 'white');
+      const created = findLinkBetween(conn.source_id, conn.target_id);
+      if (created) created.id = conn.id;
+      return created;
+    }
+
+    function openLabelEditor(linkObj, ev) {
+      ev.stopPropagation();
+      const input = document.createElement('input');
+      input.className = 'inline-editor';
+      input.value = linkObj.label || '';
+      input.style.left = Math.max(12, ev.clientX - 80) + 'px';
+      input.style.top = Math.max(80, ev.clientY - 16) + 'px';
+      document.body.appendChild(input);
+      input.focus(); input.select();
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        const newLabel = input.value.trim();
+        linkObj.label = newLabel;
+        linkObj.color = colorFor(newLabel);
+        input.remove();
+        updateConnections();
+        if (linkObj.id) fetch(`/updatelabel?id=${encodeURIComponent(linkObj.id)}&label=${encodeURIComponent(newLabel)}`).catch(() => showToast('Label could not be saved'));
+      };
+      input.addEventListener('blur', finish);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') finish(); if (e.key === 'Escape') { done = true; input.remove(); } });
+    }
+
+    function updateConnections(onlyNodeId = null) {
+      if (svg.getAttribute('width') !== String(board.offsetWidth)) svg.setAttribute('width', board.offsetWidth);
+      if (svg.getAttribute('height') !== String(board.offsetHeight)) svg.setAttribute('height', board.offsetHeight);
+      links.forEach(l => {
+        if (onlyNodeId && String(l.source) !== String(onlyNodeId) && String(l.target) !== String(onlyNodeId)) return;
+        const a = findNodeById(l.source), b = findNodeById(l.target);
+        if (!a || !b) return;
+        const x1 = a.x + (a.w || NODE_WIDTH) / 2, y1 = a.y + (a.h || NODE_FALLBACK_HEIGHT) / 2;
+        const x2 = b.x + (b.w || NODE_WIDTH) / 2, y2 = b.y + (b.h || NODE_FALLBACK_HEIGHT) / 2;
+        const bend = Math.min(260, Math.max(90, (Math.abs(x2 - x1) + Math.abs(y2 - y1)) / 3));
+        const d = `M ${x1} ${y1} C ${x1 + (x2 >= x1 ? bend : -bend)} ${y1 - 24} ${x2 + (x2 >= x1 ? -bend : bend)} ${y2 + 24} ${x2} ${y2}`;
+        l.elVisible.setAttribute('d', d); l.elHit.setAttribute('d', d);
+        l.elVisible.style.stroke = colorFor(l.label, l.color);
+        const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2 - 14;
+        const labelText = l.label || '';
+        l.labelEl.textContent = labelText; l.labelEl.setAttribute('x', midX); l.labelEl.setAttribute('y', midY);
+        const w = Math.max(34, labelText.length * 7 + 18);
+        l.labelBg.setAttribute('x', midX - w / 2); l.labelBg.setAttribute('y', midY - 13);
+        l.labelBg.setAttribute('width', w); l.labelBg.setAttribute('height', 22);
+        l.labelBg.style.display = labelText ? 'block' : 'none';
+      });
+    }
+
+    function clearHighlights() {
+      nodes.forEach(n => n.el.classList.remove('selected', 'hot', 'dim'));
+      links.forEach(l => l.elVisible.classList.remove('highlight'));
+    }
+
+    function highlightConnections(nodeId) {
+      selectedNodeId = nodeId;
+      const related = new Set([String(nodeId)]);
+      links.forEach(l => {
+        const active = String(l.source) === String(nodeId) || String(l.target) === String(nodeId);
+        l.elVisible.classList.toggle('highlight', active);
+        if (active) { related.add(String(l.source)); related.add(String(l.target)); }
+      });
+      nodes.forEach(n => {
+        const active = related.has(String(n.id));
+        n.el.classList.toggle('hot', active);
+        n.el.classList.toggle('selected', String(n.id) === String(nodeId));
+        n.el.classList.toggle('dim', !active);
+      });
+      showdata(nodeId);
+    }
+
+    function onSelectNode(n) {
+      if (connectMode) {
+        if (!awaiting) {
+          awaiting = n; clearHighlights(); n.el.classList.add('selected');
+          modeText.textContent = 'Choose the target node'; showToast('Now click the target node');
+          return;
+        }
+        if (awaiting !== n) {
+          createLink(awaiting, n, '', '1', 'white');
+          awaiting = null; connectMode = false;
+          connectBtn.classList.remove('active'); connectBtn.querySelector('span').textContent = 'Connect';
+          modeText.textContent = 'Explore mode'; clearHighlights(); highlightConnections(n.id);
+          return;
+        }
+      }
+      clearHighlights(); highlightConnections(n.id);
+    }
+
+    function showdata(nodeId) {
+      $.ajax({
+        url: '/getnodedata?id=' + encodeURIComponent(nodeId),
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          selectedHint.textContent = '#' + data.id;
+          $('.titledata').val(data.title || '');
+          $('.imglinkdata').val(data.imglink || '');
+          $('.videolinkdata').val(data.videolink || '');
+          $('.ytlinkdata').val(data.ytlink || '');
+          $('.iddata').val(data.id || '');
+          $('.descdata').val(data.description || '');
+          if (data.image) $('.imgdata').attr('src', data.image).show(); else $('.imgdata').hide();
+          const current = findNodeById(data.id);
+          if (current) Object.assign(current, { title: data.title, description: data.description, imglink: data.imglink, videolink: data.videolink, ytlink: data.ytlink, img: data.image || current.img });
+          $('#connectiondata').empty();
+          (data.connections || []).forEach(addConnectionRow);
+          batchDepth++;
+          try {
+            (data.connected_nodes || []).forEach(n => {
+              if (!findNodeById(n.id)) {
+                createNode({ id: n.id, title: n.title, description: n.description, x: parseFloat(n.x), y: parseFloat(n.y), type: n.type, imglink: n.imglink, videolink: n.videolink, ytlink: n.ytlink, img: n.image || null });
+              }
+            });
+            (data.connections || []).forEach(ensureConnectionFromData);
+          } finally {
+            batchDepth--;
+          }
+          refreshNodeCards(); updateEverything();
+        },
+        error: () => showToast('Could not load node details')
+      });
+    }
+
+    function addConnectionRow(conn) {
+      const otherId = String(conn.source_id) === String(selectedNodeId) ? conn.target_id : conn.source_id;
+      const otherTitle = String(conn.source_id) === String(selectedNodeId) ? conn.target_title : conn.source_title;
+      const row = document.createElement('div');
+      row.className = 'conn-card';
+      row.innerHTML = `<input value="${escapeHtml(conn.label || '')}" aria-label="Connection label"><button class="icon-btn" type="button" title="Open ${escapeHtml(otherTitle || 'node')}"><i class="bi bi-arrow-right-circle"></i></button><button class="icon-btn" type="button" title="Save label"><i class="bi bi-check2"></i></button>`;
+      const input = row.querySelector('input');
+      const buttons = row.querySelectorAll('button');
+      buttons[0].addEventListener('click', () => {
+        const target = findNodeById(otherId);
+        if (target) { onSelectNode(target); centerOnNode(target); } else showToast(otherTitle || 'Connected node is not loaded yet');
+      });
+      buttons[1].addEventListener('click', () => {
+        const label = input.value.trim();
+        $.get('/updatelabel?id=' + encodeURIComponent(conn.id), { label });
+        const link = links.find(l => String(l.id) === String(conn.id));
+        if (link) { link.label = label; link.color = colorFor(label); updateConnections(); }
+        showToast('Label saved');
+      });
+      document.getElementById('connectiondata').appendChild(row);
+    }
+
+    function refreshNodeCards() {
+      nodes.forEach(n => {
+        if (!n.el) return;
+        n.el.innerHTML = nodeMarkup(n);
+        updateNodeSize(n);
+      });
+    }
+
+    async function loadBoard() {
+      showToast('Loading graph');
+      const res = await fetch('/get_board_data');
+      const data = await res.json();
+      nodes.forEach(n => n.el.remove());
+      links.forEach(l => [l.elVisible, l.elHit, l.labelBg, l.labelEl].forEach(el => { try { el.remove(); } catch (err) {} }));
+      nodes = []; links = []; nodeIndex.clear(); degreeIndex.clear(); selectedNodeId = null; minimapNeedsDots = true; $('#connectiondata').empty(); $('.imgdata').hide();
+      batchDepth++;
+      try {
+        (data.nodes || []).forEach(n => createNode({ id: n.id, title: n.title, description: n.description, x: parseFloat(n.x), y: parseFloat(n.y), type: n.type, imglink: n.imglink, videolink: n.videolink, ytlink: n.ytlink, img: n.image || null }));
+        (data.connections || data.links || []).forEach(c => {
+          const a = findNodeById(c.source), b = findNodeById(c.target);
+          if (a && b) createLink(a, b, c.label || c.name || '', '0', c.color);
+        });
+      } finally {
+        batchDepth--;
+      }
+      normalizeDirectionalLayout();
+      refreshNodeCards(); updateEverything(); if (nodes.length) fitGraph(); showToast('Graph ready');
+    }
+
+    function updateStats() {
+      document.getElementById('nodeCount').textContent = nodes.length;
+      document.getElementById('linkCount').textContent = links.length;
+      emptyState.style.display = nodes.length ? 'none' : 'block';
+    }
+    function updateMinimap() {
+      if (minimapNeedsDots) {
+        minimap.querySelectorAll('.mini-node').forEach(el => el.remove());
+      }
+      const scaleX = minimap.clientWidth / board.offsetWidth, scaleY = minimap.clientHeight / board.offsetHeight;
+      if (minimapNeedsDots) {
+        nodes.forEach(n => {
+          const dot = document.createElement('div');
+          dot.className = 'mini-node';
+          dot.style.left = (n.x * scaleX) + 'px';
+          dot.style.top = (n.y * scaleY) + 'px';
+          minimap.appendChild(dot);
+        });
+        minimapNeedsDots = false;
+      }
+      updateMiniViewport();
+    }
+    function updateMiniViewport() {
+      const scaleX = minimap.clientWidth / board.offsetWidth, scaleY = minimap.clientHeight / board.offsetHeight;
+      miniView.style.left = ((workspace.scrollLeft / zoom) * scaleX) + 'px';
+      miniView.style.top = ((workspace.scrollTop / zoom) * scaleY) + 'px';
+      miniView.style.width = ((workspace.clientWidth / zoom) * scaleX) + 'px';
+      miniView.style.height = ((workspace.clientHeight / zoom) * scaleY) + 'px';
+    }
+    function updateEverything() { updateConnections(); updateStats(); updateMinimap(); }
+    function centerOnNode(node) {
+      workspace.scrollTo({ left: Math.max(0, (node.x + node.el.offsetWidth / 2) * zoom - workspace.clientWidth / 2), top: Math.max(0, (node.y + node.el.offsetHeight / 2) * zoom - workspace.clientHeight / 2), behavior: 'smooth' });
+    }
+    function fitGraph() {
+      if (!nodes.length) return;
+      const minX = Math.min(...nodes.map(n => n.x)), minY = Math.min(...nodes.map(n => n.y));
+      workspace.scrollTo({ left: Math.max(0, (minX - 80) * zoom), top: Math.max(0, (minY - 110) * zoom), behavior: 'smooth' });
+    }
+    function setZoom(nextZoom, anchorX = workspace.clientWidth / 2, anchorY = workspace.clientHeight / 2) {
+      const oldZoom = zoom;
+      zoom = Math.max(0.35, Math.min(1.8, Math.round(nextZoom * 100) / 100));
+      const boardX = (workspace.scrollLeft + anchorX) / oldZoom;
+      const boardY = (workspace.scrollTop + anchorY) / oldZoom;
+      board.style.zoom = zoom;
+      zoomLabel.textContent = Math.round(zoom * 100) + '%';
+      workspace.scrollLeft = Math.max(0, boardX * zoom - anchorX);
+      workspace.scrollTop = Math.max(0, boardY * zoom - anchorY);
+      updateMiniViewport();
+    }
+    function moveMap(dx, dy) {
+      workspace.scrollTo({
+        left: Math.max(0, workspace.scrollLeft + dx * zoom),
+        top: Math.max(0, workspace.scrollTop + dy * zoom),
+        behavior: 'smooth'
+      });
+    }
+    async function createChildNode(direction) {
+      const parent = findNodeById(selectedNodeId);
+      if (!parent) return showToast('Select a parent node first');
+      const position = nextChildPosition(parent, direction);
+      const formData = new FormData();
+      formData.append('title', titleInput.value.trim() || 'Untitled child');
+      formData.append('description', descInput.value.trim());
+      formData.append('x', position.x);
+      formData.append('y', position.y);
+      formData.append('type', typeInput.value.trim() || 'note');
+      formData.append('imglink', imglinkInput.value.trim());
+      formData.append('videolink', videolinkInput.value.trim());
+      formData.append('ytlink', ytlinkInput.value.trim());
+      if (imageInput.files && imageInput.files[0]) formData.append('image', imageInput.files[0]);
+
+      try {
+        const res = await fetch('/create_node/', { method: 'POST', body: formData });
+        const nodeData = await res.json();
+        const child = createNode({
+          id: nodeData.id,
+          title: nodeData.title,
+          description: nodeData.description,
+          type: nodeData.type,
+          imglink: nodeData.imglink,
+          videolink: nodeData.videolink,
+          ytlink: nodeData.ytlink,
+          x: parseFloat(nodeData.x),
+          y: parseFloat(nodeData.y),
+          img: nodeData.image || null
+        });
+        createLink(parent, child, direction, '1', relationColors.default);
+        refreshNodeCards();
+        [titleInput, typeInput, imglinkInput, videolinkInput, ytlinkInput, descInput].forEach(el => el.value = '');
+        imageInput.value = '';
+        onSelectNode(child);
+        centerOnNode(child);
+        showToast('Child node created');
+      } catch (err) {
+        showToast('Child node could not be created');
+      }
+    }
+
+    addBtn.addEventListener('click', () => {
+      const formData = new FormData();
+      formData.append('title', titleInput.value.trim() || 'Untitled');
+      formData.append('description', descInput.value.trim());
+      formData.append('x', workspace.scrollLeft / zoom + 460);
+      formData.append('y', workspace.scrollTop / zoom + 180);
+      formData.append('type', typeInput.value.trim() || 'note');
+      formData.append('imglink', imglinkInput.value.trim());
+      formData.append('videolink', videolinkInput.value.trim());
+      formData.append('ytlink', ytlinkInput.value.trim());
+      if (imageInput.files && imageInput.files[0]) formData.append('image', imageInput.files[0]);
+      fetch('/create_node/', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(nodeData => {
+          const node = createNode({ id: nodeData.id, title: nodeData.title, description: nodeData.description, type: nodeData.type, imglink: nodeData.imglink, videolink: nodeData.videolink, ytlink: nodeData.ytlink, x: parseFloat(nodeData.x), y: parseFloat(nodeData.y), img: nodeData.image || null });
+          [titleInput, typeInput, imglinkInput, videolinkInput, ytlinkInput, descInput].forEach(el => el.value = '');
+          imageInput.value = ''; onSelectNode(node); centerOnNode(node); showToast('Node added');
+        })
+        .catch(() => showToast('Node could not be created'));
+    });
+
+    connectBtn.addEventListener('click', () => {
+      connectMode = !connectMode; awaiting = null;
+      connectBtn.classList.toggle('active', connectMode);
+      connectBtn.querySelector('span').textContent = connectMode ? 'Pick nodes' : 'Connect';
+      modeText.textContent = connectMode ? 'Choose the first node' : 'Explore mode';
+      showToast(connectMode ? 'Click two nodes to connect them' : 'Connection mode off');
+    });
+    refreshBtn.addEventListener('click', loadBoard);
+    fitBtn.addEventListener('click', fitGraph);
+    focusBtn.addEventListener('click', () => { const selected = findNodeById(selectedNodeId); selected ? centerOnNode(selected) : showToast('Select a node first'); });
+    clearBtn.addEventListener('click', () => { selectedNodeId = null; awaiting = null; clearHighlights(); $('#connectiondata').empty(); selectedHint.textContent = 'Click a node to inspect it'; });
+    zoomOutBtn.addEventListener('click', () => setZoom(zoom - 0.1));
+    zoomInBtn.addEventListener('click', () => setZoom(zoom + 0.1));
+    panUpBtn.addEventListener('click', () => moveMap(0, -320));
+    panLeftBtn.addEventListener('click', () => moveMap(-420, 0));
+    panHomeBtn.addEventListener('click', fitGraph);
+    panRightBtn.addEventListener('click', () => moveMap(420, 0));
+    panDownBtn.addEventListener('click', () => moveMap(0, 320));
+    childDirectionBtns.forEach(btn => {
+      btn.addEventListener('click', () => createChildNode(btn.dataset.childDirection));
+    });
+    workspace.addEventListener('wheel', e => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      setZoom(zoom + (e.deltaY > 0 ? -0.08 : 0.08), e.clientX, e.clientY);
+    }, { passive: false });
+
+    $('#updatenode').on('submit', function(e) {
+      e.preventDefault();
+      const id = $('.iddata').val();
+      if (!id) return showToast('Select a node first');
+      $.ajax({
+        type: 'POST', url: '/updatenode', data: new FormData($('#updatenode')[0]), processData: false, contentType: false,
+        success: data => {
+          if (!data.success) return showToast(data.error || 'Update failed');
+          const node = findNodeById(id);
+          if (node) {
+            node.title = $('.titledata').val(); node.description = $('.descdata').val();
+            node.imglink = $('.imglinkdata').val(); node.videolink = $('.videolinkdata').val(); node.ytlink = $('.ytlinkdata').val();
+            node.el.innerHTML = nodeMarkup(node);
+            updateNodeSize(node);
+            updateConnections(node.id);
+          }
+          showToast('Node updated');
+        },
+        error: () => showToast('Update failed')
+      });
+    });
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      nodes.forEach(n => {
+        const match = !q || `${n.title || ''} ${n.description || ''} ${n.type || ''}`.toLowerCase().includes(q);
+        n.el.classList.toggle('hot', q && match);
+        n.el.classList.toggle('dim', !match);
+      });
+    });
+    board.addEventListener('click', () => {
+      if (connectMode && awaiting) { awaiting.el.classList.remove('selected'); awaiting = null; modeText.textContent = 'Choose the first node'; return; }
+      selectedNodeId = null; clearHighlights();
+    });
+    workspace.addEventListener('scroll', requestMiniViewportUpdate, { passive: true });
+    window.addEventListener('resize', () => { minimapNeedsDots = true; updateEverything(); });
+    loadBoard().catch(() => showToast('Could not load graph'));
+  </script>
+</body>
+</html>

@@ -3,15 +3,23 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from dashboard.models import Node, Connection
-
+#import Q for complex queries
+from django.db.models import Q
 def lastnodeid(request):
     last_node = Node.objects.last()
     last_id = last_node.id if last_node else 0
     return JsonResponse({'last_id': last_id+1})
 def get_board_data(request):
-    nodes = Node.objects.all()#filter(type='title')
-    connections = Connection.objects.all()
-    print('>> connections', connections)
+    # Load only title nodes
+    title_nodes = Node.objects.filter(type='title')
+    title_ids = title_nodes.values_list('id', flat=True)
+
+    # Load only connections between title nodes
+    connections = Connection.objects.filter(
+        source_id__in=title_ids,
+        target_id__in=title_ids
+    )
+
     return JsonResponse({
         "nodes": [
             {
@@ -26,13 +34,20 @@ def get_board_data(request):
                 "ytlink": n.ytlink,
                 "image": n.image.url if n.image else None
             }
-            for n in nodes
+            for n in title_nodes
         ],
         "connections": [
-            {"id": c.id, "source": c.source_id, "target": c.target_id, "label": c.label or "", "color": c.color or ""}
+            {
+                "id": c.id,
+                "source": c.source_id,
+                "target": c.target_id,
+                "label": c.label or "",
+                "color": c.color or ""
+            }
             for c in connections
         ]
     })
+
 @csrf_exempt
 def create_node(request):
     if request.method == "POST":
@@ -175,31 +190,68 @@ def update_connection(request, conn_id):
             return JsonResponse({"status": "error", "message": "Connection not found"}, status=404)
 
 def getnodedata(request):
-    id=request.GET.get('id')
-    node=Node.objects.get(id=id)
+    node_id = request.GET.get('id')
+    if not node_id:
+        return JsonResponse({"error": "Missing id"}, status=400)
+
+    node = Node.objects.get(id=node_id)
+
+    # outgoing connections
+    connections = Connection.objects.filter(Q(source=node) | Q(target=node))
+
+    # collect connected nodes that are not already sent
+    connected_nodes = []
+    for c in connections:
+        # add source if it’s not the clicked node
+        if c.source.id != node.id:
+            connected_nodes.append({
+                "id": c.source.id,
+                "title": c.source.title,
+                "description": c.source.description,
+                "x": c.source.x,
+                "y": c.source.y,
+                "type": c.source.type,
+                "imglink": c.source.imglink,
+                "videolink": c.source.videolink,
+                "ytlink": c.source.ytlink,
+                "image": c.source.image.url if c.source.image else None
+            })
+        # add target if it’s not the clicked node
+        if c.target.id != node.id:
+            connected_nodes.append({
+                "id": c.target.id,
+                "title": c.target.title,
+                "description": c.target.description,
+                "x": c.target.x,
+                "y": c.target.y,
+                "type": c.target.type,
+                "imglink": c.target.imglink,
+                "videolink": c.target.videolink,
+                "ytlink": c.target.ytlink,
+                "image": c.target.image.url if c.target.image else None
+            })
     return JsonResponse({
-        'id': node.id,
-        'title': node.title,
-        'description': node.description,
-        'x': node.x,
-        'y': node.y,
-        'type': node.type,
-        'imglink': node.imglink,
-        'videolink': node.videolink,
-        'ytlink': node.ytlink,
-        'image': node.image.url if node.image else None,
-        'connections': [
+        "id": node.id,
+        "title": node.title,
+        "description": node.description,
+        "imglink": node.imglink,
+        "videolink": node.videolink,
+        "ytlink": node.ytlink,
+        "image": node.image.url if node.image else None,
+        "connections": [
             {
-                'id': c.id,
-                'source': Node.objects.get(id=c.source_id).title,
-                'target': Node.objects.get(id=c.target_id).title,
-                'source_id': c.source_id,
-                'target_id': c.target_id,
-                'label': c.label,
-            }
-            for c in Connection.objects.filter(source=node) | Connection.objects.filter(target=node)
+                "id": c.id,
+                "source_id": c.source.id,
+                "source_title": c.source.title,
+                "target_id": c.target.id,
+                "target_title": c.target.title,
+                "label": c.label or "",
+                "color": c.color or ""
+            } for c in connections
         ],
+        "connected_nodes": connected_nodes
     })
+
 def updatelabel(request):
     id=request.GET.get('id')
     label=request.GET.get('label').lower()
@@ -218,4 +270,33 @@ def updatelabel(request):
     conn.save()
     return JsonResponse({
         'success':True
+    })
+
+
+def get_connected_nodes(request):
+    node_id = request.GET.get('id')
+    # all connections from this node
+    connections = Connection.objects.filter(source_id=node_id)
+    nodes = Node.objects.filter(id__in=connections.values_list('target_id', flat=True))
+
+    return JsonResponse({
+        "nodes": [
+            {
+                "id": n.id,
+                "title": n.title,
+                "description": n.description,
+                "x": n.x,
+                "y": n.y,
+                "type": n.type,
+                "imglink": n.imglink,
+                "videolink": n.videolink,
+                "ytlink": n.ytlink,
+                "image": n.image.url if n.image else None
+            }
+            for n in nodes
+        ],
+        "connections": [
+            {"source": c.source_id, "target": c.target_id, "label": c.label or "", "color": c.color or ""}
+            for c in connections
+        ]
     })

@@ -1,0 +1,556 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .money-studio {
+    --ink: #17212b;
+    --muted: #667085;
+    --line: rgba(23, 33, 43, .1);
+    --panel: rgba(255, 255, 255, .92);
+    --panel-soft: rgba(255, 255, 255, .72);
+    --income: #168a5b;
+    --income-soft: rgba(22, 138, 91, .12);
+    --out: #c94646;
+    --out-soft: rgba(201, 70, 70, .13);
+    --gold: #d99a27;
+    color: var(--ink);
+  }
+
+  .money-studio a { text-decoration: none; }
+
+  .studio-shell {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(31, 91, 123, .15), rgba(255, 255, 255, 0) 32%),
+      linear-gradient(180deg, #f7faf8 0%, #eef5f4 42%, #f7f2ea 100%);
+    box-shadow: 0 20px 60px rgba(15, 23, 42, .08);
+  }
+
+  .studio-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(23, 33, 43, .045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(23, 33, 43, .045) 1px, transparent 1px);
+    background-size: 34px 34px;
+    pointer-events: none;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.8), transparent 82%);
+  }
+
+  .studio-inner { position: relative; z-index: 1; }
+
+  .studio-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, .55);
+    backdrop-filter: blur(12px);
+  }
+
+  .studio-title h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 2.3rem);
+    line-height: 1.05;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  .studio-title span, .studio-kicker, .metric-label, .field-label {
+    color: var(--muted);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+  }
+
+  .studio-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: flex-end;
+  }
+
+  .studio-nav .btn, .ghost-action, .quick-action {
+    border-radius: 8px;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    font-weight: 700;
+  }
+
+  .ghost-action {
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.62);
+    color: var(--ink);
+    padding: .55rem .8rem;
+  }
+
+  .studio-layout {
+    display: grid;
+    grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: 0 12px 34px rgba(15, 23, 42, .06);
+  }
+
+  .side-stack, .main-stack { display: grid; gap: 1rem; align-content: start; }
+  .panel-pad { padding: 1rem; }
+
+  .balance-dial {
+    display: grid;
+    gap: .9rem;
+    background:
+      linear-gradient(145deg, rgba(23,33,43,.96), rgba(40,65,70,.94)),
+      #17212b;
+    color: white;
+  }
+
+  .balance-dial .studio-kicker, .balance-dial .metric-label { color: rgba(255,255,255,.62); }
+  .balance-number { font-size: 2.45rem; font-weight: 800; line-height: 1; }
+
+  .expected-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .75rem;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: .75rem;
+  }
+
+  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+  .quick-action { border: 0; color: white; padding: .75rem .65rem; }
+  .quick-action.in { background: var(--income); }
+  .quick-action.out { background: var(--out); }
+
+  .mini-form { display: grid; gap: .6rem; }
+  .mini-form .form-control, .mini-form .form-select, .source-select {
+    border-radius: 8px;
+    border-color: var(--line);
+    min-height: 42px;
+  }
+
+  .form-drawer {
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    padding: 1rem;
+  }
+
+  .form-drawer.addbalance { background: var(--income-soft); }
+  .form-drawer.outbalance { background: var(--out-soft); }
+
+  .fuel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+  .fuel-result {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    border-top: 1px solid var(--line);
+    padding-top: .75rem;
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+  }
+
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel-soft);
+    padding: .85rem;
+    min-width: 0;
+  }
+
+  .metric-value {
+    display: block;
+    margin-top: .3rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+  }
+
+  .month-command {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(220px, .7fr);
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .month-equation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    align-items: center;
+    font-size: 1.05rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.72);
+    padding: .35rem .65rem;
+    font-weight: 800;
+  }
+
+  .progress.age-track {
+    height: .55rem;
+    border-radius: 999px;
+    background: rgba(23,33,43,.08);
+  }
+
+  .ledger-head {
+    display: grid;
+    grid-template-columns: minmax(180px, 280px) 1fr auto auto;
+    gap: .75rem;
+    align-items: center;
+  }
+
+  .ledger-totals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    justify-content: flex-end;
+  }
+
+  .total-pill {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255,255,255,.74);
+    padding: .5rem .7rem;
+    min-width: 112px;
+  }
+
+  .transaction-title {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(23,33,43,.04);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .72rem;
+    font-weight: 800;
+  }
+
+  .transaction-list { display: grid; gap: .55rem; }
+
+  .transaction-item {
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--income);
+    border-radius: 8px;
+    background: rgba(255,255,255,.82) !important;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .transaction-item[style*="f9d2d2"] { border-left-color: var(--out); }
+  .transaction-item:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(15,23,42,.08); }
+
+  .amount-badge {
+    display: inline-flex;
+    justify-content: flex-end;
+    min-width: 82px;
+    border-radius: 999px;
+    background: rgba(23,33,43,.06);
+    padding: .3rem .55rem;
+    font-weight: 800;
+  }
+
+  @media (max-width: 991.98px) {
+    .studio-topbar, .month-command, .ledger-head { grid-template-columns: 1fr; display: grid; }
+    .studio-nav, .ledger-totals { justify-content: stretch; }
+    .studio-nav .btn, .ghost-action { flex: 1 1 auto; }
+    .studio-layout { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 575.98px) {
+    .studio-layout, .studio-topbar { padding: .75rem; }
+    .quick-actions, .fuel-grid, .stat-strip { grid-template-columns: 1fr; }
+    .fuel-result { grid-column: auto; flex-direction: column; }
+    .transaction-title { display: none; }
+    .transaction-item .row { gap: .35rem; }
+    .amount-badge { min-width: 0; }
+  }
+</style>
+
+<section class="money-studio">
+  <div class="studio-shell">
+    <div class="studio-inner">
+      <header class="studio-topbar">
+        <div class="studio-title">
+          <span>Command Center</span>
+          <h2>{{profile.name}}</h2>
+        </div>
+        <nav class="studio-nav" aria-label="Main tools">
+          <a class="ghost-action" href="/activities"><i class="fas fa-calendar-check"></i> Activities</a>
+          <a class="ghost-action" href="/tree"><i class="fas fa-sitemap"></i> Tree</a>
+          <a class="ghost-action" href="/roadmaps"><i class="fas fa-route"></i> Roadmaps</a>
+        </nav>
+      </header>
+
+      <div class="studio-layout">
+        <aside class="side-stack">
+          <section class="panel panel-pad balance-dial">
+            <div>
+              <div class="studio-kicker">Expected Pipeline</div>
+              <div class="balance-number">{{totalmoneyexpected}}</div>
+            </div>
+
+            <form method="get" action="/addexpectedmoney" class="mini-form">
+              <select name="raison" id="raison" class="form-select">
+                {% for i in inraisons %}
+                <option value="{{i.id}}">{{i.raison}}</option>
+                {% endfor %}
+              </select>
+              <input type="number" name="amount" placeholder="Amount" class="form-control">
+              <input type="text" name="note" placeholder="Note" class="form-control">
+              <button type="submit" class="btn btn-light fw-bold">Add expected money</button>
+            </form>
+
+            <div class="d-grid gap-2">
+              {%for i in expectedmoney%}
+              <div class="expected-card">
+                <div>
+                  <strong>{{i.raison}}</strong><br>
+                  <span>{{i.amount}} Dhs - {{i.note}}</span>
+                </div>
+                <form method="get" action="/receiveexpectedmoney">
+                  <input type="hidden" name="id" value="{{i.id}}">
+                  <button class="btn btn-success btn-sm fw-bold">Receive</button>
+                </form>
+              </div>
+              {%endfor%}
+            </div>
+
+            <div>
+              <div class="metric-label">Available Balance</div>
+              <div class="balance-number">--</div>
+            </div>
+
+            <div class="quick-actions">
+              <button type="button" onclick="$('.addbalance').toggleClass('d-none')" class="quick-action in">
+                <i class="fas fa-plus-circle"></i> Add
+              </button>
+              <button type="button" onclick="$('.outbalance').toggleClass('d-none')" class="quick-action out">
+                <i class="fas fa-minus-circle"></i> Out
+              </button>
+            </div>
+          </section>
+
+          <section class="panel panel-pad">
+            <div class="studio-kicker mb-3">Fuel Calculator</div>
+            <div class="fuel-grid">
+              <input type="number" class="form-control km" oninput="calcessence()" placeholder="KM">
+              <input type="number" class="form-control essenceprice" oninput="calcessence()" placeholder="Price/L">
+              <div class="fuel-result">
+                <span><strong class="essenceqty">0</strong> L ess</span>
+                <span><strong class="essencedh">0</strong> Dhs</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel-pad">
+            <div class="studio-kicker mb-3">Fuel Rhythm</div>
+            <div class="stat-strip" style="grid-template-columns: 1fr 1fr;">
+              <div class="metric"><span class="metric-label">Total</span><span class="metric-value">{{essenceout}}</span></div>
+              <div class="metric"><span class="metric-label">Per day</span><span class="metric-value">{{essenceoutperday}}</span></div>
+              <div class="metric"><span class="metric-label">Provision</span><span class="metric-value">{{thismonthessence}}</span></div>
+              <div class="metric"><span class="metric-label">Next fill</span><span class="metric-value">{{nextfill}}</span></div>
+            </div>
+          </section>
+
+          <section class="form-drawer outbalance d-none">
+            <div class="studio-kicker mb-3">Register Outflow</div>
+            <form id="form-send-money" class="outform mini-form" method="post" action="/outbalance">
+              {%csrf_token%}
+              <label class="field-label" for="amountout">Amount</label>
+              <input id="amountout" type="text" class="form-control" name="amountout" required>
+              <label class="field-label" for="raisonout">Payment Method</label>
+              <select id="raisonout" name="raisonout" class="form-select raisonout" required onchange="makerequire()">
+                <option value="">Select Payment Method</option>
+                {% for i in outraisons %}
+                <option value="{{i.id}}">{{i}}</option>
+                {% endfor %}
+              </select>
+              <input type="text" name="essaanceprice" class="form-control" placeholder="Essence price">
+              <input type="text" name="kilomtrage" class="form-control" placeholder="Kilometrage">
+              <select name="empty" class="form-select">
+                <option value="">Empty tank</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+              <button class="btn btn-danger fw-bold">Continue</button>
+            </form>
+          </section>
+
+          <section class="form-drawer addbalance d-none">
+            <div class="studio-kicker mb-3">Register Income</div>
+            <form id="form-send-money" method="post" action="/addtobalance" class="mini-form">
+              {%csrf_token%}
+              <label class="field-label" for="amountin">Amount</label>
+              <input id="amountin" type="text" class="form-control" name="amountin" required>
+              <label class="field-label" for="raisonin">Payment Method</label>
+              <select id="raisonin" name="raisonin" class="form-select" required>
+                <option value="">Select Payment Method</option>
+                {% for i in inraisons %}
+                <option value="{{i.id}}">{{i}}</option>
+                {% endfor %}
+              </select>
+              <button class="btn btn-success fw-bold">Continue</button>
+            </form>
+          </section>
+        </aside>
+
+        <main class="main-stack">
+          <section class="panel panel-pad">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
+              <div>
+                <div class="studio-kicker">Life Progress</div>
+                <h3 class="m-0 fw-bold">{{profile.name}} <span class="chip">-- yo</span></h3>
+              </div>
+              <div class="chip"><i class="fas fa-bolt me-2 text-warning"></i>{{ageindays}}%</div>
+            </div>
+            <div class="progress age-track mb-4">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: {{ageindays}}%" aria-valuenow="{{ageindays}}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <div class="month-command">
+              <div>
+                <div class="studio-kicker mb-2">Monthly Equation</div>
+                <div class="month-equation">
+                  <span class="chip">{{fromlastmonth}}</span>
+                  <span>+</span>
+                  <span class="chip">{{thismonthin}}</span>
+                  <span>-</span>
+                  <span class="chip">{{thismonthout}}</span>
+                  <span>=</span>
+                  <span class="chip actualsold">{{netmonthbalance}}</span>
+                </div>
+              </div>
+              <div class="input-group">
+                <input type="text" class="form-control realsold" placeholder="Real sold">
+                <button class="btn btn-dark" onclick="adjustsold(event)"><i class="fas fa-sliders-h"></i></button>
+              </div>
+            </div>
+          </section>
+
+          <section class="stat-strip">
+            <div class="metric"><span class="metric-label">Last month</span><span class="metric-value">{{fromlastmonth}}</span></div>
+            <div class="metric"><span class="metric-label">This month in</span><span class="metric-value text-success">{{thismonthin}}</span></div>
+            <div class="metric"><span class="metric-label">This month out</span><span class="metric-value text-danger">{{thismonthout}}</span></div>
+            <div class="metric"><span class="metric-label">Net</span><span class="metric-value actualsold">{{netmonthbalance}}</span></div>
+          </section>
+
+          <section class="panel panel-pad">
+            <div class="ledger-head mb-3">
+              <div>
+                <div class="studio-kicker mb-2">Ledger Filter</div>
+                <select name="" class="form-select source-select" onchange="getsource(event)">
+                  <option value="">Source</option>
+                  {% for i in inraisons %}
+                  <option value="{{i.id}}">{{i}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div></div>
+              <div class="total-pill">
+                <span class="metric-label">Total</span><br>
+                <strong class="totalfromsource">0.00</strong>
+              </div>
+              <div class="total-pill">
+                <span class="metric-label">Rest</span><br>
+                <strong class="restfromsource">0.00</strong>
+              </div>
+            </div>
+
+            <div class="transaction-title py-2 px-3 mb-2">
+              <div class="row align-items-center">
+                <div class="col-2 col-sm-2">Date</div>
+                <div class="col col-sm-6">Description</div>
+                <div class="col-auto col-sm-2 d-none d-sm-block text-center">Status</div>
+                <div class="col-3 col-sm-2 text-end">Amount</div>
+              </div>
+            </div>
+
+            <div class="transaction-list">
+              {% for i in releve %}
+              <div class="transaction-item px-3 py-3" data-bs-toggle="modal" data-bs-target="#transaction-detail" style="background:{%if i.1 == 'outbb'%}#f9d2d2{%else%}rgba(172, 255, 47, 0.304){%endif%};">
+                <div class="row align-items-center flex-row">
+                  <div class="col-2 col-sm-2 text-muted small">{{i.0.date|date:'d/m/Y H:i'}}</div>
+                  <div class="col col-sm-6"><span class="d-block fw-bold">{{i.0.raison}}</span><span class="text-muted small">{{i.0.note}}</span></div>
+                  <div class="col-auto col-sm-2 d-none d-sm-block text-center"><span class="text-warning" data-bs-toggle="tooltip" title="In Progress"><i class="fas fa-ellipsis-h"></i></span></div>
+                  <div class="col-3 col-sm-2 text-end"><span class="amount-badge text-nowrap">{{i.0.amount}}</span></div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="text-center mt-4">
+              <a href="transactions.html" class="ghost-action">View all <i class="fas fa-chevron-right"></i></a>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script>
+  function calcessence(){
+    km=$('.km').val()
+    essenceprice=$('.essenceprice').val()
+    essence=(3.75*parseFloat(km))/190
+    essencedh=essence*essenceprice
+    if (isNaN(essence)){ essence = 0 }
+    if (isNaN(essencedh)){ essencedh = 0 }
+    $('.essenceqty').text(essence.toFixed(2))
+    $('.essencedh').text(essencedh.toFixed(2))
+  }
+  function makerequire(){
+    raison=$('.raisonout').val()
+    if (raison=="4"){
+      $('.outform').find('input').attr('required', true)
+      $('.outform').find('select').attr('required', true)
+    }
+  }
+  function adjustsold(event){
+    realsold=$('.realsold').val();
+    actualsold=$('.actualsold').first().text()
+    console.log('realsold', realsold, 'actualsold', actualsold)
+    $.get('/adjustsold',{'realsold':realsold, 'actualsold':actualsold}, (data) => {
+      if (data.success){
+        location.reload();
+      }
+    });
+  }
+  function getsource(event){
+    $.get('/getsource',{'source':$(event.target).val()}, (data) => {
+      console.log(data);
+      $('.transaction-list').html(data.trs);
+      $('.totalfromsource').text(data.total.toFixed(2));
+      $('.restfromsource').text(data.rest.toFixed(2));
+    });
+  }
+</script>
+{% endblock %}

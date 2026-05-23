@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="py-5">
+  <div class="p-4 p-lg-5 mb-5 rounded-4 text-white shadow-lg" style="background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 45%, #20c997 100%);">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <span class="badge bg-light text-primary fw-semibold mb-3">Catalogue logiciel</span>
+        <h1 class="display-5 fw-bold">Choisissez votre logiciel</h1>
+        <p class="lead text-white-50 mb-0">Sélectionnez un type de logiciel et un palier d'hébergement adapté à votre activité.</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-3 p-3">
+          <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;">
+              <i class="bi bi-stars"></i>
+            </div>
+            <div>
+              <div class="fw-semibold">Design moderne</div>
+              <small class="text-white-50">Bootstrap 5, responsive et élégant.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-lg rounded-4">
+    <div class="card-body p-4 p-lg-5">
+      <ul class="nav nav-tabs nav-fill border-0 mb-4" id="homeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active fw-semibold" id="software-tab" data-bs-toggle="tab" href="#software" role="tab" aria-controls="software" aria-selected="true">
+            Types de logiciels
+          </a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link fw-semibold" id="hosting-tab" data-bs-toggle="tab" href="#hosting" role="tab" aria-controls="hosting" aria-selected="false">
+            Paliers d'hébergement
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="homeTabsContent">
+        <div class="tab-pane fade show active" id="software" role="tabpanel" aria-labelledby="software-tab">
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-cup-hot"></i>
+                    </div>
+                    <h5 class="mb-0">Restaurant</h5>
+                  </div>
+                  <p class="text-muted">Menus, caisse, gestion des tables et commandes en ligne.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Restaurant</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-info bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-gear"></i>
+                    </div>
+                    <h5 class="mb-0">Pièces auto</h5>
+                  </div>
+                  <p class="text-muted">Stocks, compatibilités, fournisseurs et commandes rapides.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Pièces auto</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-capsule"></i>
+                    </div>
+                    <h5 class="mb-0">Pharmacie</h5>
+                  </div>
+                  <p class="text-muted">Ordonnances, alertes de stock et gestion des dates.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Pharmacie</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-warning bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-basket"></i>
+                    </div>
+                    <h5 class="mb-0">Épicerie</h5>
+                  </div>
+                  <p class="text-muted">Codes-barres, promos, inventaires multi-rayons.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Épicerie</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-secondary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-scissors"></i>
+                    </div>
+                    <h5 class="mb-0">Salon &amp; spa</h5>
+                  </div>
+                  <p class="text-muted">Réservations, plannings d'équipe et abonnements.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Salon</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="bg-dark bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px;">
+                      <i class="bi bi-cpu"></i>
+                    </div>
+                    <h5 class="mb-0">Électronique</h5>
+                  </div>
+                  <p class="text-muted">Séries, garanties, SAV et réparations.</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm">Choisir Électronique</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="hosting" role="tabpanel" aria-labelledby="hosting-tab">
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">Essentiel</h5>
+                  <p class="text-muted">Pour les petites équipes qui démarrent.</p>
+                  <h2 class="fw-bold mb-3">19€<span class="fs-6 text-muted">/mois</span></h2>
+                  <ul class="list-unstyled text-muted mb-4">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>1 point de vente</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>5 utilisateurs</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Support email</li>
+                  </ul>
+                  <a href="#" class="btn btn-outline-primary w-100">Choisir Essentiel</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-primary shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title mb-0">Croissance</h5>
+                    <span class="badge bg-primary">Populaire</span>
+                  </div>
+                  <p class="text-muted">Pour les équipes en pleine croissance.</p>
+                  <h2 class="fw-bold mb-3">49€<span class="fs-6 text-muted">/mois</span></h2>
+                  <ul class="list-unstyled text-muted mb-4">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>3 points de vente</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>25 utilisateurs</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Support prioritaire</li>
+                  </ul>
+                  <a href="#" class="btn btn-primary w-100">Choisir Croissance</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">Entreprise</h5>
+                  <p class="text-muted">Pour les réseaux multi-sites.</p>
+                  <h2 class="fw-bold mb-3">Sur devis</h2>
+                  <ul class="list-unstyled text-muted mb-4">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Sites illimités</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Utilisateurs illimités</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Manager dédié</li>
+                  </ul>
+                  <a href="#" class="btn btn-outline-primary w-100">Contacter les ventes</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

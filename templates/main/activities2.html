@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Modern redesign - only visual changes, no behavioral changes */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Modern card styling */
+    .modern-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(203, 213, 225, 0.4);
+        overflow: hidden;
+    }
+    
+    /* Redesigned sidebar */
+    .modern-sidebar {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(203, 213, 225, 0.4);
+    }
+    
+    /* Create button redesign */
+    .btn-create {
+        background: linear-gradient(105deg, #0f2f40, #1c4e6e);
+        border: none;
+        padding: 0.85rem 1.8rem;
+        border-radius: 60px;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-create:hover {
+        background: linear-gradient(105deg, #0a2535, #123e58);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Modern table */
+    .modern-table-wrapper {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(203, 213, 225, 0.4);
+        overflow-x: auto;
+    }
+    
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.75rem;
+    }
+    
+    .modern-table thead th {
+        background: #f8fafc;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 14px 8px;
+        color: #1e3a5f;
+        border-bottom: 2px solid #e2e8f0;
+        text-align: center;
+        position: sticky;
+        top: 0;
+    }
+    
+    .modern-table tbody td {
+        background: white;
+        padding: 12px 8px;
+        text-align: center;
+        border-bottom: 1px solid #eef2f8;
+        vertical-align: middle;
+    }
+    
+    .modern-table tbody tr:hover td {
+        background-color: #faf9f0;
+    }
+    
+    /* Time input groups */
+    .time-group-modern {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    
+    .time-input-modern {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        padding: 6px 8px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        width: 85px;
+        text-align: center;
+    }
+    
+    .btn-icon-modern {
+        background: #eef2ff;
+        border: none;
+        border-radius: 20px;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #2c3e66;
+        transition: all 0.15s;
+    }
+    
+    .btn-icon-modern:hover {
+        background: #e0e7ff;
+        transform: scale(1.02);
+    }
+    
+    /* Events area */
+    .events-modern {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
+    
+    .events-textarea-modern {
+        background: #fef9e6;
+        border: 1px solid #f5d799;
+        border-radius: 16px;
+        padding: 6px 10px;
+        font-size: 0.7rem;
+        width: 140px;
+        resize: vertical;
+        font-family: monospace;
+    }
+    
+    .btn-save-modern {
+        background: #ffb74d;
+        border: none;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.1s;
+    }
+    
+    .btn-save-modern:hover {
+        background: #ffa01e;
+    }
+    
+    /* Stats cards */
+    .stat-card-modern {
+        background: white;
+        border-radius: 20px;
+        padding: 1.2rem;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        border: 1px solid rgba(203, 213, 225, 0.4);
+    }
+    
+    .stat-value-modern {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1e3a5f;
+        margin-top: 0.5rem;
+    }
+    
+    .stat-label-modern {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        font-weight: 600;
+    }
+    
+    /* Badge styles for toggle cells - preserves double-click */
+    .badge-modern {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        min-width: 50px;
+    }
+    
+    .badge-modern-success {
+        background: #10b981;
+        color: white;
+    }
+    
+    .badge-modern-danger {
+        background: #ef4444;
+        color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .time-input-modern {
+            width: 65px;
+        }
+        .events-textarea-modern {
+            width: 110px;
+        }
+    }
+</style>
+
+<div class="row g-4">
+    <!-- Left Sidebar - Redesigned -->
+    <aside class="col-lg-3">
+        <div class="modern-sidebar">
+            <div style="margin-bottom: 1.5rem;">
+                <div class="stat-label-modern">Total Days</div>
+                <div class="stat-value-modern" id="totalDaysDisplay">{{ activities|length }}</div>
+            </div>
+            <hr style="margin: 1rem 0; border-color: #e2e8f0;">
+            <button class="btn-create" onclick="createactivity()">
+                <span>+</span> New Day
+            </button>
+            <div style="margin-top: 1.5rem; font-size: 0.7rem; color: #64748b; text-align: center;">
+                <i class="fas fa-mouse-pointer"></i> Double-click any colored cell to toggle
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Right Table Area - Redesigned -->
+    <aside class="col-lg-9">
+        <div class="modern-table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Date</th><th>Wake</th><th>Prayer</th><th>Fajr</th><th>Dhuhr</th><th>Asr</th>
+                        <th>Maghrib</th><th>Isha</th><th>Quran</th><th>Working</th><th>Pushups</th>
+                        <th>Mast</th><th>Freelancing</th><th>Coding</th><th>Shower</th><th>Football</th>
+                        <th>Run</th><th>Sick</th><th>Sleep</th><th>Events</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in activities %}
+                    <tr>
+                        <!-- Date -->
+                        <td style="font-weight: 600;">{{i.date|date:'D d/m/y'}}</td>
+                        
+                        <!-- Wake Time -->
+                        <td>
+                            <div class="time-group-modern">
+                                <input class="waketimeinp time-input-modern" type="time" value="{{i.wake|date:'H:i'}}">
+                                <button class="btn-icon-modern" onclick="updatewaketime(event, '{{i.id}}')">✓</button>
+                            </div>
+                        </td>
+                        
+                        <!-- Toggle cells - original classes preserved, just styled -->
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'prayer')" class="{% if i.prayer %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.prayer %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.prayer %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'fajr')" class="{% if i.fajr %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.fajr %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.fajr %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'duhr')" class="{% if i.duhr %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.duhr %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.duhr %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'asr')" class="{% if i.asr %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.asr %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.asr %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'maghrib')" class="{% if i.maghrib %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.maghrib %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.maghrib %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'isha')" class="{% if i.isha %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.isha %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.isha %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'quran')" class="{% if i.quran %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.quran %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.quran %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'working')" class="{% if i.working %} bg-success {% else %} bg-danger {% endif %}">
+                            <span class="badge-modern {% if i.working %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.working %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'pushups')" class="{% if i.pushups %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.pushups %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.pushups %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <!-- Mast column - special styling -->
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'mast')" class="{% if i.mast %} bg-danger {% else %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.mast %}badge-modern-danger{% else %}badge-modern-success{% endif %}">
+                                {% if i.mast %}⚠️ yes{% else %}✓ no{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'freelancing')" class="{% if i.freelancing %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.freelancing %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.freelancing %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'coding')" class="{% if i.coding %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.coding %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.coding %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'shower')" class="{% if i.shower %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.shower %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.shower %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'football')" class="{% if i.football %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.football %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.football %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'run')" class="{% if i.run %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.run %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.run %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <td ondblclick="updateactiv(event, '{{i.id}}', 'sick')" class="{% if i.sick %} bg-success {% endif %}">
+                            <span class="badge-modern {% if i.sick %}badge-modern-success{% else %}badge-modern-danger{% endif %}">
+                                {% if i.sick %}✓{% else %}✗{% endif %}
+                            </span>
+                        </td>
+                        
+                        <!-- Sleep Time -->
+                        <td>
+                            <div class="time-group-modern">
+                                <input class="sleeptimeinp time-input-modern" type="time" value="{{i.sleep|date:'H:i'}}">
+                                <button class="btn-icon-modern" onclick="updatesleeptime(event, '{{i.id}}')">✓</button>
+                            </div>
+                        </td>
+                        
+                        <!-- Events -->
+                        <td>
+                            <div class="events-modern">
+                                <textarea class="events-textarea-modern" name="events">{{i.events}}</textarea>
+                                <button class="btn-save-modern" onclick="addevents('{{i.id}}', event)">💾 Save</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </aside>
+</div>
+
+<script>
+    // Update total days display when toggles happen (optional visual feedback)
+    function updateTotalDaysDisplay() {
+        const totalRows = document.querySelectorAll('.modern-table tbody tr').length;
+        const totalDisplay = document.getElementById('totalDaysDisplay');
+        if (totalDisplay) totalDisplay.innerText = totalRows;
+    }
+    
+    // Override the original updateactiv to also update the badge styling visually
+    // BUT preserve original behavior completely
+    const originalUpdateActiv = updateactiv;
+    window.updateactiv = function(event, id, activity) {
+        // Call original function
+        originalUpdateActiv(event, id, activity);
+        
+        // After original toggle, update the badge styling (purely visual)
+        setTimeout(() => {
+            const targetCell = event.target;
+            if (targetCell && targetCell.tagName === 'TD') {
+                const badge = targetCell.querySelector('.badge-modern');
+                if (badge) {
+                    const isSuccess = targetCell.classList.contains('bg-success');
+                    const isDanger = targetCell.classList.contains('bg-danger');
+                    
+                    if (activity === 'mast') {
+                        if (isDanger) {
+                            badge.className = 'badge-modern badge-modern-danger';
+                            badge.innerText = '⚠️ yes';
+                        } else if (isSuccess) {
+                            badge.className = 'badge-modern badge-modern-success';
+                            badge.innerText = '✓ no';
+                        }
+                    } else {
+                        if (isSuccess) {
+                            badge.className = 'badge-modern badge-modern-success';
+                            badge.innerText = '✓';
+                        } else if (isDanger) {
+                            badge.className = 'badge-modern badge-modern-danger';
+                            badge.innerText = '✗';
+                        }
+                    }
+                }
+            }
+            updateTotalDaysDisplay();
+        }, 10);
+    };
+    
+    // Also update total days on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotalDaysDisplay();
+    });
+</script>
+
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+    // Your original JavaScript functions remain EXACTLY as they were
+    function addevents(id, event){
+        events=$(event.target).parent().find('textarea').val()
+        $.get('addevents', {'events':events, 'id':id}, ()=>{
+
+        })
+    }
+    function updatesleeptime(event, id){
+        sleeptime=$(event.target).parent().find('.sleeptimeinp').val()
+        $.get('updatesleeptime', {'time':sleeptime, 'id':id}, ()=>{
+            //location.reload()
+        })
+    }
+    function updatewaketime(event, id){
+        waketime=$(event.target).parent().find('.waketimeinp').val()
+        $.get('updatewaketime', {'time':waketime, 'id':id}, ()=>{
+            //location.reload()
+        })
+    }
+    function createactivity(){
+        $.get('/createactivity', (data)=>{
+            location.reload()
+        })
+    }
+    function updateactiv(event, id, activity){
+        $.get('/updateactiv',{'id':id, 'activity':activity}, (data)=>{
+            console.log($(this))
+            $(event.target).toggleClass('bg-success')
+        })
+    }
+</script>
+{% endblock %}

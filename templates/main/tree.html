@@ -166,55 +166,70 @@
       return nodes.find(n => n.id === id);
     }
 
-    function showdata(id) {
-        $.ajax({
-            url: '/getnodedata?id=' + id ,
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-              $('.nodedata').removeClass('d-node')
-              $('.titledata').val(data.title)
-              $('.imglinkdata').val(data.imglink)
-              $('.videolinkdata').val(data.videolink)
-              $('.ytlinkdata').val(data.ytlink)
-              $('.iddata').val(data.id)
-              $('.descdata').text(data.description)
-              if (data.image) {
-                  $('.imgdata').attr('src', data.image).show();
-              } else {
-                  $('.imgdata').hide();
-              }
-              $('.typedata').text(data.type)
-              $('.connectiondata').empty();
-              for (let i in data.connections) {
-                let conn = data.connections[i];
-                if (conn.target === data.title) {
-                  // Show clickable source
-                  $('.connectiondata').append(`
-                    <div style="margin-bottom:6px; border-bottom:1px solid white;">
-                      <button onclick="onSelectNode(findNodeById(${conn.source_id}))">${conn.source}</button>
-                    </div>
-                  `);
-                } else {
-                  // Editable label for outgoing connection
-                  $('.connectiondata').append(`
-                    <div style="margin-bottom:6px; border-bottom:1px solid white;">
-                      <input style="width: 25%;background: #0f18279c;border: #ffffff;color: white;border-radius: 10px" 
-                            value="${conn.label}" type=text>
-                      <button onclick="onSelectNode(findNodeById(${conn.target_id}))">${conn.target}</button>
-                      <button onclick="updatelabel(${conn.id}, event)"></button>
-                    </div>
-                  `);
-                }
-              }
-              // For simplicity, using alert to show data
-            },
-            error: function() {
-                alert('Error fetching node data.');
+    function showdata(nodeId) {
+    $.ajax({
+        url: '/getnodedata?id=' + nodeId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            // Populate sidebar
+            $('.nodedata').removeClass('d-node')
+            $('.titledata').val(data.title)
+            $('.imglinkdata').val(data.imglink)
+            $('.videolinkdata').val(data.videolink)
+            $('.ytlinkdata').val(data.ytlink)
+            $('.iddata').val(data.id)
+            $('.descdata').text(data.description)
+            if (data.image) {
+                $('.imgdata').attr('src', data.image).show();
+            } else {
+                $('.imgdata').hide();
             }
-        });
-    }
-    /* --- node creation / drag --- */
+            $('.typedata').text(data.type)
+            $('.connectiondata').empty();
+
+            // Add connections in sidebar
+            data.connections.forEach(conn => {
+                $('.connectiondata').append(`
+                    <div style="margin-bottom:6px; border-bottom:1px solid white;">
+                        <input style="width: 25%;background: #0f18279c;border: #ffffff;color: white;border-radius: 10px" 
+                            value="${conn.label}" type=text>
+                        <button onclick="onSelectNode(findNodeById(${conn.target_id}))">${conn.target_title}</button>
+                        <button onclick="updatelabel(${conn.id}, event)"></button>
+                    </div>
+                `);
+            });
+
+            // Lazy load child nodes
+            (data.connected_nodes || []).forEach(n => {
+                if (!findNodeById(n.id)) {
+                    const newNode = createNode({
+                        id: n.id,
+                        title: n.title,
+                        description: n.description,
+                        x: parseFloat(n.x),
+                        y: parseFloat(n.y),
+                        type: n.type,
+                        imglink: n.imglink,
+                        videolink: n.videolink,
+                        ytlink: n.ytlink,
+                        img: n.image || null
+                    });
+                    // Also create the connection visually
+                    const sourceNode = findNodeById(nodeId);
+                    createLink(sourceNode, newNode, '', '0', 'white');
+                }
+            });
+
+            // update connections after lazy loading
+            setTimeout(updateConnections, 10);
+        },
+        error: function() {
+            alert('Error fetching node data.');
+        }
+    });
+}
+/* --- node creation / drag --- */
     function createNode(data){
       const n = Object.assign({x: 120 + Math.random()*300, y: 80 + Math.random()*150, title: 'Untitled', description:'', img:null, type:'note', imglink:null}, data);
       const el = document.createElement('div');

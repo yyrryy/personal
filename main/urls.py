@@ -1,10 +1,11 @@
 
 from django.urls import path
-from . import views, nodeviews
+from . import views, nodeviews, todoviews
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    path('', views.main, name='main'),
+    path('', views.home, name='home'),
+    path('main', views.main, name='main'),
     path('addtobalance', views.addtobalance, name='addtobalance'),
     path('outbalance', views.outbalance, name='outbalance'),
     path('activities', views.activities, name='activities'),
@@ -27,10 +28,10 @@ urlpatterns = [
     path('getnodedata', nodeviews.getnodedata, name='getnodedata'),
     path('updatenode', nodeviews.updatenode, name='updatenode'),
     path('updatelabel', nodeviews.updatelabel, name='updatelabel'),
-    # path('addtobalance', views.addtobalance, name='addtobalance'),
-    # path('addtobalance', views.addtobalance, name='addtobalance'),
-    # path('addtobalance', views.addtobalance, name='addtobalance'),
-    # path('addtobalance', views.addtobalance, name='addtobalance'),
+    path('get_connected_nodes', nodeviews.get_connected_nodes, name='get_connected_nodes'),
+    path('roadmaps', todoviews.roadmaps, name='roadmaps'),
+    path('addexpectedmoney', views.addexpectedmoney, name='addexpectedmoney'),
+    path('receiveexpectedmoney', views.receiveexpectedmoney, name='receiveexpectedmoney'),
     # path('addtobalance', views.addtobalance, name='addtobalance'),
     # path('addtobalance', views.addtobalance, name='addtobalance'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

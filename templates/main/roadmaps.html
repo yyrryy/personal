@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+
+    <!-- sidebar: roadmap list + create button -->
+    <aside class="col-lg-3">
+        <div class="shadow-sm rounded text-center p-3 mb-4">
+            <a href="/" class="btn btn-primary">Home</a>
+            <button class="btn btn-success" onclick="createRoadmap()">+ Create Roadmap</button>
+        </div>
+        <div class="shadow-sm rounded text-center p-3 mb-4">
+            {% for roadmap in roadmaps %}
+                <button class="btn btn-info mb-2 roadmap-button" 
+                        onclick="viewRoadmap({{ roadmap.id }}, this)">
+                    {{ roadmap.title }}
+                </button>
+            {% empty %}
+                <p>No roadmaps yet.</p>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <!-- main content: roadmap items -->
+    <aside class="col-lg-9">
+        <div class="shadow-sm rounded p-3 mb-4">
+            <h3 id="roadmap-title">Select a roadmap</h3>
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="roadmap-data">
+                    <tr>
+                        <td colspan="4" class="text-center">No tasks selected</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </aside>
+
+</div>
+
+<script>
+    // create roadmap
+    function createRoadmap() {
+        window.location.href = "/roadmap/create/";
+    }
+
+    // view roadmap tasks
+    function viewRoadmap(id, btn) {
+        // highlight active roadmap button
+        $(".roadmap-button").removeClass("active");
+        $(btn).addClass("active");
+
+        $.get(`/roadmap/${id}/`, function(data) {
+            $(".roadmap-data").html(""); // clear old rows
+            $("#roadmap-title").text(data.title);
+
+            if (data.items.length === 0) {
+                $(".roadmap-data").append(`<tr><td colspan="4" class="text-center">No tasks yet</td></tr>`);
+            }
+
+            data.items.forEach(function(item) {
+                let status = item.completed ? "✅ Done" : "❌ Pending";
+                let row = `
+                    <tr>
+                        <td>${item.created_at.split('T')[0]}</td>
+                        <td>${item.title}</td>
+                        <td>${status}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editRoadmapItem(${item.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRoadmapItem(${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                $(".roadmap-data").append(row);
+            });
+        });
+    }
+
+    // edit roadmap item
+    function editRoadmapItem(id) {
+        window.location.href = `/roadmap/item/${id}/edit/`;
+    }
+
+    // delete roadmap item
+    function deleteRoadmapItem(id) {
+        if (confirm("Are you sure you want to delete this task?")) {
+            window.location.href = `/roadmap/item/${id}/delete/`;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,301 @@
+[
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 1,
+      "fields": {
+        "roadmap": 1,
+        "title": "Basic Linux Commands",
+        "description": "",
+        "category": "Linux",
+        "order": 1,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 2,
+      "fields": {
+        "roadmap": 1,
+        "title": "File Permissions (chmod, chown, umask)",
+        "description": "",
+        "category": "Linux",
+        "order": 2,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:10Z",
+        "updated_at": "2024-01-01T00:00:10Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 3,
+      "fields": {
+        "roadmap": 1,
+        "title": "Processes & Systemd",
+        "description": "",
+        "category": "Linux",
+        "order": 3,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:20Z",
+        "updated_at": "2024-01-01T00:00:20Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 4,
+      "fields": {
+        "roadmap": 1,
+        "title": "TCP vs UDP",
+        "description": "",
+        "category": "Networking",
+        "order": 4,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:30Z",
+        "updated_at": "2024-01-01T00:00:30Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 5,
+      "fields": {
+        "roadmap": 1,
+        "title": "DNS Fundamentals",
+        "description": "",
+        "category": "Networking",
+        "order": 5,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:40Z",
+        "updated_at": "2024-01-01T00:00:40Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 6,
+      "fields": {
+        "roadmap": 1,
+        "title": "HTTP & HTTPS",
+        "description": "",
+        "category": "Networking",
+        "order": 6,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:00:50Z",
+        "updated_at": "2024-01-01T00:00:50Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 7,
+      "fields": {
+        "roadmap": 1,
+        "title": "Git Basics (commit, branch, merge)",
+        "description": "",
+        "category": "Git & CI/CD",
+        "order": 7,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:00Z",
+        "updated_at": "2024-01-01T00:01:00Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 8,
+      "fields": {
+        "roadmap": 1,
+        "title": "Branching Strategies (Git Flow)",
+        "description": "",
+        "category": "Git & CI/CD",
+        "order": 8,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:10Z",
+        "updated_at": "2024-01-01T00:01:10Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 9,
+      "fields": {
+        "roadmap": 1,
+        "title": "CI Concepts",
+        "description": "",
+        "category": "Git & CI/CD",
+        "order": 9,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:20Z",
+        "updated_at": "2024-01-01T00:01:20Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 10,
+      "fields": {
+        "roadmap": 1,
+        "title": "Docker Images & Containers",
+        "description": "",
+        "category": "Docker",
+        "order": 10,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:30Z",
+        "updated_at": "2024-01-01T00:01:30Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 11,
+      "fields": {
+        "roadmap": 1,
+        "title": "Dockerfile & Build Context",
+        "description": "",
+        "category": "Docker",
+        "order": 11,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:40Z",
+        "updated_at": "2024-01-01T00:01:40Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 12,
+      "fields": {
+        "roadmap": 1,
+        "title": "Docker Compose",
+        "description": "",
+        "category": "Docker",
+        "order": 12,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:01:50Z",
+        "updated_at": "2024-01-01T00:01:50Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 13,
+      "fields": {
+        "roadmap": 1,
+        "title": "Kubernetes Core Concepts",
+        "description": "",
+        "category": "Kubernetes",
+        "order": 13,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:00Z",
+        "updated_at": "2024-01-01T00:02:00Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 14,
+      "fields": {
+        "roadmap": 1,
+        "title": "Deployments & Services",
+        "description": "",
+        "category": "Kubernetes",
+        "order": 14,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:10Z",
+        "updated_at": "2024-01-01T00:02:10Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 15,
+      "fields": {
+        "roadmap": 1,
+        "title": "ConfigMaps & Secrets",
+        "description": "",
+        "category": "Kubernetes",
+        "order": 15,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:20Z",
+        "updated_at": "2024-01-01T00:02:20Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 16,
+      "fields": {
+        "roadmap": 1,
+        "title": "Compute (EC2, GCE, VM Instances)",
+        "description": "",
+        "category": "Cloud",
+        "order": 16,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:30Z",
+        "updated_at": "2024-01-01T00:02:30Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 17,
+      "fields": {
+        "roadmap": 1,
+        "title": "Object Storage (S3, GCS, Azure Blob)",
+        "description": "",
+        "category": "Cloud",
+        "order": 17,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:40Z",
+        "updated_at": "2024-01-01T00:02:40Z"
+      }
+    },
+  
+    
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 18,
+      "fields": {
+        "roadmap": 1,
+        "title": "Secrets Management",
+        "description": "",
+        "category": "Security",
+        "order": 18,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:02:50Z",
+        "updated_at": "2024-01-01T00:02:50Z"
+      }
+    },
+    {
+      "model": "dashboard.roadmapitem",
+      "pk": 19,
+      "fields": {
+        "roadmap": 1,
+        "title": "Vulnerability Scanning (Trivy, Snyk)",
+        "description": "",
+        "category": "Security",
+        "order": 19,
+        "completed": false,
+        "notes": "",
+        "created_at": "2024-01-01T00:03:00Z",
+        "updated_at": "2024-01-01T00:03:00Z"
+      }
+    }
+  ]
+  
