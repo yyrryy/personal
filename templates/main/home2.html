@@ -1,0 +1,1082 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Solutions Logicielles Premium{% endblock %}
+
+{% block content %}
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #fff; color: #212529; }
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #212529 0%, #6c757d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .soft-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem 1rem;
+    border-radius: 999px;
+    background: #e7f1ff;
+    border: 1px solid #cfe2ff;
+    color: #0d6efd;
+    font-weight: 600;
+    font-size: .875rem;
+  }
+  .btn-modern {
+    border-radius: 14px;
+    font-weight: 700;
+    padding: .95rem 1.5rem;
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+  }
+  .btn-modern:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(13,110,253,.12); }
+  .navbar-modern {
+    background: rgba(255,255,255,.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #eef1f4;
+  }
+  .wizard-sticky-header {
+    z-index: 1030;
+  }
+  .wizard-sticky-header .container-lg {
+    background: rgba(255,255,255,.94);
+    backdrop-filter: blur(10px);
+  }
+  .section-title { letter-spacing: -0.03em; }
+  .tab-link {
+    border: 0;
+    background: transparent;
+    padding: 1rem 0;
+    margin-right: 1.5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #6c757d;
+    position: relative;
+  }
+  .tab-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px 999px 0 0;
+    background: #0d6efd;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .tab-link.active { color: #0d6efd; }
+  .tab-link.active::after { opacity: 1; }
+  .wizard-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+  }
+  .wizard-step-btn {
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    background: #fff;
+    padding: .8rem .9rem;
+    text-align: left;
+    transition: all .2s ease;
+    font-weight: 600;
+    color: #495057;
+  }
+  .wizard-step-btn.active {
+    border-color: #0d6efd;
+    box-shadow: 0 8px 20px rgba(13,110,253,.12);
+    color: #0d6efd;
+  }
+  .wizard-step-btn.done {
+    border-color: #198754;
+    color: #198754;
+  }
+  .wizard-step-btn .wizard-step-index {
+    display: inline-flex;
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: .78rem;
+    margin-right: .45rem;
+    background: #e9ecef;
+    color: #495057;
+  }
+  .wizard-step-btn.active .wizard-step-index {
+    background: #0d6efd;
+    color: #fff;
+  }
+  .wizard-step-btn.done .wizard-step-index {
+    background: #198754;
+    color: #fff;
+  }
+  .wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-top: 1.25rem;
+  }
+  .addon-card {
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    background: #fff;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .addon-card:hover {
+    border-color: #cfe2ff;
+    box-shadow: 0 10px 24px rgba(13,110,253,.1);
+  }
+  .addon-card.selected {
+    border-color: #0d6efd;
+    box-shadow: 0 12px 26px rgba(13,110,253,.16);
+    background: #f8fbff;
+  }
+  .card-modern {
+    border: 1px solid #e9ecef;
+    border-radius: 22px;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    overflow: hidden;
+    background: #fff;
+  }
+  .card-modern:hover {
+    transform: translateY(-6px);
+    border-color: #cfe2ff;
+    box-shadow: 0 18px 40px rgba(13,110,253,.12);
+  }
+  .card-modern.selected {
+    border-color: #0d6efd;
+    box-shadow: 0 18px 44px rgba(13,110,253,.16);
+  }
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #e7f1ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+  }
+  .feature-list li { margin-bottom: .55rem; }
+  .feature-list li::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: .6rem;
+    border-radius: 50%;
+    background: #0d6efd;
+  }
+  .check-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50%;
+    background: #0d6efd;
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 700;
+  }
+  .card-modern.selected .check-badge { display: inline-flex; }
+  .recommended-badge {
+    position: absolute;
+    top: -0.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: #fff;
+    padding: .35rem 1rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+  }
+  .contact-wrap {
+    background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
+  }
+  .pricing-toggle .btn {
+    min-width: 7.5rem;
+    font-weight: 700;
+  }
+  .pricing-toggle .btn.active {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+  .price-value {
+    letter-spacing: -0.04em;
+  }
+  .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.12);
+  }
+  .success-box {
+    display: none;
+    border-radius: 14px;
+  }
+  .success-box.show { display: block; }
+</style>
+
+<nav class="navbar navbar-modern sticky-top wizard-sticky-header">
+  <div class="container-lg py-3">
+    <div class="d-flex flex-column gap-3">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        <div class="btn-group pricing-toggle d-none" role="group" aria-label="Cycle de facturation">
+          <button id="billing-monthly" type="button" class="btn btn-outline-primary" onclick="setBillingCycle('monthly')">Mensuel</button>
+          <button id="billing-yearly" type="button" class="btn btn-outline-primary active" onclick="setBillingCycle('yearly')">Annuel</button>
+        </div>
+        <div id="total-counter" class="p-3" style="font-weight:700;">Total: 0</div>
+      </div>
+      <div class="wizard-steps">
+        <button id="step-btn-1" class="wizard-step-btn active" type="button" onclick="goToStep(1)">
+          <span class="wizard-step-index">1</span> Logiciel
+        </button>
+        <button id="step-btn-2" class="wizard-step-btn" type="button" onclick="goToStep(2)">
+          <span class="wizard-step-index">2</span> Hébergement
+        </button>
+        <button id="step-btn-3" class="wizard-step-btn" type="button" onclick="goToStep(3)">
+          <span class="wizard-step-index">3</span> Add-ons
+        </button>
+        <button id="step-btn-4" class="wizard-step-btn" type="button" onclick="goToStep(4)">
+          <span class="wizard-step-index">4</span> Coordonnées
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- <header class="py-5 py-lg-5">
+  <div class="container-lg py-4">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-9">
+        <div class="soft-pill mb-3">✨ Solutions complètes pour votre entreprise</div>
+        <h1 class="hero-title mb-4">Trouvez la solution idéale</h1>
+        <p class="lead text-secondary mx-auto mb-4" style="max-width: 40rem;">
+          Des logiciels professionnels adaptés à chaque secteur d'activité. Configurez votre solution en quelques minutes.
+        </p>
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+          <button class="btn btn-primary btn-modern" onclick="document.getElementById('tabs').scrollIntoView({behavior:'smooth'})">Explorer nos solutions</button>
+          <button class="btn btn-light btn-modern border" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Demander une démo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header> -->
+
+<section id="tabs" class="py-4 py-lg-5">
+  <div class="container-lg">
+    <div class="mb-4">
+      <h3 class="h4 fw-bold mb-0">Assistant de configuration</h3>
+    </div>
+
+    <div id="software-content" class="tab-content">
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Restaurant" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">🍽️</div>
+            <h3 class="h5 fw-bold mb-2">Gestion Restaurant</h3>
+            <p class="text-secondary small mb-3">Pilotez commandes, tables et facturation dans une interface élégante.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Commandes</li><li>Tables</li><li>Stock</li><li>Factures</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Station-Service" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">⛽</div>
+            <h3 class="h5 fw-bold mb-2">Gestion Station-Service</h3>
+            <p class="text-secondary small mb-3">Suivi des pompes, ventes et rapports en temps réel.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Pompes</li><li>Paiements</li><li>Rapports</li><li>Clients</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="POS / Caisse" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">💳</div>
+            <h3 class="h5 fw-bold mb-2">POS / Caisse</h3>
+            <p class="text-secondary small mb-3">Une caisse moderne, rapide et pensée pour vendre plus vite.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Multi-caisse</li><li>Clients</li><li>Promotions</li><li>Rapports</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Stock" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">📦</div>
+            <h3 class="h5 fw-bold mb-2">Gestion Stock</h3>
+            <p class="text-secondary small mb-3">Contrôlez vos inventaires avec alertes et traçabilité.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Tracking</li><li>Alertes</li><li>Mouvements</li><li>Statistiques</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion École" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">🎓</div>
+            <h3 class="h5 fw-bold mb-2">Gestion École</h3>
+            <p class="text-secondary small mb-3">Suivi des élèves, notes, absences et communication parentale.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Élèves</li><li>Notes</li><li>Absences</li><li>Parents</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Location de Voitures" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">🚗</div>
+            <h3 class="h5 fw-bold mb-2">Location de Voitures</h3>
+            <p class="text-secondary small mb-3">Gérez réservations, flotte, documents et facturation.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Réservations</li><li>Flottes</li><li>Documents</li><li>Facturation</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Carburant / Pétrole" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">🛢️</div>
+            <h3 class="h5 fw-bold mb-2">Gestion Carburant / Pétrole</h3>
+            <p class="text-secondary small mb-3">Supervisez les volumes, la distribution et les stocks.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Stocks</li><li>Distribution</li><li>Clients</li><li>Rapports</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+        <div class="col-12 col-md-6 col-xl-">
+          <article class="card-modern h-100 p-4 position-relative" data-software-name="Solutions Personnalisées" onclick="selectSoftware(this)">
+            <span class="check-badge">✓</span>
+            <div class="card-icon mb-3">⚙️</div>
+            <h3 class="h5 fw-bold mb-2">Solutions Personnalisées</h3>
+            <p class="text-secondary small mb-3">Une solution sur mesure pensée pour votre process.</p>
+            <ul class="list-unstyled small mb-4 feature-list">
+              <li>Flexible</li><li>Scalable</li><li>Support</li><li>Formation</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <span></span>
+        <button id="wizard-next-software" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Hébergement</button>
+      </div>
+    </div>
+
+    <div id="hosting-content" class="tab-content d-none">
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+          <h3 class="h4 fw-bold mb-1">Hébergement local et Online</h3>
+          <p class="text-secondary mb-0">Le mode annuel est conseillé pour profiter des meilleurs tarifs.</p>
+        </div>
+        
+      </div>
+
+      <div>
+        <h4 class="fw-bold mb-3">Local & Online</h4>
+        <div class="row g-4">
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative d-flex flex-column align-items-start gap-3" data-hosting-name="Local" data-hosting-type="local" onclick="selectHosting(this)">
+              <span class="check-badge">✓</span>
+              <h3 class="h4 fw-bold mb-2">Local</h3>
+              <div class="mb-4">
+                <span class="display-6 fw-bold price-value" data-price-monthly="0 Dh" data-price-yearly="0 Dh">0 Dh</span>
+                <span class="text-secondary" data-price-cycle>/an</span>
+              </div>
+              <div class="flex-fill">
+                <h3 class="h5 fw-bold mb-1">Local</h3>
+                <div class="mb-2"><span class="fw-bold">Gratuit</span> <span class="text-secondary">pour l'hébergement</span></div>
+                <ul class="list-unstyled small mb-2">
+                  <li class="mb-1"><strong>Installation locale</strong> sur vos machines</li>
+                  <li class="mb-1"><strong>0 Dh</strong> pour l'hébergement</li>
+                  <!-- <li class="mb-1">SSL gratuit</li> -->
+                  <li class="mb-1"><strong>Support</strong> inclus</li>
+                  <li class="mb-1"><strong>Scalable</strong> selon vos besoins</li>
+                </ul>
+
+                <!-- <div class="rounded-4 bg-light border p-3 mb-0 d-inline-block">
+                  <div class="fw-semibold mb-1">Sauvegardes automatiques</div>
+                  <div class="text-secondary small">
+                    <span data-local-save-yearly>2000 Dh/an</span>
+                    <span class="mx-2">ou</span>
+                    <span data-local-save-monthly>190 Dh/mois</span>
+                  </div>
+                </div> -->
+              </div>
+
+              <div class="w-100">
+                <p class="text-secondary small mb-2">Choix recommandé si vous voulez commencer vite sans coût d'hébergement.</p>
+                <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'))">Sélectionner</button>
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Starter" data-hosting-type="remote" onclick="selectHosting(this)">
+              <span class="check-badge">✓</span>
+              <h3 class="h4 fw-bold mb-2">Starter</h3>
+              <div class="mb-4">
+                <span class="display-6 fw-bold price-value" data-price-monthly="70 Dh" data-price-yearly="840 Dh">840 Dh</span>
+                <span class="text-secondary" data-price-cycle>/an</span>
+              </div>
+              <ul class="list-unstyled small mb-4">
+                <li class="mb-2"><strong>1 vCPU - 512 MB RAM</strong></li>
+                <li class="mb-2"><strong>10 GB</strong> SSD</li>
+                <li class="mb-2"><strong>500 GB</strong> Transfer</li>
+                <!-- <li class="mb-2">SSL gratuit</li> -->
+                <li>Support <strong>24h</strong></li>
+              </ul>
+              <p class="text-secondary small mb-4">Pour démarrer facilement.</p>
+              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Growth" data-hosting-type="remote" onclick="selectHosting(this)">
+              <span class="check-badge">✓</span>
+              <h3 class="h4 fw-bold mb-2">Growth</h3>
+              <div class="mb-4">
+                <span class="display-6 fw-bold price-value" data-price-monthly="90 Dh" data-price-yearly="1080 Dh">1080 Dh</span>
+                <span class="text-secondary" data-price-cycle>/an</span>
+              </div>
+              <ul class="list-unstyled small mb-4">
+                <li class="mb-2"><strong>1 vCPU - 1 GB RAM</strong></li>
+                <li class="mb-2"><strong>25 GB</strong> SSD</li>
+                <li class="mb-2"><strong>1 TB</strong> Transfer</li>
+                <!-- <li class="mb-2">SSL gratuit</li> -->
+                <li>Support <strong>12h</strong></li>
+              </ul>
+              <p class="text-secondary small mb-4">Bon équilibre prix/performance.</p>
+              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Professional" data-hosting-type="remote" onclick="selectHosting(this)">
+              <span class="check-badge">✓</span>
+              <h3 class="h4 fw-bold mb-2">Professional</h3>
+              <div class="mb-4">
+                <span class="display-6 fw-bold price-value" data-price-monthly="150 Dh" data-price-yearly="1800 Dh">1800 Dh</span>
+                <span class="text-secondary" data-price-cycle>/an</span>
+              </div>
+              <ul class="list-unstyled small mb-4">
+                <li class="mb-2"><strong>1 vCPU - 2 GB RAM</strong></li>
+                <li class="mb-2"><strong>50 GB</strong> SSD</li>
+                <li class="mb-2"><strong>2 TB</strong> Transfer</li>
+                <!-- <li class="mb-2">SSL gratuit</li> -->
+                <li>Support <strong>8h</strong></li>
+              </ul>
+              <p class="text-secondary small mb-4">Pour les sites actifs.</p>
+              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" onclick="selectHosting(this)">
+              <span class="recommended-badge">⭐ Recommandé</span>
+              <span class="check-badge">✓</span>
+              <h3 class="h4 fw-bold mb-2">Business</h3>
+              <div class="mb-4">
+                <span class="display-6 fw-bold price-value" data-price-monthly="210 Dh" data-price-yearly="2520 Dh">2520 Dh</span>
+                <span class="text-secondary" data-price-cycle>/an</span>
+              </div>
+              <ul class="list-unstyled small mb-4">
+                <li class="mb-2"><strong>2 vCPU - 2 GB RAM</strong></li>
+                <li class="mb-2"><strong>60 GB</strong> SSD</li>
+                <li class="mb-2"><strong>3 TB</strong> Transfer</li>
+                <!-- <li class="mb-2">SSL gratuit</li> -->
+                <li>Support <strong>4h</strong></li>
+              </ul>
+              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+            </article>
+          </div>
+        </div>
+        </div>
+
+        <div class="wizard-nav">
+          <button id="wizard-back-hosting" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+          <button id="wizard-next-hosting" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Add-ons</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="addons-content" class="tab-content d-none">
+      <div class="bg-light border rounded-4 p-4">
+        <h5 class="fw-bold mb-3">Add-ons</h5>
+        <div id="remote-addons" class="d-none">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <article id="addon-domain" class="addon-card" data-addon-type="domain">
+                <div class="fw-semibold">Ajouter un domaine <small class="text-muted">(Prix indicatif)</small></div>
+                <div class="text-secondary small mt-1">
+                  <span data-domain-price-yearly>125 Dh/an</span>
+                  <span class="mx-2">ou</span>
+                  <span data-domain-price-monthly>15 Dh/mois</span>
+                </div>
+              </article>
+              <div class="mt-2">
+                <input type="text" id="domain-name" placeholder="ex: monsite.ma" class="form-control form-control-sm" />
+                <div class="text-secondary small mt-1">
+                  <div class="small text-muted">Le prix du domaine n'est pas fixe et peut varier selon l'extension.</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <article id="addon-ssl" class="addon-card" data-addon-type="ssl">
+                <div class="fw-semibold">Ajouter SSL</div>
+                <div class="text-secondary small mt-1">
+                  <span data-ssl-price-yearly>2000 Dh/an</span>
+                  <span class="mx-2">ou</span>
+                  <span data-ssl-price-monthly>190 Dh/mois</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div id="local-addons" class="d-none">
+          <article id="addon-sauvegarde" class="addon-card" data-addon-type="sauvegarde">
+            <div class="fw-semibold">Sauvegarde automatique</div>
+            <div class="text-secondary small mt-1">
+              <span data-local-save-yearly>2000 Dh/an</span>
+              <span class="mx-2">ou</span>
+              <span data-local-save-monthly>190 Dh/mois</span>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button id="wizard-back-addons" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+        <button id="wizard-next-addons" type="button" class="btn btn-primary btn-modern">Suivant: Coordonnées</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact-wrap py-5 py-lg-5 d-none">
+  <div class="container-lg py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="text-center mb-4 mb-lg-5">
+          <h2 class="section-title display-6 fw-bold mb-3">Finalisez votre sélection</h2>
+          <p class="text-secondary mb-0">Complétez le formulaire pour que nous vous contactions rapidement.</p>
+        </div>
+
+        <div id="summary-section" class="bg-light border rounded-4 p-4 mb-4">
+          <h4 class="fw-bold mb-3">Résumé de votre sélection</h4>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="border-bottom pb-2">
+                <div class="text-secondary small">Logiciel</div>
+                <div class="fw-semibold" id="summary-software">—</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="border-bottom pb-2">
+                <div class="text-secondary small">Hébergement</div>
+                <div class="fw-semibold" id="summary-hosting">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="border-bottom pb-2">
+              <div class="text-secondary small">Add-ons sélectionnés</div>
+              <div class="fw-semibold" id="summary-addons">Aucun</div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <!-- One-time payments -->
+            <div class="col-lg-6">
+              <div class="bg-white border rounded-3 p-3">
+                <h5 class="fw-bold mb-3">💰 Paiement unique</h5>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Frais d'installation</span>
+                  <span class="fw-semibold">500 Dh</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2">
+                  <span class="fw-bold">Total unique</span>
+                  <span class="fw-bold text-primary" id="summary-onetime-total">500 Dh</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recurring payments -->
+            <div class="col-lg-6">
+              <div class="bg-white border rounded-3 p-3">
+                <h5 class="fw-bold mb-3">📅 Paiement <span id="summary-cycle-label">annuel</span></h5>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Forfait d'hébergement</span>
+                  <span id="summary-hosting-price">0 Dh</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Add-ons</span>
+                  <span id="summary-addons-price">0 Dh</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2">
+                  <span class="fw-bold">Total <span id="summary-cycle-label2">annuel</span></span>
+                  <span class="fw-bold text-primary" id="summary-recurring-total">0 Dh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-primary bg-opacity-10 border border-primary rounded-3 p-3 mt-3">
+            <div class="d-flex justify-content-between">
+              <span class="fw-bold">Investissement total initial</span>
+              <span class="fw-bold h5 mb-0 text-primary" id="summary-grand-total">500 Dh</span>
+            </div>
+          </div>
+        </div>
+
+        <form id="contact-form" class="bg-white border rounded-4 p-4 p-lg-5 shadow-sm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nom *</label>
+              <input type="text" name="nom" required class="form-control form-control-lg">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Téléphone *</label>
+              <input type="tel" name="telephone" required class="form-control form-control-lg">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Entreprise</label>
+              <input type="text" name="entreprise" class="form-control form-control-lg">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Logiciel choisi</label>
+              <input type="text" id="software-display" readonly class="form-control form-control-lg bg-light">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Hébergement choisi</label>
+              <input type="text" id="hosting-display" readonly class="form-control form-control-lg bg-light">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Message</label>
+              <textarea name="message" rows="5" class="form-control form-control-lg" placeholder="Décrivez vos besoins spécifiques..."></textarea>
+            </div>
+            <div class="col-12">
+              <div class="wizard-nav mt-0">
+                <button id="wizard-back-contact" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+                <button id="submit-btn" type="submit" class="btn btn-primary btn-modern">Envoyer ma demande</button>
+              </div>
+            </div>
+          </div>
+          <div id="success-message" class="success-box alert alert-success mt-4 mb-0">
+            <strong>✓ Demande envoyée avec succès !</strong>
+            <div class="small mt-1">Nous vous contacterons dans les 24 heures.</div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <footer class="bg-dark text-white py-5">
+  <div class="container-lg">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <h5 class="fw-bold">SoftHub</h5>
+        <p class="text-secondary small mb-0">Solutions logicielles complètes pour votre entreprise.</p>
+      </div>
+      <div class="col-md-3">
+        <h5 class="fw-bold">Produits</h5>
+        <ul class="list-unstyled small mb-0">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-secondary">Logiciels</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-secondary">Hébergement</a></li>
+          <li><a href="#" class="text-decoration-none text-secondary">Tarifs</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h5 class="fw-bold">Support</h5>
+        <ul class="list-unstyled small mb-0">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-secondary">Documentation</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-secondary">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-secondary">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h5 class="fw-bold">Légal</h5>
+        <ul class="list-unstyled small mb-0">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-secondary">Conditions</a></li>
+          <li><a href="#" class="text-decoration-none text-secondary">Confidentialité</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary my-4">
+    <p class="text-center text-secondary small mb-0">&copy; 2024 SoftHub. Tous droits réservés.</p>
+  </div>
+</footer> -->
+
+<script>
+  let selectedSoftware = '';
+  let selectedHosting = '';
+  let selectedHostingCard = null;
+  let selectedHostingType = '';
+  let currentStep = 1;
+  let lastStep = 1;
+  let billingCycle = 'yearly';
+
+  function updateWizardUI(options = {}) {
+    const softwareContent = document.getElementById('software-content');
+    const hostingContent = document.getElementById('hosting-content');
+    const addonsContent = document.getElementById('addons-content');
+    const contactSection = document.getElementById('contact');
+    const pricingToggle = document.querySelector('.pricing-toggle');
+    softwareContent.classList.toggle('d-none', currentStep !== 1);
+    hostingContent.classList.toggle('d-none', currentStep !== 2);
+    addonsContent.classList.toggle('d-none', currentStep !== 3);
+    contactSection.classList.toggle('d-none', currentStep !== 4);
+    if (pricingToggle) pricingToggle.classList.toggle('d-none', currentStep !== 2 && currentStep !== 3 && currentStep !== 4);
+
+    const stepButtons = [
+      document.getElementById('step-btn-1'),
+      document.getElementById('step-btn-2'),
+      document.getElementById('step-btn-3'),
+      document.getElementById('step-btn-4')
+    ];
+    stepButtons.forEach((btn, index) => {
+      const stepNumber = index + 1;
+      btn.classList.toggle('active', stepNumber === currentStep);
+      btn.classList.toggle('done', stepNumber < currentStep);
+    });
+
+    document.getElementById('wizard-next-software').disabled = !selectedSoftware;
+    document.getElementById('wizard-next-hosting').disabled = !selectedHosting;
+
+    if (options.scroll !== false) {
+      if (currentStep === 4) {
+        contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        updateSummary();
+      } else if (currentStep === 3) {
+        addonsContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        document.getElementById('tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  function goToStep(step) {
+    if (step === 2 && !selectedSoftware) return;
+    if (step === 3 && (!selectedSoftware || !selectedHosting)) return;
+    if (step === 4 && (!selectedSoftware || !selectedHosting)) return;
+    currentStep = step;
+    updateWizardUI();
+  }
+
+  function selectSoftware(card) {
+    document.querySelectorAll('[data-software-name]').forEach(el => el.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedSoftware = card.dataset.softwareName;
+    document.getElementById('software-display').value = selectedSoftware;
+    updateWizardUI({ scroll: false });
+  }
+
+  function clearAddonSelections() {
+    document.querySelectorAll('.addon-card').forEach(el => el.classList.remove('selected'));
+    const domainName = document.getElementById('domain-name');
+    if (domainName) domainName.value = '';
+  }
+
+  function isAddonSelected(addonId) {
+    const addon = document.getElementById(addonId);
+    return !!addon && addon.classList.contains('selected');
+  }
+
+  function selectHosting(card) {
+    document.querySelectorAll('[data-hosting-name]').forEach(el => el.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedHosting = card.dataset.hostingName;
+    const hostingType = card.dataset.hostingType || 'remote';
+    const typeChanged = hostingType !== selectedHostingType;
+    selectedHostingCard = card;
+    document.getElementById('hosting-display').value = selectedHosting;
+
+    const remoteAddons = document.getElementById('remote-addons');
+    const localAddons = document.getElementById('local-addons');
+    if (typeChanged) {
+      clearAddonSelections();
+    }
+    selectedHostingType = hostingType;
+    if (remoteAddons) remoteAddons.classList.toggle('d-none', hostingType !== 'remote');
+    if (localAddons) localAddons.classList.toggle('d-none', hostingType !== 'local');
+
+    computeTotal();
+    updateWizardUI({ scroll: false });
+  }
+
+  function setBillingCycle(cycle) {
+    billingCycle = cycle;
+    const monthlyButton = document.getElementById('billing-monthly');
+    const yearlyButton = document.getElementById('billing-yearly');
+    if (monthlyButton) monthlyButton.classList.toggle('active', cycle === 'monthly');
+    if (yearlyButton) yearlyButton.classList.toggle('active', cycle === 'yearly');
+
+    document.querySelectorAll('[data-price-monthly]').forEach((el) => {
+      el.textContent = el.dataset[`price${cycle.charAt(0).toUpperCase()}${cycle.slice(1)}`];
+    });
+    document.querySelectorAll('[data-price-cycle]').forEach((el) => {
+      el.textContent = cycle === 'yearly' ? '/an' : '/mois';
+    });
+
+    document.querySelectorAll('[data-domain-price-yearly]').forEach(el => el.textContent = '125 Dh/an');
+    document.querySelectorAll('[data-domain-price-monthly]').forEach(el => el.textContent = '15 Dh/mois');
+    document.querySelectorAll('[data-ssl-price-yearly]').forEach(el => el.textContent = '2000 Dh/an');
+    document.querySelectorAll('[data-ssl-price-monthly]').forEach(el => el.textContent = '190 Dh/mois');
+    document.querySelectorAll('[data-local-save-yearly]').forEach(el => el.textContent = '2000 Dh/an');
+    document.querySelectorAll('[data-local-save-monthly]').forEach(el => el.textContent = '190 Dh/mois');
+
+    computeTotal();
+    if (currentStep === 4) updateSummary();
+  }
+
+  function computeExtrasTotalDh(card) {
+    if (!card) return 0;
+    const dPrice = billingCycle === 'yearly' ? 125 : 15;
+    const sPrice = billingCycle === 'yearly' ? 2000 : 190;
+    let total = 0;
+    if (card.dataset.hostingType === 'remote') {
+      if (isAddonSelected('addon-domain')) total += dPrice;
+      if (isAddonSelected('addon-ssl')) total += sPrice;
+    }
+    if (card.dataset.hostingType === 'local') {
+      if (isAddonSelected('addon-sauvegarde')) total += sPrice;
+    }
+    return total;
+  }
+
+  function hostingBaseAmountDh(card) {
+    if (!card || card.dataset.hostingType === 'local') return 0;
+    const priceEl = card.querySelector('.price-value');
+    if (!priceEl) return 0;
+    const baseRaw = billingCycle === 'yearly' ? priceEl.dataset.priceYearly : priceEl.dataset.priceMonthly;
+    const amount = parseInt((baseRaw || '').replace(/[^\d]/g, ''), 10);
+    return Number.isFinite(amount) ? amount : 0;
+  }
+
+  function computeTotal() {
+    const totalCounter = document.getElementById('total-counter');
+    if (!selectedHostingCard) {
+      totalCounter.style.display = 'none';
+      return;
+    }
+    const hostAmount = hostingBaseAmountDh(selectedHostingCard);
+    const extrasTotal = computeExtrasTotalDh(selectedHostingCard);
+    const totalAmount = hostAmount + extrasTotal;
+    const display = `${totalAmount} Dh/${billingCycle === 'yearly' ? 'an' : 'mois'}`;
+    if (totalCounter) {
+      totalCounter.style.display = '';
+      totalCounter.textContent = `Total: ${display}`;
+    }
+  }
+
+  function updateSummary() {
+    // Update software
+    document.getElementById('summary-software').textContent = selectedSoftware || '—';
+
+    // Update hosting
+    document.getElementById('summary-hosting').textContent = selectedHosting || '—';
+
+    // Update add-ons list
+    const selectedAddons = [];
+    if (isAddonSelected('addon-domain')) {
+      const domainName = document.getElementById('domain-name')?.value;
+      selectedAddons.push(`Domaine${domainName ? ': ' + domainName : ''}`);
+    }
+    if (isAddonSelected('addon-ssl')) {
+      selectedAddons.push('Certificat SSL');
+    }
+    if (isAddonSelected('addon-sauvegarde')) {
+      selectedAddons.push('Sauvegarde automatique');
+    }
+    document.getElementById('summary-addons').textContent = selectedAddons.length > 0 ? selectedAddons.join(', ') : 'Aucun';
+
+    // Calculate prices
+    const hostAmount = hostingBaseAmountDh(selectedHostingCard);
+    const addonsAmount = computeExtrasTotalDh(selectedHostingCard);
+    const installationFee = 500;
+    const recurringTotal = hostAmount + addonsAmount;
+    const grandTotal = installationFee + recurringTotal;
+
+    // Update cycle labels
+    const cycleLabel = billingCycle === 'yearly' ? 'annuel' : 'mensuel';
+    document.getElementById('summary-cycle-label').textContent = cycleLabel;
+    document.getElementById('summary-cycle-label2').textContent = cycleLabel;
+
+    // Update price displays
+    const hostingPriceText = selectedHostingCard?.dataset.hostingType === 'local' 
+      ? '0 Dh' 
+      : `${hostAmount} Dh/${billingCycle === 'yearly' ? 'an' : 'mois'}`;
+    const addonsPriceText = addonsAmount > 0 ? `${addonsAmount} Dh/${billingCycle === 'yearly' ? 'an' : 'mois'}` : '0 Dh';
+    const recurringTotalText = `${recurringTotal} Dh/${billingCycle === 'yearly' ? 'an' : 'mois'}`;
+
+    document.getElementById('summary-hosting-price').textContent = hostingPriceText;
+    document.getElementById('summary-addons-price').textContent = addonsPriceText;
+    
+    // Update one-time payment
+    document.getElementById('summary-onetime-total').textContent = `${installationFee} Dh`;
+    
+    // Update recurring payment
+    document.getElementById('summary-recurring-total').textContent = recurringTotalText;
+    
+    // Update grand total
+    document.getElementById('summary-grand-total').textContent = `${grandTotal} Dh + ${recurringTotalText} recurring`;
+  }
+
+  document.addEventListener('click', (e) => {
+    const addonCard = e.target.closest('.addon-card');
+    if (!addonCard) return;
+    addonCard.classList.toggle('selected');
+    if (addonCard.id === 'addon-domain' && !addonCard.classList.contains('selected')) {
+      const domainName = document.getElementById('domain-name');
+      if (domainName) domainName.value = '';
+    }
+    computeTotal();
+    if (currentStep === 4) updateSummary();
+  });
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('#domain-name')) {
+      computeTotal();
+      if (currentStep === 4) updateSummary();
+    }
+  });
+
+  setBillingCycle('yearly');
+  updateWizardUI();
+
+  document.getElementById('wizard-next-software').addEventListener('click', () => goToStep(2));
+  document.getElementById('wizard-back-hosting').addEventListener('click', () => goToStep(1));
+  document.getElementById('wizard-next-hosting').addEventListener('click', () => goToStep(3));
+  document.getElementById('wizard-back-addons').addEventListener('click', () => goToStep(2));
+  document.getElementById('wizard-next-addons').addEventListener('click', () => goToStep(4));
+  document.getElementById('wizard-back-contact').addEventListener('click', () => goToStep(3));
+
+  document.getElementById('contact-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-btn');
+    const successMessage = document.getElementById('success-message');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Envoi en cours...';
+    successMessage.classList.remove('show');
+
+    // Collect extras state from selected card
+    let domainChosen = false, domainName = '', sslChosen = false, sauvegardeChosen = false;
+    if (selectedHostingCard) {
+      const dNameEl = document.getElementById('domain-name');
+      domainChosen = isAddonSelected('addon-domain');
+      domainName = dNameEl ? dNameEl.value : '';
+      sslChosen = isAddonSelected('addon-ssl');
+      sauvegardeChosen = isAddonSelected('addon-sauvegarde');
+    }
+
+    const payload = {
+      nom: document.querySelector('[name="nom"]').value,
+      telephone: document.querySelector('[name="telephone"]').value,
+      entreprise: document.querySelector('[name="entreprise"]').value,
+      logiciel: selectedSoftware,
+      hebergement: selectedHosting,
+      message: document.querySelector('[name="message"]').value,
+      extras: {
+        domain: {
+          chosen: domainChosen,
+          name: domainName,
+          price: billingCycle === 'yearly' ? '125 Dh/an' : '15 Dh/mois',
+          note: "Le prix du domaine n'est pas fixe et peut varier selon l'extension."
+        },
+        ssl: {
+          chosen: sslChosen,
+          price: billingCycle === 'yearly' ? '2000 Dh/an' : '190 Dh/mois'
+        },
+        sauvegarde: {
+          chosen: sauvegardeChosen,
+          price: billingCycle === 'yearly' ? '2000 Dh/an' : '190 Dh/mois'
+        }
+      }
+    };
+
+    try {
+      const response = await fetch('/api/contact/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+
+      document.getElementById('contact-form').reset();
+      const addonsContent = document.getElementById('addons-content');
+      const remoteAddons = document.getElementById('remote-addons');
+      const localAddons = document.getElementById('local-addons');
+      if (addonsContent) addonsContent.classList.add('d-none');
+      if (remoteAddons) remoteAddons.classList.add('d-none');
+      if (localAddons) localAddons.classList.add('d-none');
+      clearAddonSelections();
+      selectedHostingCard = null;
+      selectedHosting = '';
+      selectedHostingType = '';
+      selectedSoftware = '';
+      document.querySelectorAll('[data-software-name], [data-hosting-name]').forEach(el => el.classList.remove('selected'));
+      document.getElementById('hosting-display').value = '';
+      document.getElementById('software-display').value = '';
+
+      computeTotal();
+      goToStep(1);
+
+      successMessage.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Envoyer ma demande';
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors de l'envoi. Veuillez réessayer.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Envoyer ma demande';
+    }
+  });
+</script>
+{% endblock %}

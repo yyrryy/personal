@@ -5,6 +5,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('', views.home, name='home'),
+    path('api/hosting/plans/', views.hosting_plans, name='hosting_plans'),
+    path('api/contact/', views.contact, name='contact'),
     path('main', views.main, name='main'),
     path('addtobalance', views.addtobalance, name='addtobalance'),
     path('outbalance', views.outbalance, name='outbalance'),

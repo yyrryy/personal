@@ -1,3 +1,9 @@
+import json
+import os
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
 from django.shortcuts import render, redirect
 from dashboard.models import Profile, Outraisons, Inraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected
 from django.http import JsonResponse
@@ -5,11 +11,333 @@ from itertools import chain
 from datetime import date, timedelta
 from django.db.models import Sum
 from django.utils import timezone
+from django.core.cache import cache
+from django.views.decorators.csrf import csrf_exempt
 thismonth=date.today().month
 thisyear=date.today().year
 # Create your views here.
 def home(request):
-    return render(request, 'main/home.html')
+    return render(request, 'main/home3.html')
+CACHE_KEY = "hosting_sizes"
+CACHE_TIMEOUT = 60 * 60 * 12  # 12 hours
+def get_env_float(name, default=None):
+    value = os.environ.get(name)
+
+    if value is None:
+        if default is not None:
+            return default
+        raise ValueError(f"{name} is not configured.")
+
+    try:
+        return float(value)
+    except ValueError:
+        raise ValueError(f"{name} must be a number.")
+
+
+def get_env_value(name):
+    value = os.environ.get(name)
+    if not value:
+        raise ValueError(f"{name} is not configured.")
+    return value
+
+
+def format_selected_addons(extras):
+    if not isinstance(extras, dict):
+        return "Aucun"
+
+    labels = {
+        "domain": "Nom de domaine",
+        "ssl": "Certificat SSL",
+        "backup": "Backup automatisé",
+        "maintenance": "Maintenance",
+        "monitoring": "Monitoring",
+        "email": "Email pro",
+        "sauvegarde": "Sauvegarde locale",
+        "maintenance_local": "Maintenance locale",
+        "support_prioritaire": "Support prioritaire",
+    }
+    selected = []
+    for key, label in labels.items():
+        extra = extras.get(key) or {}
+        if extra.get("chosen"):
+            line = label
+            if key == "domain":
+                domain_name = str(extra.get("name") or "").strip()
+                if domain_name:
+                    line = f"{line} ({domain_name})"
+            price = str(extra.get("price") or "").strip()
+            if price:
+                line = f"{line} - {price}"
+            selected.append(line)
+    return ", ".join(selected) if selected else "Aucun"
+
+
+def build_contact_message(payload):
+    nom = str(payload.get("nom") or "").strip()
+    telephone = str(payload.get("telephone") or "").strip()
+    entreprise = str(payload.get("entreprise") or "").strip()
+    logiciel = str(payload.get("logiciel") or "").strip()
+    hebergement = str(payload.get("hebergement") or "").strip()
+    message = str(payload.get("message") or "").strip()
+    addons = format_selected_addons(payload.get("extras") or {})
+
+    lines = [
+        "Nouvelle demande (assistant de configuration)",
+        f"Nom: {nom or '—'}",
+        f"Telephone: {telephone or '—'}",
+        f"Entreprise: {entreprise or '—'}",
+        f"Logiciel: {logiciel or '—'}",
+        f"Hebergement: {hebergement or '—'}",
+        f"Add-ons: {addons}",
+    ]
+    if message:
+        lines.append(f"Message: {message}")
+    return "\n".join(lines)
+
+
+def send_telegram_message(token, chat_id, message):
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urlencode({"chat_id": chat_id, "text": message}).encode("utf-8")
+    req = Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    try:
+        with urlopen(req, timeout=10) as response:
+            payload = response.read().decode("utf-8")
+    except HTTPError as exc:
+        raise Exception(f"Telegram API error: HTTP {exc.code}")
+    except URLError:
+        raise Exception("Unable to reach Telegram API")
+
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        raise Exception("Invalid response from Telegram API")
+
+    if not data.get("ok"):
+        raise Exception(data.get("description") or "Telegram API error")
+
+
+@csrf_exempt
+def contact(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+    print('>> payload', payload)
+    if not isinstance(payload, dict):
+        return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+
+    missing = []
+    for field in ("nom", "telephone"):
+        if not str(payload.get(field) or "").strip():
+            missing.append(field)
+    if missing:
+        return JsonResponse(
+            {"error": "Missing required fields: " + ", ".join(missing)},
+            status=400,
+        )
+
+    try:
+        token = get_env_value("TELEGRAM_BOT_TOKEN")
+        chat_id = get_env_value("TELEGRAM_CHAT_ID")
+        message = build_contact_message(payload)
+        chatIds=chat_id.split(",")
+        for i in chatIds:
+            send_telegram_message(token, i, message)
+    except ValueError as exc:
+        print('>> error', exc)
+        return JsonResponse({"error": str(exc)}, status=500)
+    except Exception as exc:
+        print('>> error', exc)
+        return JsonResponse({"error": str(exc)}, status=502)
+
+    return JsonResponse({"ok": True})
+
+
+def fetch_hosting_sizes(token):
+    """
+    Fetch hosting sizes from provider API.
+    Cached for 12 hours.
+    """
+
+    # return cached instead of making rewuast
+    # cached_sizes = cache.get(CACHE_KEY)
+    # if cached_sizes:
+    #     return cached_sizes
+
+    req = Request(
+        "https://api.digitalocean.com/v2/sizes?per_page=200",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(req, timeout=10) as response:
+            payload = response.read().decode("utf-8")
+
+    except HTTPError as exc:
+        raise Exception(f"Hosting API error: HTTP {exc.code}")
+
+    except URLError:
+        raise Exception("Unable to reach hosting provider")
+
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        raise Exception("Invalid response from hosting provider")
+
+    sizes = {
+        size.get("slug"): size
+        for size in data.get("sizes", [])
+    }
+
+    cache.set(CACHE_KEY, sizes, CACHE_TIMEOUT)
+
+    return sizes
+
+
+def hosting_plans(request):
+    try:
+        token = os.environ.get("DIGITALOCEAN_TOKEN")
+
+        if not token:
+            return JsonResponse(
+                {"error": "DIGITALOCEAN_TOKEN is not configured."},
+                status=500
+            )
+
+        usd_to_dh = get_env_float("DO_USD_TO_DH")
+
+        plan_configs = {
+            "starter": {
+                "slug": os.environ.get(
+                    "DO_SIZE_STARTER",
+                    "s-1vcpu-512mb-10gb"
+                ),
+                "support_hours": 24,
+                "recommended_for": "Très petite entreprise",
+                "business_margin": 35,
+            },
+            "growth": {
+                "slug": os.environ.get(
+                    "DO_SIZE_GROWTH",
+                    "s-1vcpu-1gb"
+                ),
+                "support_hours": 12,
+                "recommended_for": "Petite entreprise",
+                "business_margin": 40,
+            },
+            "professional": {
+                "slug": os.environ.get(
+                    "DO_SIZE_PROFESSIONAL",
+                    "s-1vcpu-2gb"
+                ),
+                "support_hours": 8,
+                "recommended_for": "Entreprise active",
+                "business_margin": 50,
+            },
+            "business": {
+                "slug": os.environ.get(
+                    "DO_SIZE_BUSINESS",
+                    "s-2vcpu-2gb"
+                ),
+                "support_hours": 4,
+                "recommended_for": "Entreprise intensive",
+                "business_margin": 60,
+            },
+        }
+
+        sizes = fetch_hosting_sizes(token)
+
+        missing_slugs = [
+            config["slug"]
+            for config in plan_configs.values()
+            if config["slug"] not in sizes
+        ]
+
+        if missing_slugs:
+            return JsonResponse(
+                {
+                    "error": (
+                        "Missing size slugs: "
+                        + ", ".join(missing_slugs)
+                    )
+                },
+                status=502,
+            )
+
+        plans = {}
+
+        for key, config in plan_configs.items():
+            slug = config["slug"]
+            size = sizes[slug]
+
+            provider_monthly_usd = size.get("price_monthly")
+
+            if provider_monthly_usd is None:
+                return JsonResponse(
+                    {
+                        "error": (
+                            f"Size {slug} "
+                            "has no monthly price."
+                        )
+                    },
+                    status=502,
+                )
+
+            provider_monthly_dh = round(
+                float(provider_monthly_usd)
+                * usd_to_dh
+            )
+
+            monthly_sell_price = (
+                provider_monthly_dh
+                + config["business_margin"]
+            )
+
+            plans[key] = {
+                "monthly_dh": monthly_sell_price,
+                "yearly_dh": monthly_sell_price * 12,
+
+                # infrastructure info
+                "vcpus": size.get("vcpus"),
+                "memory_mb": size.get("memory"),
+                "disk_gb": size.get("disk"),
+                "transfer_tb": size.get("transfer"),
+
+                # business info
+                "support_hours": config["support_hours"],
+                "recommended_for": config["recommended_for"],
+            }
+
+        return JsonResponse({
+            "currency": "DH",
+            "billing_cycles": [
+                "monthly",
+                "yearly"
+            ],
+            "plans": plans,
+        })
+
+    except ValueError as exc:
+        return JsonResponse(
+            {"error": str(exc)},
+            status=500
+        )
+
+    except Exception as exc:
+        return JsonResponse(
+            {"error": str(exc)},
+            status=502
+        )
 def main(request):
     profile=Profile.objects.get(pk=1)
     essances=list(Essance.objects.all())
@@ -238,7 +566,7 @@ def tree(request):
     ctx={
         'title':'tree',
     }
-    return render(request, 'main/tree2.html', ctx)
+    return render(request, 'main/tree3.html', ctx)
 def addexpectedmoney(request):
     amount=request.GET.get('amount')
     raison=request.GET.get('raison')
@@ -263,5 +591,3 @@ def receiveexpectedmoney(request):
 #     data = [{"lat": village.lat, "long": village.long, "ishelped": village.ishelped, "isaccessible": village.isaccissible, "habitat": village.habitat} for village in villages]
 
 #     return JsonResponse(data, safe=False)
-
-
