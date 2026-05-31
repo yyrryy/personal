@@ -40,12 +40,12 @@
     backdrop-filter: blur(10px);
     border-bottom: 1px solid #eef1f4;
   }
-  .wizard-sticky-header {
+  .config-sticky-header {
     position: sticky;
     top: 0;
     z-index: 1030;
   }
-  .wizard-sticky-header .container-lg {
+  .config-sticky-header .container-lg {
     background: rgba(255,255,255,.94);
     backdrop-filter: blur(10px);
   }
@@ -74,49 +74,41 @@
   }
   .tab-link.active { color: #0d6efd; }
   .tab-link.active::after { opacity: 1; }
-  .wizard-steps {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .75rem;
+  .option-card {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    height: 100%;
   }
-  .wizard-step-btn {
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
-    background: #fff;
-    padding: .8rem .9rem;
-    text-align: left;
-    transition: all .2s ease;
-    font-weight: 600;
-    color: #495057;
+  .option-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
-  .wizard-step-btn.active {
+  .option-body {
+    height: 100%;
+  }
+  .option-input:checked + .option-body {
     border-color: #0d6efd;
-    box-shadow: 0 8px 20px rgba(13,110,253,.12);
-    color: #0d6efd;
+    box-shadow: 0 18px 44px rgba(13,110,253,.16);
+    background: #f8fbff;
   }
-  .wizard-step-btn.done {
-    border-color: #198754;
-    color: #198754;
-  }
-  .wizard-step-btn .wizard-step-index {
+  .option-input:checked + .option-body .check-badge {
     display: inline-flex;
-    width: 1.45rem;
-    height: 1.45rem;
-    border-radius: 50%;
-    align-items: center;
-    justify-content: center;
-    font-size: .78rem;
-    margin-right: .45rem;
-    background: #e9ecef;
-    color: #495057;
   }
-  .wizard-step-btn.active .wizard-step-index {
-    background: #0d6efd;
-    color: #fff;
+  .hosting-carousel .carousel-item {
+    padding: .25rem;
   }
-  .wizard-step-btn.done .wizard-step-index {
-    background: #198754;
-    color: #fff;
+  .hosting-carousel .carousel-control-prev,
+  .hosting-carousel .carousel-control-next {
+    width: 3rem;
+  }
+  .hosting-carousel .carousel-control-prev-icon,
+  .hosting-carousel .carousel-control-next-icon {
+    filter: invert(1);
+  }
+  .hosting-carousel .carousel-indicators [data-bs-target] {
+    background-color: #0d6efd;
   }
   .wizard-nav {
     display: flex;
@@ -238,30 +230,20 @@
   .thank-you-page { min-height: 70vh; }
 </style>
 
-<nav class="navbar navbar-modern sticky-top wizard-sticky-header">
+<nav class="navbar navbar-modern sticky-top config-sticky-header">
   <div class="container-lg py-3">
-    <div class="d-flex flex-column gap-3">
-      
-      <div class="wizard-steps">
-        <button id="step-btn-1" class="wizard-step-btn active" type="button" onclick="goToStep(1)">
-          <span class="wizard-step-index">1</span> Logiciel
-        </button>
-        <button id="step-btn-2" class="wizard-step-btn" type="button" onclick="goToStep(2)">
-          <span class="wizard-step-index">2</span> Hébergement
-        </button>
-        <button id="step-btn-3" class="wizard-step-btn" type="button" onclick="goToStep(3)">
-          <span class="wizard-step-index">3</span> Add-ons
-        </button>
-        <button id="step-btn-4" class="wizard-step-btn" type="button" onclick="goToStep(4)">
-          <span class="wizard-step-index">4</span> Coordonnées
-        </button>
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+      <div>
+        <div class="soft-pill mb-2">Configurez votre solution</div>
+        <h1 class="h4 fw-bold mb-1">Composez vos services</h1>
+        <div class="text-secondary small">Choisissez votre logiciel, l’hébergement et les add-ons.</div>
       </div>
-      <div class="d-flex align-items-center justify-content-between gap-3">
-        <div class="btn-group pricing-toggle d-none" role="group" aria-label="Cycle de facturation">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="btn-group pricing-toggle" role="group" aria-label="Cycle de facturation">
           <button id="billing-monthly" type="button" class="btn btn-outline-primary" onclick="setBillingCycle('monthly')">Mensuel</button>
           <button id="billing-yearly" type="button" class="btn btn-outline-primary active" onclick="setBillingCycle('yearly')">Annuel</button>
         </div>
-        <div id="total-counter" class="p-3" style="font-weight:700;">Total: 0</div>
+        <div id="total-counter" class="p-3 d-none" style="font-weight:700;">Total: 0</div>
       </div>
     </div>
   </div>
@@ -290,299 +272,302 @@
     
 
     <div id="software-content" class="tab-content">
-      <div class="row g-4">
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Restaurant" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🍽️</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Restaurant</h3>
-            <p class="text-secondary small mb-3">Pilotez commandes, tables et facturation dans une interface élégante.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Commandes</li><li>Tables</li><li>Stock</li><li>Factures</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Station-Service" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⛽</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Station-Service</h3>
-            <p class="text-secondary small mb-3">Suivi des pompes, ventes et rapports en temps réel.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Pompes</li><li>Paiements</li><li>Rapports</li><li>Clients</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="POS / Caisse" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">💳</div>
-            <h3 class="h5 fw-bold mb-2">POS / Caisse</h3>
-            <p class="text-secondary small mb-3">Une caisse moderne, rapide et pensée pour vendre plus vite.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Multi-caisse</li><li>Clients</li><li>Promotions</li><li>Rapports</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Stock" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">📦</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Stock</h3>
-            <p class="text-secondary small mb-3">Contrôlez vos inventaires avec alertes et traçabilité.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Tracking</li><li>Alertes</li><li>Mouvements</li><li>Statistiques</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion École" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🎓</div>
-            <h3 class="h5 fw-bold mb-2">Gestion École</h3>
-            <p class="text-secondary small mb-3">Suivi des élèves, notes, absences et communication parentale.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Élèves</li><li>Notes</li><li>Absences</li><li>Parents</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Location de Voitures" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🚗</div>
-            <h3 class="h5 fw-bold mb-2">Location de Voitures</h3>
-            <p class="text-secondary small mb-3">Gérez réservations, flotte, documents et facturation.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Réservations</li><li>Flottes</li><li>Documents</li><li>Facturation</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Carburant / Pétrole" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🛢️</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Carburant / Pétrole</h3>
-            <p class="text-secondary small mb-3">Supervisez les volumes, la distribution et les stocks.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Stocks</li><li>Distribution</li><li>Clients</li><li>Rapports</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Statique" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🌐</div>
-            <h3 class="h5 fw-bold mb-2">Site Web Statique</h3>
-            <p class="text-secondary small mb-3">Un site internet moderne et professionnel pour votre présence en ligne.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Design responsif</li><li>SEO optimisé</li><li>Rapide</li><li>Sécurisé</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Dynamique" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⚡</div>
-            <h3 class="h5 fw-bold mb-2">Site Web Dynamique</h3>
-            <p class="text-secondary small mb-3">Une plateforme interactive avec gestion de contenu et base de données.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>CMS intégré</li><li>Interactivité</li><li>Base de données</li><li>Scalable</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Solutions Personnalisées" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⚙️</div>
-            <h3 class="h5 fw-bold mb-2">Solutions Personnalisées</h3>
-            <p class="text-secondary small mb-3">Une solution sur mesure pensée pour votre process.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Flexible</li><li>Scalable</li><li>Support</li><li>Formation</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
+      <div class="mb-4">
+        <h2 class="section-title h3 fw-bold mb-2">Choisissez votre logiciel</h2>
+        <p class="text-secondary mb-0">Sélectionnez le module principal qui correspond à votre activité.</p>
       </div>
-      <div class="wizard-nav">
-        <span></span>
-        <button id="wizard-next-software" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Hébergement</button>
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Gestion Restaurant">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">🍽️</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Restaurant</h3>
+              <p class="text-secondary small mb-3">Pilotez commandes, tables et facturation dans une interface élégante.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Commandes</li><li>Tables</li><li>Stock</li><li>Factures</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Gestion Station-Service">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">⛽</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Station-Service</h3>
+              <p class="text-secondary small mb-3">Suivi des pompes, ventes et rapports en temps réel.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Pompes</li><li>Paiements</li><li>Rapports</li><li>Clients</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="POS / Caisse">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">💳</div>
+              <h3 class="h5 fw-bold mb-2">POS / Caisse</h3>
+              <p class="text-secondary small mb-3">Une caisse moderne, rapide et pensée pour vendre plus vite.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Multi-caisse</li><li>Clients</li><li>Promotions</li><li>Rapports</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Gestion Stock">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">📦</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Stock</h3>
+              <p class="text-secondary small mb-3">Contrôlez vos inventaires avec alertes et traçabilité.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Tracking</li><li>Alertes</li><li>Mouvements</li><li>Statistiques</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Gestion École">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">🎓</div>
+              <h3 class="h5 fw-bold mb-2">Gestion École</h3>
+              <p class="text-secondary small mb-3">Suivi des élèves, notes, absences et communication parentale.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Élèves</li><li>Notes</li><li>Absences</li><li>Parents</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Location de Voitures">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">🚗</div>
+              <h3 class="h5 fw-bold mb-2">Location de Voitures</h3>
+              <p class="text-secondary small mb-3">Gérez réservations, flotte, documents et facturation.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Réservations</li><li>Flottes</li><li>Documents</li><li>Facturation</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Gestion Carburant / Pétrole">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">🛢️</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Carburant / Pétrole</h3>
+              <p class="text-secondary small mb-3">Supervisez les volumes, la distribution et les stocks.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Stocks</li><li>Distribution</li><li>Clients</li><li>Rapports</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Site Web Statique">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">🌐</div>
+              <h3 class="h5 fw-bold mb-2">Site Web Statique</h3>
+              <p class="text-secondary small mb-3">Un site internet moderne et professionnel pour votre présence en ligne.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Design responsif</li><li>SEO optimisé</li><li>Rapide</li><li>Sécurisé</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Site Web Dynamique">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">⚡</div>
+              <h3 class="h5 fw-bold mb-2">Site Web Dynamique</h3>
+              <p class="text-secondary small mb-3">Une plateforme interactive avec gestion de contenu et base de données.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>CMS intégré</li><li>Interactivité</li><li>Base de données</li><li>Scalable</li>
+              </ul>
+            </div>
+          </label>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <label class="option-card">
+            <input type="radio" name="software" class="option-input" value="Solutions Personnalisées">
+            <div class="option-body card-modern h-100 p-4 position-relative">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">⚙️</div>
+              <h3 class="h5 fw-bold mb-2">Solutions Personnalisées</h3>
+              <p class="text-secondary small mb-3">Une solution sur mesure pensée pour votre process.</p>
+              <ul class="list-unstyled small mb-0 feature-list">
+                <li>Flexible</li><li>Scalable</li><li>Support</li><li>Formation</li>
+              </ul>
+            </div>
+          </label>
+        </div>
       </div>
     </div>
 
-    <div id="hosting-content" class="tab-content d-none">
+    <div id="hosting-content" class="tab-content mt-5">
       <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
         <div>
-          <h3 class="h4 fw-bold mb-1">Hébergement local et Online</h3>
+          <h3 class="h4 fw-bold mb-1">Hébergement local et online</h3>
           <p class="text-secondary mb-0">Le mode annuel est conseillé pour profiter des meilleurs tarifs.</p>
         </div>
-        
       </div>
       <div id="hosting-do-error" class="alert alert-warning d-none" role="alert"></div>
 
-      <div>
-        <h4 class="fw-bold mb-3">Local & Online</h4>
-        <div class="row g-4">
-          <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative d-flex flex-column align-items-start gap-3" data-hosting-name="Local" data-hosting-type="local" onclick="selectHosting(this)">
-              <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Local</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="0 Dh" data-price-yearly="0 Dh">0 Dh</span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <div class="flex-fill">
-                <h3 class="h5 fw-bold mb-1">Local</h3>
-                <div class="mb-2"><span class="fw-bold">Gratuit</span> <span class="text-secondary">pour l'hébergement</span></div>
-                <ul class="list-unstyled small mb-2">
-                  <li class="mb-1"><strong>Installation locale</strong> sur vos machines</li>
-                  <li class="mb-1"><strong>0 Dh</strong> pour l'hébergement</li>
-                  <!-- <li class="mb-1">SSL gratuit</li> -->
-                  <li class="mb-1"><strong>Support</strong> inclus</li>
-                  <li class="mb-1"><strong>Scalable</strong> selon vos besoins</li>
-                </ul>
-
-                <!-- <div class="rounded-4 bg-light border p-3 mb-0 d-inline-block">
-                  <div class="fw-semibold mb-1">Sauvegardes automatiques</div>
-                  <div class="text-secondary small">
-                    <span data-local-save-yearly>2000 Dh/an</span>
-                    <span class="mx-2">ou</span>
-                    <span data-local-save-monthly>190 Dh/mois</span>
+      <div class="mb-3">
+        <h4 class="fw-bold mb-2">Sélectionnez votre hébergement</h4>
+        <p class="text-secondary mb-0">Faites défiler les offres pour composer votre service.</p>
+      </div>
+      <div id="hostingCarousel" class="carousel slide hosting-carousel" data-bs-ride="false" data-bs-interval="false">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#hostingCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Offres 1"></button>
+          <button type="button" data-bs-target="#hostingCarousel" data-bs-slide-to="1" aria-label="Offres 2"></button>
+          <button type="button" data-bs-target="#hostingCarousel" data-bs-slide-to="2" aria-label="Offres 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="row g-4">
+              <div class="col-12 col-lg-6">
+                <article class="card-modern h-100 p-4 position-relative d-flex flex-column align-items-start gap-3" data-hosting-name="Local" data-hosting-type="local" onclick="selectHosting(this)">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h4 fw-bold mb-2">Local</h3>
+                  <div class="mb-4">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="0 Dh" data-price-yearly="0 Dh">0 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
                   </div>
-                </div> -->
-              </div>
+                  <div class="flex-fill">
+                    <h3 class="h5 fw-bold mb-1">Local</h3>
+                    <div class="mb-2"><span class="fw-bold">Gratuit</span> <span class="text-secondary">pour l'hébergement</span></div>
+                    <ul class="list-unstyled small mb-2">
+                      <li class="mb-1"><strong>Installation locale</strong> sur vos machines</li>
+                      <li class="mb-1"><strong>0 Dh</strong> pour l'hébergement</li>
+                      <!-- <li class="mb-1">SSL gratuit</li> -->
+                      <li class="mb-1"><strong>Support</strong> inclus</li>
+                      <li class="mb-1"><strong>Scalable</strong> selon vos besoins</li>
+                    </ul>
+                  </div>
 
-              <div class="w-100">
-                <p class="text-secondary small mb-2">Choix recommandé si vous voulez commencer vite sans coût d'hébergement.</p>
-                <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'))">Sélectionner</button>
+                  <div class="w-100">
+                    <p class="text-secondary small mb-2">Choix recommandé si vous voulez commencer vite sans coût d'hébergement.</p>
+                    <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'))">Sélectionner</button>
+                  </div>
+                </article>
               </div>
-            </article>
+              <div class="col-12 col-lg-6">
+                <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Starter" data-hosting-type="remote" data-do-plan="starter" onclick="selectHosting(this)">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h4 fw-bold mb-2">Starter</h3>
+                  <div class="mb-4">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="45 Dh"></span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-4">
+                    <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">512 MB</span> RAM</li>
+                    <li class="mb-2"><strong data-do-field="disk">10 GB</strong> SSD</li>
+                    <li class="mb-2"><strong data-do-field="transfer">500 GB</strong> Transfert</li>
+                    <li>Support <strong>24h</strong></li>
+                  </ul>
+                  <p class="text-secondary small mb-4">Pour démarrer facilement.</p>
+                  <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+                </article>
+              </div>
+            </div>
           </div>
-          <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Starter" data-hosting-type="remote" data-do-plan="starter" onclick="selectHosting(this)">
-              <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Starter</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="45 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
+          <div class="carousel-item">
+            <div class="row g-4">
+              <div class="col-12 col-lg-6">
+                <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Growth" data-hosting-type="remote" data-do-plan="growth" onclick="selectHosting(this)">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h4 fw-bold mb-2">Growth</h3>
+                  <div class="mb-4">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="65 Dh">1080 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-4">
+                    <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">1 GB</span> RAM</li>
+                    <li class="mb-2"><strong data-do-field="disk">25 GB</strong> SSD</li>
+                    <li class="mb-2"><strong data-do-field="transfer">1 TB</strong> Transfert</li>
+                    <li>Support <strong>12h</strong></li>
+                  </ul>
+                  <p class="text-secondary small mb-4">Bon équilibre prix/performance.</p>
+                  <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+                </article>
               </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">512 MB</span> RAM</li>
-                <li class="mb-2"><strong data-do-field="disk">10 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">500 GB</strong> Transfert</li>
-                
-                <li>Support <strong>24h</strong></li>
-              </ul>
-              <p class="text-secondary small mb-4">Pour démarrer facilement.</p>
-              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
-            </article>
+              <div class="col-12 col-lg-6">
+                <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Professional" data-hosting-type="remote" data-do-plan="professional" onclick="selectHosting(this)">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h4 fw-bold mb-2">Professional</h3>
+                  <div class="mb-4">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="135 Dh">1800 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-4">
+                    <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">2 GB</span> RAM</li>
+                    <li class="mb-2"><strong data-do-field="disk">50 GB</strong> SSD</li>
+                    <li class="mb-2"><strong data-do-field="transfer">2 TB</strong> Transfert</li>
+                    <li>Support <strong>8h</strong></li>
+                  </ul>
+                  <p class="text-secondary small mb-4">Pour les sites actifs.</p>
+                  <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+                </article>
+              </div>
+            </div>
           </div>
-          <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Growth" data-hosting-type="remote" data-do-plan="growth" onclick="selectHosting(this)">
-              <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Growth</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="65 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
+          <div class="carousel-item">
+            <div class="row g-4">
+              <div class="col-12 col-lg-6">
+                <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+                  <span class="recommended-badge">⭐ Recommandé</span>
+                  <span class="check-badge">✓</span>
+                  <h3 class="h4 fw-bold mb-2">Business</h3>
+                  <div class="mb-4">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="210 Dh">2520 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-4">
+                    <li class="mb-2"><strong data-do-field="vcpus">2 vCPU</strong> - <span data-do-field="memory">2 GB</span> RAM</li>
+                    <li class="mb-2"><strong data-do-field="disk">60 GB</strong> SSD</li>
+                    <li class="mb-2"><strong data-do-field="transfer">3 TB</strong> Transfert</li>
+                    <li>Support <strong>4h</strong></li>
+                  </ul>
+                  <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+                  <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
+                </article>
               </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">1 GB</span> RAM</li>
-                <li class="mb-2"><strong data-do-field="disk">25 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">1 TB</strong> Transfert</li>
-                
-                <li>Support <strong>12h</strong></li>
-              </ul>
-              <p class="text-secondary small mb-4">Bon équilibre prix/performance.</p>
-              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
-            </article>
-          </div>
-          <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Professional" data-hosting-type="remote" data-do-plan="professional" onclick="selectHosting(this)">
-              <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Professional</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="135 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="vcpus">1 vCPU</strong> - <span data-do-field="memory">2 GB</span> RAM</li>
-                <li class="mb-2"><strong data-do-field="disk">50 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">2 TB</strong> Transfert</li>
-                
-                <li>Support <strong>8h</strong></li>
-              </ul>
-              <p class="text-secondary small mb-4">Pour les sites actifs.</p>
-              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
-            </article>
-          </div>
-          <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
-              <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Business</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="210 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="vcpus">2 vCPU</strong> - <span data-do-field="memory">2 GB</span> RAM</li>
-                <li class="mb-2"><strong data-do-field="disk">60 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">3 TB</strong> Transfert</li>
-                
-                <li>Support <strong>4h</strong></li>
-              </ul>
-              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
-              <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button>
-            </article>
+            </div>
           </div>
         </div>
-        </div>
-
-        <div class="wizard-nav">
-          <button id="wizard-back-hosting" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
-          <button id="wizard-next-hosting" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Add-ons</button>
-        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#hostingCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#hostingCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Suivant</span>
+        </button>
       </div>
     </div>
 
-    <div id="addons-content" class="tab-content d-none">
+    <div id="addons-content" class="tab-content mt-5">
+      <div class="mb-3">
+        <h4 class="fw-bold mb-2">Ajoutez des services complémentaires</h4>
+        <p class="text-secondary mb-0">Composez votre offre avec les services qui vous intéressent.</p>
+      </div>
       <div class="bg-light border rounded-4 p-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
           <h5 class="fw-bold mb-0">Add-ons</h5>
@@ -713,7 +698,7 @@
                 </ul>
               </article>
             </div>
-            <!-- <div class="col-md-6 col-xl-4">
+            <div class="col-md-6 col-xl-4">
               <article id="addon-support" class="addon-card position-relative" data-addon-type="support" data-addon-label="Support prioritaire" data-addon-monthly="120" data-addon-yearly="1300">
                 <span class="check-badge">✓</span>
                 <h3 class="h5 fw-bold mb-1">Support prioritaire</h3>
@@ -726,17 +711,13 @@
                   <li class="mb-0">Assistance dédiée</li>
                 </ul>
               </article>
-            </div> -->
+            </div>
           </div>
         </div>
       </div>
-      <div class="wizard-nav">
-        <button id="wizard-back-addons" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
-        <button id="wizard-next-addons" type="button" class="btn btn-primary btn-modern">Suivant: Coordonnées</button>
-      </div>
     </div>
     
-    <div id="contact" class="contact-wrap py-5 py-lg-5 d-none">
+    <div id="contact" class="contact-wrap py-5 py-lg-5 mt-5">
       <div class="container-lg py-4">
     <div class="row justify-content-center">
       <div class="col-lg-8">
@@ -839,8 +820,7 @@
               <textarea name="message" rows="5" class="form-control form-control-lg" placeholder="Décrivez vos besoins spécifiques..."></textarea>
             </div>
             <div class="col-12">
-              <div class="wizard-nav mt-0">
-                <button id="wizard-back-contact" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+              <div class="wizard-nav mt-0 justify-content-end">
                 <button id="submit-btn" type="submit" class="btn btn-primary btn-modern">Envoyer ma demande</button>
               </div>
             </div>
@@ -916,10 +896,8 @@
   let selectedHosting = '';
   let selectedHostingCard = null;
   let selectedHostingType = '';
-  let currentStep = 1;
-  let lastStep = 1;
   let billingCycle = 'yearly';
-  const hostingSurcharge = { monthly: 65, yearly: 50 };
+  const hostingSurcharge = { monthly: 30, yearly: 25 };
 
   function parseDhAmount(value) {
     const amount = parseInt((value || '').replace(/[^\d]/g, ''), 10);
@@ -1001,64 +979,18 @@
     return `${amount} Dh/${billingCycle === 'yearly' ? 'an' : 'mois'}`;
   }
 
-  function updateWizardUI(options = {}) {
-    const $softwareContent = $('#software-content');
-    const $hostingContent = $('#hosting-content');
-    const $addonsContent = $('#addons-content');
-    const $contactSection = $('#contact');
-    const $pricingToggle = $('.pricing-toggle');
-
-    $softwareContent.toggleClass('d-none', currentStep !== 1);
-    $hostingContent.toggleClass('d-none', currentStep !== 2);
-    $addonsContent.toggleClass('d-none', currentStep !== 3);
-    $contactSection.toggleClass('d-none', currentStep !== 4);
-    if ($pricingToggle.length) {
-      $pricingToggle.toggleClass('d-none', !(currentStep === 2 || currentStep === 3 || currentStep === 4));
-    }
-
-    $('#step-btn-1, #step-btn-2, #step-btn-3, #step-btn-4').each(function (index) {
-      const stepNumber = index + 1;
-      $(this).toggleClass('active', stepNumber === currentStep);
-      $(this).toggleClass('done', stepNumber < currentStep);
-    });
-
-    $('#wizard-next-software').prop('disabled', !selectedSoftware);
-    $('#wizard-next-hosting').prop('disabled', !selectedHosting);
-
-    if (options.scroll !== false) {
-      if (currentStep === 4) {
-        scrollToSection($contactSection);
-        updateSummary();
-      } else if (currentStep === 3) {
-        scrollToSection($addonsContent);
-      } else {
-        scrollToSection($('#tabs'));
-      }
-    }
-  }
-
   function showThankYouPage() {
     $('#tabs').addClass('d-none');
     $('#thank-you').removeClass('d-none');
-    $('.wizard-sticky-header').addClass('d-none');
+    $('.config-sticky-header').addClass('d-none');
     $('html, body').scrollTop(0);
   }
 
-  function goToStep(step) {
-    if (step === 2 && !selectedSoftware) return;
-    if (step === 3 && (!selectedSoftware || !selectedHosting)) return;
-    if (step === 4 && (!selectedSoftware || !selectedHosting)) return;
-    currentStep = step;
-    updateWizardUI();
-  }
-
-  function selectSoftware(card) {
-    const $card = $(card);
-    $('[data-software-name]').removeClass('selected');
-    $card.addClass('selected');
-    selectedSoftware = $card.attr('data-software-name') || '';
+  function selectSoftware(input) {
+    const $input = $(input);
+    selectedSoftware = $input.val() || '';
     $('#software-display').val(selectedSoftware);
-    updateWizardUI({ scroll: false });
+    updateSummary();
   }
 
   function clearAddonSelections() {
@@ -1088,7 +1020,7 @@
     $('#local-addons').toggleClass('d-none', hostingType !== 'local');
 
     computeTotal();
-    updateWizardUI({ scroll: false });
+    updateSummary();
   }
 
   function setBillingCycle(cycle) {
@@ -1101,7 +1033,7 @@
     $('[data-price-cycle]').text(cycle === 'yearly' ? '/an' : '/mois');
 
     computeTotal();
-    if (currentStep === 4) updateSummary();
+    updateSummary();
   }
 
   function computeExtrasTotalDh($card) {

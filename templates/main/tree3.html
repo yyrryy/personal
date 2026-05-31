@@ -477,6 +477,7 @@
           <div class="menu-item" onclick="window.moveNodeAction('${node.id}', 0, -40)">↑ Move Up</div>
           <div class="menu-item" onclick="window.moveNodeAction('${node.id}', 0, 40)">↓ Move Down</div>
         `;
+        $('.context-menu').remove()
         document.body.appendChild(menu);
         setTimeout(() => document.removeEventListener('click', hideMenu), 0);
         document.addEventListener('click', hideMenu, { once: true });

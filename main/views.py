@@ -472,7 +472,7 @@ def activities(request):
                     print(new_activity_date)
     ctx={
         'title':'Acttivities',
-        'activities':Activity.objects.all().order_by('-date')
+        'activities':Activity.objects.all().order_by('-date')[:30]
     }
     return render(request, 'main/activities.html', ctx)
 
