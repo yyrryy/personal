@@ -13,8 +13,7 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
-thismonth=date.today().month
-thisyear=date.today().year
+
 # Create your views here.
 def home(request):
     return render(request, 'main/home3.html')
@@ -339,6 +338,8 @@ def hosting_plans(request):
             status=502
         )
 def main(request):
+    thismonth=date.today().month
+    thisyear=date.today().year
     profile=Profile.objects.get(pk=1)
     essances=list(Essance.objects.all())
     # litters=essances.aggregate(total=Sum('qty'))['total'] or 0

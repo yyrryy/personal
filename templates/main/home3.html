@@ -284,690 +284,691 @@
     </div>
   </div>
 </header> -->
-
-<section id="tabs" class="py-4 py-lg-5">
-  <div class="container-lg">
-    
-
-    <div id="software-content" class="tab-content">
-      <div class="row g-4">
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Restaurant" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🍽️</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Restaurant</h3>
-            <p class="text-secondary small mb-3">Pilotez commandes, tables et facturation dans une interface élégante.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Commandes</li><li>Tables</li><li>Stock</li><li>Factures</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Station-Service" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⛽</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Station-Service</h3>
-            <p class="text-secondary small mb-3">Suivi des pompes, ventes et rapports en temps réel.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Pompes</li><li>Paiements</li><li>Rapports</li><li>Clients</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="POS / Caisse" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">💳</div>
-            <h3 class="h5 fw-bold mb-2">POS / Caisse</h3>
-            <p class="text-secondary small mb-3">Une caisse moderne, rapide et pensée pour vendre plus vite.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Multi-caisse</li><li>Clients</li><li>Promotions</li><li>Rapports</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Stock" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">📦</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Stock</h3>
-            <p class="text-secondary small mb-3">Contrôlez vos inventaires avec alertes et traçabilité.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Tracking</li><li>Alertes</li><li>Mouvements</li><li>Statistiques</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion École" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🎓</div>
-            <h3 class="h5 fw-bold mb-2">Gestion École</h3>
-            <p class="text-secondary small mb-3">Suivi des élèves, notes, absences et communication parentale.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Élèves</li><li>Notes</li><li>Absences</li><li>Parents</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Location de Voitures" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🚗</div>
-            <h3 class="h5 fw-bold mb-2">Location de Voitures</h3>
-            <p class="text-secondary small mb-3">Gérez réservations, flotte, documents et facturation.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Réservations</li><li>Flottes</li><li>Documents</li><li>Facturation</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Carburant / Pétrole" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🛢️</div>
-            <h3 class="h5 fw-bold mb-2">Gestion Carburant / Pétrole</h3>
-            <p class="text-secondary small mb-3">Supervisez les volumes, la distribution et les stocks.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Stocks</li><li>Distribution</li><li>Clients</li><li>Rapports</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Statique" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">🌐</div>
-            <h3 class="h5 fw-bold mb-2">Site Web Statique</h3>
-            <p class="text-secondary small mb-3">Un site internet moderne et professionnel pour votre présence en ligne.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Design responsif</li><li>SEO optimisé</li><li>Rapide</li><li>Sécurisé</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Dynamique" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⚡</div>
-            <h3 class="h5 fw-bold mb-2">Site Web Dynamique</h3>
-            <p class="text-secondary small mb-3">Une plateforme interactive avec gestion de contenu et base de données.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>CMS intégré</li><li>Interactivité</li><li>Base de données</li><li>Scalable</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-        <div class="col-12 col-md-6 col-xl-">
-          <article class="card-modern h-100 p-4 position-relative" data-software-name="Solutions Personnalisées" onclick="selectSoftware(this)">
-            <span class="check-badge">✓</span>
-            <div class="card-icon mb-3">⚙️</div>
-            <h3 class="h5 fw-bold mb-2">Solutions Personnalisées</h3>
-            <p class="text-secondary small mb-3">Une solution sur mesure pensée pour votre process.</p>
-            <ul class="list-unstyled small mb-4 feature-list">
-              <li>Flexible</li><li>Scalable</li><li>Support</li><li>Formation</li>
-            </ul>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
-              <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
-            </div>
-          </article>
-        </div>
-      </div>
-      <div class="wizard-nav">
-        <span></span>
-        <button id="wizard-next-software" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Hébergement</button>
-      </div>
-    </div>
-
-    <div id="hosting-content" class="tab-content d-none">
-      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-        <div>
-          <h3 class="h4 fw-bold mb-1">Hébergement local et Online</h3>
-          <p class="text-secondary mb-0">Le mode annuel est conseillé pour profiter des meilleurs tarifs.</p>
-        </div>
-        
-      </div>
-      <div id="hosting-do-error" class="alert alert-warning d-none" role="alert"></div>
-
-      <div>
-        <h4 class="fw-bold mb-3">Local & Online</h4>
+<div class="content">
+  <section id="tabs" class="py-4 py-lg-5">
+    <div class="container-lg">
+      
+  
+      <div id="software-content" class="tab-content">
         <div class="row g-4">
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative d-flex flex-column align-items-start gap-3" data-hosting-name="Local" data-hosting-type="local" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Restaurant" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Local</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="0 Dh" data-price-yearly="0 Dh">0 Dh</span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <div class="flex-fill">
-                <h3 class="h5 fw-bold mb-1">Local</h3>
-                <div class="mb-2"><span class="fw-bold">Gratuit</span> <span class="text-secondary">pour l'hébergement</span></div>
-                <ul class="list-unstyled small mb-2">
-                  <li class="mb-1"><strong>Installation locale</strong> sur vos machines</li>
-                  <li class="mb-1"><strong>0 Dh</strong> pour l'hébergement</li>
-                  <!-- <li class="mb-1">SSL gratuit</li> -->
-                  <li class="mb-1"><strong>Support</strong> inclus</li>
-                  <li class="mb-1"><strong>Scalable</strong> selon vos besoins</li>
-                </ul>
-
-                <!-- <div class="rounded-4 bg-light border p-3 mb-0 d-inline-block">
-                  <div class="fw-semibold mb-1">Sauvegardes automatiques</div>
-                  <div class="text-secondary small">
-                    <span data-local-save-yearly>2000 Dh/an</span>
-                    <span class="mx-2">ou</span>
-                    <span data-local-save-monthly>190 Dh/mois</span>
-                  </div>
-                </div> -->
-              </div>
-
-              <div class="w-100">
-                <p class="text-secondary small mb-2">Choix recommandé si vous voulez commencer vite sans coût d'hébergement.</p>
-                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'))">Sélectionner</button> -->
+              <div class="card-icon mb-3">🍽️</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Restaurant</h3>
+              <p class="text-secondary small mb-3">Pilotez commandes, tables et facturation dans une interface élégante.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Commandes</li><li>Tables</li><li>Stock</li><li>Factures</li>
+              </ul>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
               </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Starter" data-hosting-type="remote" data-do-plan="starter" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Station-Service" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Starter</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="50 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">10 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">500 GB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management <strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">⛽</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Station-Service</h3>
+              <p class="text-secondary small mb-3">Suivi des pompes, ventes et rapports en temps réel.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Pompes</li><li>Paiements</li><li>Rapports</li><li>Clients</li>
               </ul>
-              <p class="text-secondary small mb-4">Pour démarrer facilement.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Growth" data-hosting-type="remote" data-do-plan="growth" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="POS / Caisse" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Growth</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="70 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">25 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">1 TB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">💳</div>
+              <h3 class="h5 fw-bold mb-2">POS / Caisse</h3>
+              <p class="text-secondary small mb-3">Une caisse moderne, rapide et pensée pour vendre plus vite.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Multi-caisse</li><li>Clients</li><li>Promotions</li><li>Rapports</li>
               </ul>
-              <p class="text-secondary small mb-4">Bon équilibre prix/performance.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Professional" data-hosting-type="remote" data-do-plan="professional" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Stock" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Professional</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="130 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">50 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">2 TB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">📦</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Stock</h3>
+              <p class="text-secondary small mb-3">Contrôlez vos inventaires avec alertes et traçabilité.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Tracking</li><li>Alertes</li><li>Mouvements</li><li>Statistiques</li>
               </ul>
-              <p class="text-secondary small mb-4">Pour les sites actifs.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion École" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Business</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="200 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">60 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">3 TB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">🎓</div>
+              <h3 class="h5 fw-bold mb-2">Gestion École</h3>
+              <p class="text-secondary small mb-3">Suivi des élèves, notes, absences et communication parentale.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Élèves</li><li>Notes</li><li>Absences</li><li>Parents</li>
               </ul>
-              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Location de Voitures" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Business</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="250 Dh"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">80 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">4 TB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">🚗</div>
+              <h3 class="h5 fw-bold mb-2">Location de Voitures</h3>
+              <p class="text-secondary small mb-3">Gérez réservations, flotte, documents et facturation.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Réservations</li><li>Flottes</li><li>Documents</li><li>Facturation</li>
               </ul>
-              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Gestion Carburant / Pétrole" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Business</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="500"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">160 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">5 TB</strong> Transfert</li>
-                
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">🛢️</div>
+              <h3 class="h5 fw-bold mb-2">Gestion Carburant / Pétrole</h3>
+              <p class="text-secondary small mb-3">Supervisez les volumes, la distribution et les stocks.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Stocks</li><li>Distribution</li><li>Clients</li><li>Rapports</li>
               </ul>
-              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
           <div class="col-12 col-md-6 col-xl-">
-            <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Statique" onclick="selectSoftware(this)">
               <span class="check-badge">✓</span>
-              <h3 class="h4 fw-bold mb-2">Business</h3>
-              <div class="mb-4">
-                <span class="display-6 fw-bold price-value" data-price-monthly="1000"></span>
-                <span class="text-secondary" data-price-cycle>/an</span>
-              </div>
-              <ul class="list-unstyled small mb-4">
-                <li class="mb-2"><strong data-do-field="disk">320 GB</strong> SSD</li>
-                <li class="mb-2"><strong data-do-field="transfer">6 TB</strong> Transfert</li>
-                <li class="mb-2">Déploiement <strong>Inclus</strong></li>
-                <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
-                <li class="mb-2">Surveillance <strong>24/7</strong></li>
-                <li class="mb-2">Protection <strong>DDoS</strong></li>
-                <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
-                <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
-                <li class="mb-2">Migration <strong>Gratuite</strong></li>
-                <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
-                <li class="mb-2">Support <strong>12h/24</strong></li>
-
+              <div class="card-icon mb-3">🌐</div>
+              <h3 class="h5 fw-bold mb-2">Site Web Statique</h3>
+              <p class="text-secondary small mb-3">Un site internet moderne et professionnel pour votre présence en ligne.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Design responsif</li><li>SEO optimisé</li><li>Rapide</li><li>Sécurisé</li>
               </ul>
-              <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
-              <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Site Web Dynamique" onclick="selectSoftware(this)">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">⚡</div>
+              <h3 class="h5 fw-bold mb-2">Site Web Dynamique</h3>
+              <p class="text-secondary small mb-3">Une plateforme interactive avec gestion de contenu et base de données.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>CMS intégré</li><li>Interactivité</li><li>Base de données</li><li>Scalable</li>
+              </ul>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
+            </article>
+          </div>
+          <div class="col-12 col-md-6 col-xl-">
+            <article class="card-modern h-100 p-4 position-relative" data-software-name="Solutions Personnalisées" onclick="selectSoftware(this)">
+              <span class="check-badge">✓</span>
+              <div class="card-icon mb-3">⚙️</div>
+              <h3 class="h5 fw-bold mb-2">Solutions Personnalisées</h3>
+              <p class="text-secondary small mb-3">Une solution sur mesure pensée pour votre process.</p>
+              <ul class="list-unstyled small mb-4 feature-list">
+                <li>Flexible</li><li>Scalable</li><li>Support</li><li>Formation</li>
+              </ul>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation(); selectSoftware(this.closest('[data-software-name]'));">Choisir</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-sm flex-fill btn-modern py-2" onclick="event.stopPropagation();">Voir démo</button> -->
+              </div>
             </article>
           </div>
         </div>
-        </div>
-
         <div class="wizard-nav">
-          <button id="wizard-back-hosting" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
-          <button id="wizard-next-hosting" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Add-ons</button>
+          <span></span>
+          <button id="wizard-next-software" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Hébergement</button>
         </div>
       </div>
-    </div>
-
-    <div id="addons-content" class="tab-content d-none">
-      <div class="bg-light border rounded-4 p-4">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-          <h5 class="fw-bold mb-0">Add-ons</h5>
-          <span class="text-secondary small">Services complémentaires pour booster votre solution.</span>
+  
+      <div id="hosting-content" class="tab-content d-none">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <h3 class="h4 fw-bold mb-1">Hébergement local et Online</h3>
+            <p class="text-secondary mb-0">Le mode annuel est conseillé pour profiter des meilleurs tarifs.</p>
+          </div>
+          
         </div>
-        <div id="remote-addons" class="d-none">
+        <div id="hosting-do-error" class="alert alert-warning d-none" role="alert"></div>
+  
+        <div>
+          <h4 class="fw-bold mb-3">Local & Online</h4>
           <div class="row g-4">
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-domain" class="addon-card position-relative" data-addon-type="domain" data-addon-label="Nom de domaine" data-addon-monthly="15" data-addon-yearly="125">
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative d-flex flex-column align-items-start gap-3" data-hosting-name="Local" data-hosting-type="local" onclick="selectHosting(this)">
                 <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Nom de domaine</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="15 Dh" data-price-yearly="170 Dh">125 Dh</span>
+                <h3 class="h4 fw-bold mb-2">Local</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="0 Dh" data-price-yearly="0 Dh">0 Dh</span>
                   <span class="text-secondary" data-price-cycle>/an</span>
                 </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Réservation + configuration DNS</li>
-                  <li class="mb-0">Renouvellement géré</li>
-                </ul>
+                <div class="flex-fill">
+                  <h3 class="h5 fw-bold mb-1">Local</h3>
+                  <div class="mb-2"><span class="fw-bold">Gratuit</span> <span class="text-secondary">pour l'hébergement</span></div>
+                  <ul class="list-unstyled small mb-2">
+                    <li class="mb-1"><strong>Installation locale</strong> sur vos machines</li>
+                    <li class="mb-1"><strong>0 Dh</strong> pour l'hébergement</li>
+                    <!-- <li class="mb-1">SSL gratuit</li> -->
+                    <li class="mb-1"><strong>Support</strong> inclus</li>
+                    <li class="mb-1"><strong>Scalable</strong> selon vos besoins</li>
+                  </ul>
+  
+                  <!-- <div class="rounded-4 bg-light border p-3 mb-0 d-inline-block">
+                    <div class="fw-semibold mb-1">Sauvegardes automatiques</div>
+                    <div class="text-secondary small">
+                      <span data-local-save-yearly>2000 Dh/an</span>
+                      <span class="mx-2">ou</span>
+                      <span data-local-save-monthly>190 Dh/mois</span>
+                    </div>
+                  </div> -->
+                </div>
+  
+                <div class="w-100">
+                  <p class="text-secondary small mb-2">Choix recommandé si vous voulez commencer vite sans coût d'hébergement.</p>
+                  <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'))">Sélectionner</button> -->
+                </div>
               </article>
-              <div class="mt-2">
-                <input type="text" id="domain-name" placeholder="ex: monsite.ma" class="form-control form-control-sm" />
-                <div class="text-secondary small mt-1">
-                  <div class="small text-muted">Le prix du domaine n'est pas fixe et peut varier selon l'extension.</div>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Starter" data-hosting-type="remote" data-do-plan="starter" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Starter</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="50 Dh"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">10 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">500 GB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management <strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Pour démarrer facilement.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Growth" data-hosting-type="remote" data-do-plan="growth" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Growth</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="70 Dh"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">25 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">1 TB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Bon équilibre prix/performance.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Professional" data-hosting-type="remote" data-do-plan="professional" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Professional</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="130 Dh"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">50 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">2 TB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Pour les sites actifs.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Business</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="200 Dh"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">60 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">3 TB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Business +" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Business +</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="250 Dh"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">80 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">4 TB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Grand Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Grand Business</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="500"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">160 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">5 TB</strong> Transfert</li>
+                  
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-">
+              <article class="card-modern h-100 p-4 position-relative" data-hosting-name="Premium Business" data-hosting-type="remote" data-do-plan="business" onclick="selectHosting(this)">
+                <span class="check-badge">✓</span>
+                <h3 class="h4 fw-bold mb-2">Premium Business</h3>
+                <div class="mb-4">
+                  <span class="display-6 fw-bold price-value" data-price-monthly="1000"></span>
+                  <span class="text-secondary" data-price-cycle>/an</span>
+                </div>
+                <ul class="list-unstyled small mb-4">
+                  <li class="mb-2"><strong data-do-field="disk">320 GB</strong> SSD</li>
+                  <li class="mb-2"><strong data-do-field="transfer">6 TB</strong> Transfert</li>
+                  <li class="mb-2">Déploiement <strong>Inclus</strong></li>
+                  <li class="mb-2">Base de donné management<strong>Inclus</strong></li>
+                  <li class="mb-2">Surveillance <strong>24/7</strong></li>
+                  <li class="mb-2">Protection <strong>DDoS</strong></li>
+                  <li class="mb-2">Pare-feu <strong>Configuré</strong></li>
+                  <li class="mb-2">Mises à jour <strong>Sécurité</strong></li>
+                  <li class="mb-2">Migration <strong>Gratuite</strong></li>
+                  <li class="mb-2">Changement de plan <strong>Inclus</strong></li>
+                  <li class="mb-2">Support <strong>12h/24</strong></li>
+  
+                </ul>
+                <p class="text-secondary small mb-4">Puissance et fiabilité.</p>
+                <!-- <button type="button" class="btn btn-primary btn-modern w-100" onclick="event.stopPropagation(); selectHosting(this.closest('[data-hosting-name]'));">Sélectionner</button> -->
+              </article>
+            </div>
+          </div>
+          </div>
+  
+          <div class="wizard-nav">
+            <button id="wizard-back-hosting" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+            <button id="wizard-next-hosting" type="button" class="btn btn-primary btn-modern" disabled>Suivant: Add-ons</button>
+          </div>
+        </div>
+      </div>
+  
+      <div id="addons-content" class="tab-content d-none">
+        <div class="bg-light border rounded-4 p-4">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h5 class="fw-bold mb-0">Add-ons</h5>
+            <span class="text-secondary small">Services complémentaires pour booster votre solution.</span>
+          </div>
+          <div id="remote-addons" class="d-none">
+            <div class="row g-4">
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-domain" class="addon-card position-relative" data-addon-type="domain" data-addon-label="Nom de domaine" data-addon-monthly="15" data-addon-yearly="125">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Nom de domaine</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="15 Dh" data-price-yearly="170 Dh">125 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Réservation + configuration DNS</li>
+                    <li class="mb-0">Renouvellement géré</li>
+                  </ul>
+                </article>
+                <div class="mt-2">
+                  <input type="text" id="domain-name" placeholder="ex: monsite.ma" class="form-control form-control-sm" />
+                  <div class="text-secondary small mt-1">
+                    <div class="small text-muted">Le prix du domaine n'est pas fixe et peut varier selon l'extension.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-ssl" class="addon-card position-relative" data-addon-type="ssl" data-addon-label="Certificat SSL" data-addon-monthly="190" data-addon-yearly="2000">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Certificat SSL</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="190 Dh" data-price-yearly="2000 Dh">2000 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">HTTPS & sécurité renforcée</li>
+                    <li class="mb-0">Activation rapide</li>
+                  </ul>
+                </article>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-backup" class="addon-card position-relative" data-addon-type="backup" data-addon-label="Sauvegardes automatiques" data-addon-monthly="120" data-addon-yearly="1200">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Sauvegardes automatiques</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="120 Dh" data-price-yearly="1200 Dh">1200 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Snapshots quotidiens</li>
+                    <li class="mb-0">Restauration rapide</li>
+                  </ul>
+                </article>
+              </div>
+              <!-- <div class="col-md-6 col-xl-4">
+                <article id="addon-maintenance" class="addon-card position-relative" data-addon-type="maintenance" data-addon-label="Maintenance & mises à jour" data-addon-monthly="250" data-addon-yearly="2700">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Maintenance & mises à jour</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="250 Dh" data-price-yearly="2700 Dh">2700 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Correctifs & sécurité</li>
+                    <li class="mb-0">Optimisation régulière</li>
+                  </ul>
+                </article>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-monitoring" class="addon-card position-relative" data-addon-type="monitoring" data-addon-label="Monitoring & sécurité" data-addon-monthly="150" data-addon-yearly="1600">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Monitoring & sécurité</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="150 Dh" data-price-yearly="1600 Dh">1600 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Surveillance 24/7</li>
+                    <li class="mb-0">Alertes & rapports</li>
+                  </ul>
+                </article>
+              </div> -->
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-email" class="addon-card position-relative" data-addon-type="email" data-addon-label="Email professionnel" data-addon-monthly="60" data-addon-yearly="650">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Email professionnel</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="60 Dh" data-price-yearly="650 Dh">650 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Boîtes mail pro</li>
+                    <li class="mb-0">Configuration DNS</li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+          </div>
+  
+          <div id="local-addons" class="d-none">
+            <div class="row g-4">
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-sauvegarde" class="addon-card position-relative" data-addon-type="sauvegarde" data-addon-label="Sauvegarde automatique" data-addon-monthly="190" data-addon-yearly="2000">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Sauvegarde automatique</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="190 Dh" data-price-yearly="2000 Dh">2000 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Sauvegardes chiffrées</li>
+                    <li class="mb-0">Restauration rapide</li>
+                  </ul>
+                </article>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <article id="addon-maintenance-local" class="addon-card position-relative" data-addon-type="maintenance-local" data-addon-label="Maintenance & mises à jour" data-addon-monthly="200" data-addon-yearly="2200">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Maintenance & mises à jour</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="200 Dh" data-price-yearly="2200 Dh">2200 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Correctifs & optimisation</li>
+                    <li class="mb-0">Nettoyage système</li>
+                  </ul>
+                </article>
+              </div>
+              <!-- <div class="col-md-6 col-xl-4">
+                <article id="addon-support" class="addon-card position-relative" data-addon-type="support" data-addon-label="Support prioritaire" data-addon-monthly="120" data-addon-yearly="1300">
+                  <span class="check-badge">✓</span>
+                  <h3 class="h5 fw-bold mb-1">Support prioritaire</h3>
+                  <div class="mb-2">
+                    <span class="display-6 fw-bold price-value" data-price-monthly="120 Dh" data-price-yearly="1300 Dh">1300 Dh</span>
+                    <span class="text-secondary" data-price-cycle>/an</span>
+                  </div>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">Interventions rapides</li>
+                    <li class="mb-0">Assistance dédiée</li>
+                  </ul>
+                </article>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="wizard-nav">
+          <button id="wizard-back-addons" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+          <button id="wizard-next-addons" type="button" class="btn btn-primary btn-modern">Suivant: Coordonnées</button>
+        </div>
+      </div>
+      
+      <div id="contact" class="contact-wrap py-5 py-lg-5 d-none">
+        <div class="container-lg py-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="text-center mb-4 mb-lg-5">
+            <h2 class="section-title display-6 fw-bold mb-3">Finalisez votre sélection</h2>
+            <p class="text-secondary mb-0">Complétez le formulaire pour que nous vous contactions rapidement.</p>
+          </div>
+  
+          <div id="summary-section" class="bg-light border rounded-4 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Résumé de votre sélection</h4>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="border-bottom pb-2">
+                  <div class="text-secondary small">Logiciel</div>
+                  <div class="fw-semibold" id="summary-software">—</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="border-bottom pb-2">
+                  <div class="text-secondary small">Hébergement</div>
+                  <div class="fw-semibold" id="summary-hosting">—</div>
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-ssl" class="addon-card position-relative" data-addon-type="ssl" data-addon-label="Certificat SSL" data-addon-monthly="190" data-addon-yearly="2000">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Certificat SSL</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="190 Dh" data-price-yearly="2000 Dh">2000 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">HTTPS & sécurité renforcée</li>
-                  <li class="mb-0">Activation rapide</li>
-                </ul>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-backup" class="addon-card position-relative" data-addon-type="backup" data-addon-label="Sauvegardes automatiques" data-addon-monthly="120" data-addon-yearly="1200">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Sauvegardes automatiques</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="120 Dh" data-price-yearly="1200 Dh">1200 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Snapshots quotidiens</li>
-                  <li class="mb-0">Restauration rapide</li>
-                </ul>
-              </article>
-            </div>
-            <!-- <div class="col-md-6 col-xl-4">
-              <article id="addon-maintenance" class="addon-card position-relative" data-addon-type="maintenance" data-addon-label="Maintenance & mises à jour" data-addon-monthly="250" data-addon-yearly="2700">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Maintenance & mises à jour</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="250 Dh" data-price-yearly="2700 Dh">2700 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Correctifs & sécurité</li>
-                  <li class="mb-0">Optimisation régulière</li>
-                </ul>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-monitoring" class="addon-card position-relative" data-addon-type="monitoring" data-addon-label="Monitoring & sécurité" data-addon-monthly="150" data-addon-yearly="1600">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Monitoring & sécurité</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="150 Dh" data-price-yearly="1600 Dh">1600 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Surveillance 24/7</li>
-                  <li class="mb-0">Alertes & rapports</li>
-                </ul>
-              </article>
-            </div> -->
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-email" class="addon-card position-relative" data-addon-type="email" data-addon-label="Email professionnel" data-addon-monthly="60" data-addon-yearly="650">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Email professionnel</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="60 Dh" data-price-yearly="650 Dh">650 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Boîtes mail pro</li>
-                  <li class="mb-0">Configuration DNS</li>
-                </ul>
-              </article>
-            </div>
-          </div>
-        </div>
-
-        <div id="local-addons" class="d-none">
-          <div class="row g-4">
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-sauvegarde" class="addon-card position-relative" data-addon-type="sauvegarde" data-addon-label="Sauvegarde automatique" data-addon-monthly="190" data-addon-yearly="2000">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Sauvegarde automatique</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="190 Dh" data-price-yearly="2000 Dh">2000 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Sauvegardes chiffrées</li>
-                  <li class="mb-0">Restauration rapide</li>
-                </ul>
-              </article>
-            </div>
-            <div class="col-md-6 col-xl-4">
-              <article id="addon-maintenance-local" class="addon-card position-relative" data-addon-type="maintenance-local" data-addon-label="Maintenance & mises à jour" data-addon-monthly="200" data-addon-yearly="2200">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Maintenance & mises à jour</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="200 Dh" data-price-yearly="2200 Dh">2200 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Correctifs & optimisation</li>
-                  <li class="mb-0">Nettoyage système</li>
-                </ul>
-              </article>
-            </div>
-            <!-- <div class="col-md-6 col-xl-4">
-              <article id="addon-support" class="addon-card position-relative" data-addon-type="support" data-addon-label="Support prioritaire" data-addon-monthly="120" data-addon-yearly="1300">
-                <span class="check-badge">✓</span>
-                <h3 class="h5 fw-bold mb-1">Support prioritaire</h3>
-                <div class="mb-2">
-                  <span class="display-6 fw-bold price-value" data-price-monthly="120 Dh" data-price-yearly="1300 Dh">1300 Dh</span>
-                  <span class="text-secondary" data-price-cycle>/an</span>
-                </div>
-                <ul class="list-unstyled small mb-0">
-                  <li class="mb-2">Interventions rapides</li>
-                  <li class="mb-0">Assistance dédiée</li>
-                </ul>
-              </article>
-            </div> -->
-          </div>
-        </div>
-      </div>
-      <div class="wizard-nav">
-        <button id="wizard-back-addons" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
-        <button id="wizard-next-addons" type="button" class="btn btn-primary btn-modern">Suivant: Coordonnées</button>
-      </div>
-    </div>
-    
-    <div id="contact" class="contact-wrap py-5 py-lg-5 d-none">
-      <div class="container-lg py-4">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="text-center mb-4 mb-lg-5">
-          <h2 class="section-title display-6 fw-bold mb-3">Finalisez votre sélection</h2>
-          <p class="text-secondary mb-0">Complétez le formulaire pour que nous vous contactions rapidement.</p>
-        </div>
-
-        <div id="summary-section" class="bg-light border rounded-4 p-4 mb-4">
-          <h4 class="fw-bold mb-3">Résumé de votre sélection</h4>
-          <div class="row g-3 mb-4">
-            <div class="col-md-6">
+            <div class="mb-4">
               <div class="border-bottom pb-2">
-                <div class="text-secondary small">Logiciel</div>
-                <div class="fw-semibold" id="summary-software">—</div>
+                <div class="text-secondary small">Add-ons sélectionnés</div>
+                <div class="fw-semibold" id="summary-addons">Aucun</div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="border-bottom pb-2">
-                <div class="text-secondary small">Hébergement</div>
-                <div class="fw-semibold" id="summary-hosting">—</div>
-              </div>
-            </div>
-          </div>
-          <div class="mb-4">
-            <div class="border-bottom pb-2">
-              <div class="text-secondary small">Add-ons sélectionnés</div>
-              <div class="fw-semibold" id="summary-addons">Aucun</div>
-            </div>
-          </div>
-
-          <div class="row g-3">
-            <!-- One-time payments -->
-            <div class="col-lg-6">
-              <div class="bg-white border rounded-3 p-3">
-                <h5 class="fw-bold mb-3">💰 Paiement unique</h5>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Frais d'installation</span>
-                  <span class="fw-semibold">500 Dh</span>
+  
+            <div class="row g-3">
+              <!-- One-time payments -->
+              <!-- <div class="col-lg-6">
+                <div class="bg-white border rounded-3 p-3">
+                  <h5 class="fw-bold mb-3">💰 Paiement unique</h5>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Frais d'installation</span>
+                    <span class="fw-semibold">500 Dh</span>
+                  </div>
+                  <div class="d-flex justify-content-between border-top pt-2">
+                    <span class="fw-bold">Total unique</span>
+                    <span class="fw-bold text-primary" id="summary-onetime-total">500 Dh</span>
+                  </div>
                 </div>
-                <div class="d-flex justify-content-between border-top pt-2">
-                  <span class="fw-bold">Total unique</span>
-                  <span class="fw-bold text-primary" id="summary-onetime-total">500 Dh</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recurring payments -->
-            <div class="col-lg-6">
-              <div class="bg-white border rounded-3 p-3">
-                <h5 class="fw-bold mb-3">📅 Paiement <span id="summary-cycle-label">annuel</span></h5>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Forfait d'hébergement</span>
-                  <span id="summary-hosting-price">0 Dh</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Add-ons</span>
-                  <span id="summary-addons-price">0 Dh</span>
-                </div>
-                <div class="d-flex justify-content-between border-top pt-2">
-                  <span class="fw-bold">Total <span id="summary-cycle-label2">annuel</span></span>
-                  <span class="fw-bold text-primary" id="summary-recurring-total">0 Dh</span>
+              </div> -->
+  
+              <!-- Recurring payments -->
+              <div class="col-12">
+                <div class="bg-white border rounded-3 p-3">
+                  <h5 class="fw-bold mb-3">📅 Paiement <span id="summary-cycle-label">annuel</span></h5>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Forfait d'hébergement</span>
+                    <span id="summary-hosting-price">0 Dh</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Add-ons</span>
+                    <span id="summary-addons-price">0 Dh</span>
+                  </div>
+                  <div class="d-flex justify-content-between border-top pt-2">
+                    <span class="fw-bold">Total <span id="summary-cycle-label2">annuel</span></span>
+                    <span class="fw-bold text-primary" id="summary-recurring-total">0 Dh</span>
+                  </div>
                 </div>
               </div>
             </div>
+  
+            <!-- <div class="bg-primary bg-opacity-10 border border-primary rounded-3 p-3 mt-3">
+              <div class="d-flex justify-content-between">
+                <span class="fw-bold">Investissement total initial</span>
+                <span class="fw-bold h5 mb-0 text-primary" id="summary-grand-total">500 Dh</span>
+              </div>
+            </div> -->
           </div>
-
-          <div class="bg-primary bg-opacity-10 border border-primary rounded-3 p-3 mt-3">
-            <div class="d-flex justify-content-between">
-              <span class="fw-bold">Investissement total initial</span>
-              <span class="fw-bold h5 mb-0 text-primary" id="summary-grand-total">500 Dh</span>
+  
+          <form id="contact-form" class="bg-white border rounded-4 p-4 p-lg-5 shadow-sm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Nom *</label>
+                <input type="text" name="nom" required class="form-control form-control-lg">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Téléphone *</label>
+                <input type="tel" name="telephone" required class="form-control form-control-lg">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Entreprise</label>
+                <input type="text" name="entreprise" class="form-control form-control-lg">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Logiciel choisi</label>
+                <input type="text" id="software-display" readonly class="form-control form-control-lg bg-light">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Hébergement choisi</label>
+                <input type="text" id="hosting-display" readonly class="form-control form-control-lg bg-light">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Message</label>
+                <textarea name="message" rows="5" class="form-control form-control-lg" placeholder="Décrivez vos besoins spécifiques..."></textarea>
+              </div>
+              <div class="col-12">
+                <div class="wizard-nav mt-0">
+                  <button id="wizard-back-contact" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
+                  <button id="submit-btn" type="submit" class="btn btn-primary btn-modern">Envoyer ma demande</button>
+                </div>
+              </div>
             </div>
-          </div>
+            <div id="success-message" class="success-box alert alert-success mt-4 mb-0">
+              <strong>✓ Demande envoyée avec succès !</strong>
+              <div class="small mt-1">Nous vous contacterons dans les 24 heures.</div>
+            </div>
+          </form>
         </div>
-
-        <form id="contact-form" class="bg-white border rounded-4 p-4 p-lg-5 shadow-sm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Nom *</label>
-              <input type="text" name="nom" required class="form-control form-control-lg">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Téléphone *</label>
-              <input type="tel" name="telephone" required class="form-control form-control-lg">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-semibold">Entreprise</label>
-              <input type="text" name="entreprise" class="form-control form-control-lg">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Logiciel choisi</label>
-              <input type="text" id="software-display" readonly class="form-control form-control-lg bg-light">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Hébergement choisi</label>
-              <input type="text" id="hosting-display" readonly class="form-control form-control-lg bg-light">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-semibold">Message</label>
-              <textarea name="message" rows="5" class="form-control form-control-lg" placeholder="Décrivez vos besoins spécifiques..."></textarea>
-            </div>
-            <div class="col-12">
-              <div class="wizard-nav mt-0">
-                <button id="wizard-back-contact" type="button" class="btn btn-outline-secondary btn-modern">Retour</button>
-                <button id="submit-btn" type="submit" class="btn btn-primary btn-modern">Envoyer ma demande</button>
-              </div>
-            </div>
-          </div>
-          <div id="success-message" class="success-box alert alert-success mt-4 mb-0">
-            <strong>✓ Demande envoyée avec succès !</strong>
-            <div class="small mt-1">Nous vous contacterons dans les 24 heures.</div>
-          </div>
-        </form>
+      </div>
+        </div>
       </div>
     </div>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <section id="thank-you" class="thank-you-page py-5 py-lg-5 d-none">
   <div class="container-lg py-4">
@@ -1144,7 +1145,7 @@
       } else if (currentStep === 3) {
         scrollToSection($addonsContent);
       } else {
-        scrollToSection($('#tabs'));
+        scrollToSection($('.content'));
       }
     }
   }

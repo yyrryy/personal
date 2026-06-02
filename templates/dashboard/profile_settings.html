@@ -1,0 +1,146 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Profile Settings - Dashboard{% endblock %}
+{% block page_title %}Profile Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Company Information -->
+            <div class="card mb-4">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Company Information</h5>
+                </div>
+                <form method="post" class="card-body">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Company Name *</label>
+                            <input type="text" name="company_name" class="form-control" value="{{ client.company_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">VAT Number</label>
+                            <input type="text" name="vat_number" class="form-control" value="{{ client.vat_number|default:'' }}">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" name="address" class="form-control" value="{{ client.address|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" class="form-control" value="{{ client.city|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" name="country" class="form-control" value="{{ client.country|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" name="phone" class="form-control" value="{{ client.phone|default:'' }}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Personal Information -->
+            <div class="card mb-4">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <form method="post" class="card-body">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user.first_name|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user.last_name|default:'' }}">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                            <small class="text-muted">Email cannot be changed from here. Contact support if you need to update it.</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Account Status -->
+            <div class="card mb-4">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Account Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Account Type</small>
+                        <div>Premium</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Member Since</small>
+                        <div>{{ client.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Verification Status</small>
+                        <div>
+                            {% if client.is_verified %}
+                                <span class="badge bg-success">Verified</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending Verification</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Actions -->
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Account Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="bi bi-key"></i> Change Password
+                        </button>
+                        <a href="/accounts/logout/" class="btn btn-outline-danger">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>To change your password, visit the authentication system.</p>
+                <p>Feature coming soon. Please contact support for password changes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

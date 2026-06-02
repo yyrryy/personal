@@ -1,0 +1,83 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Manage Invoices - Admin{% endblock %}
+{% block page_title %}Invoices Management{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-card stat-success">
+            <h6>Total Paid</h6>
+            <div class="stat-value">€{{ total_paid|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-warning">
+            <h6>Pending/Overdue</h6>
+            <div class="stat-value">€{{ total_pending|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-primary">
+            <h6>Total Invoices</h6>
+            <div class="stat-value">{{ invoices.count }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get">
+            <select name="status" class="form-select" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                {% for status, label in status_choices %}
+                    <option value="{{ status }}" {% if status == status_filter %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if invoices %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Client</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Issued</th>
+                            <th>Due</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                            <tr>
+                                <td><strong>{{ inv.invoice_number }}</strong></td>
+                                <td><a href="{% url 'admin_client_detail' inv.subscription.client.id %}">{{ inv.subscription.client.company_name }}</a></td>
+                                <td>€{{ inv.total_amount|floatformat:2 }}</td>
+                                <td>
+                                    {% if inv.status == 'paid' %}<span class="badge bg-success">Paid</span>
+                                    {% elif inv.status == 'pending' %}<span class="badge bg-warning">Pending</span>
+                                    {% elif inv.status == 'overdue' %}<span class="badge bg-danger">Overdue</span>
+                                    {% else %}<span class="badge bg-secondary">{{ inv.status|title }}</span>{% endif %}
+                                </td>
+                                <td>{{ inv.issued_date|date:"M d, Y" }}</td>
+                                <td>{{ inv.due_date|date:"M d, Y" }}</td>
+                                <td><a href="{% url 'admin_invoice_detail' inv.id %}" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-5 text-center text-muted"><p>No invoices found</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

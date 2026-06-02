@@ -1,0 +1,240 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Subscription Details - Admin{% endblock %}
+{% block page_title %}{{ subscription.software.name }} - {{ subscription.client.company_name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <!-- Subscription Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Subscription Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Client</label>
+                        <p><a href="{% url 'admin_client_detail' subscription.client.id %}">{{ subscription.client.company_name }}</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Software</label>
+                        <p>{{ subscription.software.name }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Hosting Plan</label>
+                        <p>{{ subscription.hosting_plan.name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Billing Cycle</label>
+                        <p>{{ subscription.billing_cycle|title }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Status</label>
+                        <p>
+                            {% if subscription.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif subscription.status == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elif subscription.status == 'suspended' %}
+                                <span class="badge bg-danger">Suspended</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ subscription.status|title }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Start Date</label>
+                        <p>{{ subscription.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add-ons -->
+        {% if addons %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Active Add-ons</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th>Add-on</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for addon in addons %}
+                                    <tr>
+                                        <td>{{ addon.addon.name }}</td>
+                                        <td>{{ addon.quantity }}</td>
+                                        <td>€{{ addon.addon.price|floatformat:2 }}</td>
+                                        <td>€{{ addon.get_total_price|floatformat:2 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- History -->
+        {% if history %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Change History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Change</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in history %}
+                                    <tr>
+                                        <td>{{ entry.created_at|date:"M d, Y H:i" }}</td>
+                                        <td>{{ entry.description }}</td>
+                                        <td>{{ entry.user.username }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Cost Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Cost Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Monthly Cost</small>
+                    <h4 class="mb-0">€{{ subscription.get_monthly_cost|floatformat:2 }}</h4>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Hosting Plan</small>
+                    <p class="mb-0">€{{ subscription.hosting_plan.price|floatformat:2 }}</p>
+                </div>
+                {% if addons %}
+                    <div class="mb-3">
+                        <small class="text-muted">Add-ons Total</small>
+                        <p class="mb-0">€{{ subscription.get_addons_cost|floatformat:2 }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Actions</h6>
+            </div>
+            <div class="card-body">
+                {% if subscription.status == 'active' %}
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="suspend">
+                        <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Suspend this subscription?')">
+                            <i class="bi bi-pause"></i> Suspend
+                        </button>
+                    </form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Cancel this subscription?')">
+                            <i class="bi bi-x"></i> Cancel
+                        </button>
+                    </form>
+                {% elif subscription.status == 'suspended' %}
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="activate">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-play"></i> Reactivate
+                        </button>
+                    </form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Cancel this subscription?')">
+                            <i class="bi bi-x"></i> Cancel
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoices -->
+{% if invoices %}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Associated Invoices</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Issued</th>
+                            <th>Due</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                            <tr>
+                                <td>{{ inv.invoice_number }}</td>
+                                <td>€{{ inv.total_amount|floatformat:2 }}</td>
+                                <td>
+                                    {% if inv.status == 'paid' %}
+                                        <span class="badge bg-success">Paid</span>
+                                    {% elif inv.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif inv.status == 'overdue' %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ inv.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ inv.issued_date|date:"M d, Y" }}</td>
+                                <td>{{ inv.due_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'admin_invoice_detail' inv.id %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

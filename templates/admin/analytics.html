@@ -1,0 +1,146 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Analytics - Admin{% endblock %}
+{% block page_title %}Business Analytics{% endblock %}
+
+{% block content %}
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card stat-primary">
+            <h6>Total Clients</h6>
+            <div class="stat-value">{{ total_clients }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-success">
+            <h6>Active Subscriptions</h6>
+            <div class="stat-value">{{ active_subscriptions }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-warning">
+            <h6>Total Subscriptions</h6>
+            <div class="stat-value">{{ total_subscriptions }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-danger">
+            <h6>Total Revenue</h6>
+            <div class="stat-value">€{{ total_revenue|floatformat:0 }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Monthly Revenue Trend</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Subscription Status</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Clients -->
+{% if top_clients %}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Top Clients by Revenue</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th>Client</th>
+                            <th>Total Revenue</th>
+                            <th>Invoices</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in top_clients %}
+                            <tr>
+                                <td><a href="{% url 'admin_client_detail' item.client.id %}">{{ item.client.company_name }}</a></td>
+                                <td class="fw-bold">€{{ item.total|floatformat:2 }}</td>
+                                <td><a href="{% url 'admin_client_detail' item.client.id %}" class="btn btn-sm btn-outline-primary">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_labels|safe }},
+            datasets: [{
+                label: 'Revenue',
+                data: {{ monthly_data|safe }},
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#0d6efd',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: true } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => '€' + v.toFixed(0) }
+                }
+            }
+        }
+    });
+    
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys({{ status_breakdown|safe }}),
+            datasets: [{
+                data: Object.values({{ status_breakdown|safe }}),
+                backgroundColor: ['#198754', '#ffc107', '#dc3545', '#6c757d']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+{% endblock %}

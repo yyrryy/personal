@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-light: #0a58ca;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .sidebar .nav-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 15px 20px 5px;
+            margin-top: 10px;
+        }
+        
+        .navbar-admin {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.stat-primary { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); }
+        .stat-card.stat-success { background: linear-gradient(135deg, #198754 0%, #146c43 100%); }
+        .stat-card.stat-warning { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: #333; }
+        .stat-card.stat-danger { background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); }
+        
+        .stat-card h6 {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        
+        .table-responsive {
+            border-radius: 0.5rem;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+        
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        .badge {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="px-3 mb-4">
+                    <h5 class="text-white fw-bold mb-0">
+                        <i class="bi bi-speedometer2"></i> Admin Panel
+                    </h5>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <div class="nav-label">Main</div>
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                        <i class="bi bi-house"></i> Dashboard
+                    </a>
+                    
+                    <div class="nav-label">Management</div>
+                    <a href="{% url 'admin_clients' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_clients' %}active{% endif %}">
+                        <i class="bi bi-people"></i> Clients
+                    </a>
+                    <a href="{% url 'admin_subscriptions' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_subscriptions' %}active{% endif %}">
+                        <i class="bi bi-box"></i> Subscriptions
+                    </a>
+                    <a href="{% url 'admin_invoices' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_invoices' %}active{% endif %}">
+                        <i class="bi bi-receipt"></i> Invoices
+                    </a>
+                    
+                    <div class="nav-label">Insights</div>
+                    <a href="{% url 'admin_analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_analytics' %}active{% endif %}">
+                        <i class="bi bi-graph-up"></i> Analytics
+                    </a>
+                    
+                    <hr class="border-light my-3">
+                    
+                    <a href="/admin/" class="nav-link">
+                        <i class="bi bi-gear"></i> Django Admin
+                    </a>
+                    <a href="/dashboard/" class="nav-link">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10">
+                <!-- Top Navbar -->
+                <nav class="navbar navbar-admin sticky-top">
+                    <div class="container-fluid">
+                        <span class="navbar-brand mb-0 h5">
+                            {% block page_title %}Dashboard{% endblock %}
+                        </span>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3 text-muted">
+                                <i class="bi bi-person-circle"></i> {{ request.user.first_name|default:request.user.username }}
+                            </span>
+                            <a href="/accounts/logout/" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <!-- Messages -->
+                {% if messages %}
+                    <div class="container-fluid px-4 pt-3">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- Content -->
+                <div class="container-fluid p-4">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

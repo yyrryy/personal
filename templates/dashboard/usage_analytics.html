@@ -1,0 +1,311 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Usage Analytics - Dashboard{% endblock %}
+{% block page_title %}Usage Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Date Range Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">From Date</label>
+                            <input type="date" name="from_date" class="form-control" value="{{ from_date|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">To Date</label>
+                            <input type="date" name="to_date" class="form-control" value="{{ to_date|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Subscription</label>
+                            <select name="subscription" class="form-select">
+                                <option value="">All Subscriptions</option>
+                                {% for sub in subscriptions %}
+                                    <option value="{{ sub.id }}" {% if sub.id == selected_subscription %}selected{% endif %}>
+                                        {{ sub.software.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel"></i> Apply Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Total Spending</small>
+                            <h4 class="mb-0">€{{ total_spending|floatformat:2 }}</h4>
+                        </div>
+                        <div class="text-primary" style="font-size: 1.5rem;">
+                            <i class="bi bi-cash"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Active Subscriptions</small>
+                            <h4 class="mb-0">{{ active_subscriptions }}</h4>
+                        </div>
+                        <div class="text-success" style="font-size: 1.5rem;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Add-ons Active</small>
+                            <h4 class="mb-0">{{ addons_count }}</h4>
+                        </div>
+                        <div class="text-info" style="font-size: 1.5rem;">
+                            <i class="bi bi-puzzle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Avg Monthly Cost</small>
+                            <h4 class="mb-0">€{{ avg_monthly_cost|floatformat:2 }}</h4>
+                        </div>
+                        <div class="text-warning" style="font-size: 1.5rem;">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Monthly Spending Chart -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Monthly Spending Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cost Breakdown Pie Chart -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Cost Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="costBreakdownChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Breakdown -->
+    <div class="row">
+        <!-- Subscriptions Breakdown -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Subscriptions Breakdown</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if subscriptions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th>Software</th>
+                                        <th>Plan</th>
+                                        <th>Monthly Cost</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sub in subscriptions %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ sub.software.name }}</strong>
+                                            </td>
+                                            <td>{{ sub.hosting_plan.name }}</td>
+                                            <td>€{{ sub.hosting_plan.price|floatformat:2 }}</td>
+                                            <td>
+                                                {% if sub.status == 'active' %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% elif sub.status == 'pending' %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ sub.status|title }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-4 text-center text-muted">
+                            <p>No subscriptions found</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add-ons Breakdown -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+                    <h5 class="mb-0">Active Add-ons</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if addons %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th>Add-on</th>
+                                        <th>Qty</th>
+                                        <th>Unit Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for addon in addons %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ addon.addon.name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ addon.subscription.software.name }}</small>
+                                            </td>
+                                            <td>{{ addon.quantity }}</td>
+                                            <td>€{{ addon.addon.price|floatformat:2 }}</td>
+                                            <td class="fw-600">€{{ addon.get_total_price|floatformat:2 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-4 text-center text-muted">
+                            <p>No add-ons currently active</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Monthly Spending Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_labels|safe }},
+            datasets: [{
+                label: 'Monthly Spending',
+                data: {{ monthly_data|safe }},
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#0d6efd',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '€' + value.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Cost Breakdown Pie Chart
+    const breakdownCtx = document.getElementById('costBreakdownChart').getContext('2d');
+    new Chart(breakdownCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ breakdown_labels|safe }},
+            datasets: [{
+                data: {{ breakdown_data|safe }},
+                backgroundColor: [
+                    '#0d6efd',
+                    '#6c757d',
+                    '#198754',
+                    '#ffc107',
+                    '#fd7e14',
+                    '#dc3545'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

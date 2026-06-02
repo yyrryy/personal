@@ -1,0 +1,121 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Invoice Details - Admin{% endblock %}
+{% block page_title %}{{ invoice.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Invoice Details</h5>
+                <span class="badge bg-{% if invoice.status == 'paid' %}success{% elif invoice.status == 'overdue' %}danger{% else %}warning{% endif %}">{{ invoice.status|title }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Invoice Number</label>
+                        <p class="fw-bold">{{ invoice.invoice_number }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Client</label>
+                        <p><a href="{% url 'admin_client_detail' invoice.subscription.client.id %}">{{ invoice.subscription.client.company_name }}</a></p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Subscription</label>
+                        <p><a href="{% url 'admin_subscription_detail' invoice.subscription.id %}">{{ invoice.subscription.software.name }}</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Billing Period</label>
+                        <p>{{ invoice.issued_date|date:"M Y" }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Issued Date</label>
+                        <p>{{ invoice.issued_date|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Due Date</label>
+                        <p>{{ invoice.due_date|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Paid Date</label>
+                        <p>{{ invoice.paid_date|date:"M d, Y"|default:"-" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Invoice Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-md-8">Subtotal:</div>
+                    <div class="col-md-4 text-end">€{{ invoice.subtotal|floatformat:2 }}</div>
+                </div>
+                {% if invoice.discount_amount > 0 %}
+                    <div class="row mb-2">
+                        <div class="col-md-8">Discount:</div>
+                        <div class="col-md-4 text-end">-€{{ invoice.discount_amount|floatformat:2 }}</div>
+                    </div>
+                {% endif %}
+                <div class="row mb-2">
+                    <div class="col-md-8">Tax ({{ invoice.tax_percentage }}%):</div>
+                    <div class="col-md-4 text-end">+€{{ invoice.tax_amount|floatformat:2 }}</div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8 fw-bold">TOTAL:</div>
+                    <div class="col-md-4 text-end fw-bold">€{{ invoice.total_amount|floatformat:2 }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Invoice Actions</h6>
+            </div>
+            <div class="card-body">
+                {% if invoice.status != 'paid' %}
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_paid">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check"></i> Mark as Paid
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_pending">
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="bi bi-clock"></i> Mark Pending
+                        </button>
+                    </form>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="cancel_invoice">
+                    <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Cancel this invoice?')">
+                        <i class="bi bi-x"></i> Cancel Invoice
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

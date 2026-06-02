@@ -1,0 +1,118 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Subscriptions - Dashboard{% endblock %}
+{% block page_title %}Subscriptions{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Your Subscriptions</h4>
+                <a href="{% url 'main:home' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Subscription
+                </a>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-6">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Subscriptions ({{ subscriptions.count }})</option>
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subscriptions List -->
+    <div class="row">
+        {% if subscriptions %}
+            {% for subscription in subscriptions %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    {{ subscription.software.emoji }} {{ subscription.software.name }}
+                                </h5>
+                                {% if subscription.status == 'active' %}
+                                    <span class="badge-status badge-active">Active</span>
+                                {% elif subscription.status == 'pending' %}
+                                    <span class="badge-status badge-pending">Pending</span>
+                                {% elif subscription.status == 'suspended' %}
+                                    <span class="badge-status badge-suspended">Suspended</span>
+                                {% else %}
+                                    <span class="badge-status badge-cancelled">Cancelled</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="small text-muted mb-2">
+                                    <i class="bi bi-hdd"></i> {{ subscription.hosting_plan.name }}
+                                </div>
+                                <div class="small text-muted mb-2">
+                                    <i class="bi bi-calendar"></i> 
+                                    {% if subscription.billing_cycle == 'monthly' %}
+                                        Monthly billing
+                                    {% else %}
+                                        Yearly billing
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">
+                                    <i class="bi bi-clock-history"></i> 
+                                    Started {{ subscription.start_date|date:"M d, Y" }}
+                                </div>
+                            </div>
+                            
+                            <!-- Addons -->
+                            {% with addon_count=subscription.addons.filter|length %}
+                                {% if addon_count > 0 %}
+                                    <div class="alert alert-sm alert-info py-2 px-3 mb-3" role="alert">
+                                        <small>
+                                            <i class="bi bi-star"></i>
+                                            {{ addon_count }} add-on{{ addon_count|pluralize }}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <!-- Pricing -->
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Monthly Cost:</small>
+                                    <span class="price-tag">€{{ subscription.get_monthly_cost|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="{% url 'dashboard:subscription_detail' subscription.id %}" class="btn btn-sm btn-primary w-100">
+                                <i class="bi bi-arrow-right"></i> Manage
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <h5>No Subscriptions Found</h5>
+                    <p class="text-muted mb-3">You don't have any subscriptions yet.</p>
+                    <a href="{% url 'main:home' %}" class="btn btn-primary">Browse Plans</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

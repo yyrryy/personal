@@ -1,0 +1,113 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Invoices - Dashboard{% endblock %}
+{% block page_title %}Invoices & Billing{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="stat-card">
+                <i class="bi bi-file-earmark-text" style="font-size: 2rem; color: var(--primary-color);"></i>
+                <div class="stat-value">{{ invoices.count }}</div>
+                <div class="stat-label">Total Invoices</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stat-card">
+                <i class="bi bi-check-circle" style="font-size: 2rem; color: var(--success-color);"></i>
+                <div class="stat-value">€{{ total_paid|floatformat:2 }}</div>
+                <div class="stat-label">Paid</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stat-card">
+                <i class="bi bi-exclamation-circle" style="font-size: 2rem; color: var(--warning-color);"></i>
+                <div class="stat-value">€{{ total_pending|floatformat:2 }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Invoices ({{ invoices.count }})</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Invoices Table -->
+    <div class="card">
+        <div class="card-header" style="border-bottom: 1px solid #e9ecef;">
+            <h5 class="mb-0">Invoice History</h5>
+        </div>
+        <div class="card-body">
+            {% if invoices %}
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Subscription</th>
+                                <th>Date</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                                <tr>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                    <td>{{ invoice.subscription.software.name }}</td>
+                                    <td>{{ invoice.issued_date|date:"M d, Y" }}</td>
+                                    <td>{{ invoice.due_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <strong>€{{ invoice.total_amount|floatformat:2 }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if invoice.status == 'paid' %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% elif invoice.status == 'overdue' %}
+                                            <span class="badge bg-danger">Overdue</span>
+                                        {% elif invoice.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ invoice.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'dashboard:invoice_detail' invoice.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state py-5">
+                    <div class="empty-state-icon">📄</div>
+                    <h5>No Invoices Found</h5>
+                    <p class="text-muted">You don't have any invoices matching the current filter.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
