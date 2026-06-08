@@ -3,7 +3,7 @@ import os
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from dashboard.models import Profile, Outraisons, Inraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected
 from django.http import JsonResponse
@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def home(request):
-    return render(request, 'main/home3.html')
+    return render(request, 'main/home5.html')
 CACHE_KEY = "hosting_sizes"
 CACHE_TIMEOUT = 60 * 60 * 12  # 12 hours
 def get_env_float(name, default=None):
@@ -39,6 +39,9 @@ def get_env_value(name):
         raise ValueError(f"{name} is not configured.")
     return value
 
+
+def choose_package(request):
+    return render(request, 'main/choose_package.html')
 
 def format_selected_addons(extras):
     if not isinstance(extras, dict):
@@ -337,6 +340,7 @@ def hosting_plans(request):
             {"error": str(exc)},
             status=502
         )
+@login_required(login_url='login')
 def main(request):
     thismonth=date.today().month
     thisyear=date.today().year
@@ -592,3 +596,9 @@ def receiveexpectedmoney(request):
 #     data = [{"lat": village.lat, "long": village.long, "ishelped": village.ishelped, "isaccessible": village.isaccissible, "habitat": village.habitat} for village in villages]
 
 #     return JsonResponse(data, safe=False)
+
+def deleteexpectedmoney(request):
+    id=request.GET.get('id')
+    money=Moneyexpected.objects.get(pk=id)
+    money.delete()
+    return redirect('main:main')

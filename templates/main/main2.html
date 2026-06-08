@@ -309,44 +309,7 @@
 
       <div class="studio-layout">
         <aside class="side-stack">
-          <section class="panel panel-pad balance-dial">
-            <div>
-              <div class="studio-kicker">Expected Pipeline</div>
-              <div class="balance-number">{{totalmoneyexpected}}</div>
-            </div>
-
-            <form method="get" action="/addexpectedmoney" class="mini-form">
-              <select name="raison" id="raison" class="form-select">
-                {% for i in inraisons %}
-                <option value="{{i.id}}">{{i.raison}}</option>
-                {% endfor %}
-              </select>
-              <input type="number" name="amount" placeholder="Amount" class="form-control">
-              <input type="text" name="note" placeholder="Note" class="form-control">
-              <button type="submit" class="btn btn-light fw-bold">Add expected money</button>
-            </form>
-
-            <div class="d-grid gap-2">
-              {%for i in expectedmoney%}
-              <div class="expected-card">
-                <div>
-                  <strong>{{i.raison}}</strong><br>
-                  <span>{{i.amount}} Dhs - {{i.note}}</span>
-                </div>
-                <form method="get" action="/receiveexpectedmoney">
-                  <input type="hidden" name="id" value="{{i.id}}">
-                  <button class="btn btn-success btn-sm fw-bold">Receive</button>
-                </form>
-              </div>
-              {%endfor%}
-            </div>
-
-            <div>
-              <div class="metric-label">Available Balance</div>
-              <div class="balance-number">--</div>
-            </div>
-
-            <div class="quick-actions">
+          <div class="quick-actions">
               <button type="button" onclick="$('.addbalance').toggleClass('d-none')" class="quick-action in">
                 <i class="fas fa-plus-circle"></i> Add
               </button>
@@ -354,30 +317,6 @@
                 <i class="fas fa-minus-circle"></i> Out
               </button>
             </div>
-          </section>
-
-          <section class="panel panel-pad">
-            <div class="studio-kicker mb-3">Fuel Calculator</div>
-            <div class="fuel-grid">
-              <input type="number" class="form-control km" oninput="calcessence()" placeholder="KM">
-              <input type="number" class="form-control essenceprice" oninput="calcessence()" placeholder="Price/L">
-              <div class="fuel-result">
-                <span><strong class="essenceqty">0</strong> L ess</span>
-                <span><strong class="essencedh">0</strong> Dhs</span>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel panel-pad">
-            <div class="studio-kicker mb-3">Fuel Rhythm</div>
-            <div class="stat-strip" style="grid-template-columns: 1fr 1fr;">
-              <div class="metric"><span class="metric-label">Total</span><span class="metric-value">{{essenceout}}</span></div>
-              <div class="metric"><span class="metric-label">Per day</span><span class="metric-value">{{essenceoutperday}}</span></div>
-              <div class="metric"><span class="metric-label">Provision</span><span class="metric-value">{{thismonthessence}}</span></div>
-              <div class="metric"><span class="metric-label">Next fill</span><span class="metric-value">{{nextfill}}</span></div>
-            </div>
-          </section>
-
           <section class="form-drawer outbalance d-none">
             <div class="studio-kicker mb-3">Register Outflow</div>
             <form id="form-send-money" class="outform mini-form" method="post" action="/outbalance">
@@ -418,6 +357,75 @@
               <button class="btn btn-success fw-bold">Continue</button>
             </form>
           </section>
+          <section class="panel panel-pad balance-dial">
+            <div>
+              <div class="studio-kicker" onclick="$('.expectedmoney').toggleClass('d-none')">Expected Pipeline</div>
+              <div class="balance-number expectedmoney d-none">{{totalmoneyexpected}}</div>
+            </div>
+
+            <form method="get" action="/addexpectedmoney" class="mini-form">
+              <select name="raison" id="raison" class="form-select">
+                {% for i in inraisons %}
+                <option value="{{i.id}}">{{i.raison}}</option>
+                {% endfor %}
+              </select>
+              <input type="number" name="amount" placeholder="Amount" class="form-control">
+              <input type="text" name="note" placeholder="Note" class="form-control">
+              <button type="submit" class="btn btn-light fw-bold">Add expected money</button>
+            </form>
+
+            <div class="d-grid gap-2">
+              {%for i in expectedmoney%}
+              <div class="expected-card">
+                <div>
+                  <strong>{{i.raison}}</strong><br>
+                  <span>{{i.amount}} Dhs - {{i.note}}</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <form method="get" action="/receiveexpectedmoney" style="margin: 0;">
+                    <input type="hidden" name="id" value="{{i.id}}">
+                    <button class="btn btn-success btn-sm fw-bold">Receive</button>
+                  </form>
+                  <form method="get" action="/deleteexpectedmoney" style="margin: 0;">
+                    <input type="hidden" name="id" value="{{i.id}}">
+                    <button class="btn btn-danger btn-sm fw-bold" style="background-color: var(--out); border: 0;">Delete</button>
+                  </form>
+                </div>
+              </div>
+              {%endfor%}
+            </div>
+
+            <div>
+              <div class="metric-label">Available Balance</div>
+              <div class="balance-number">--</div>
+            </div>
+
+            
+          </section>
+
+          <section class="panel panel-pad">
+            <div class="studio-kicker mb-3">Fuel Calculator</div>
+            <div class="fuel-grid">
+              <input type="number" class="form-control km" oninput="calcessence()" placeholder="KM">
+              <input type="number" class="form-control essenceprice" oninput="calcessence()" placeholder="Price/L">
+              <div class="fuel-result">
+                <span><strong class="essenceqty">0</strong> L ess</span>
+                <span><strong class="essencedh">0</strong> Dhs</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel-pad">
+            <div class="studio-kicker mb-3">Fuel Rhythm</div>
+            <div class="stat-strip" style="grid-template-columns: 1fr 1fr;">
+              <div class="metric"><span class="metric-label">Total</span><span class="metric-value">{{essenceout}}</span></div>
+              <div class="metric"><span class="metric-label">Per day</span><span class="metric-value">{{essenceoutperday}}</span></div>
+              <div class="metric"><span class="metric-label">Provision</span><span class="metric-value">{{thismonthessence}}</span></div>
+              <div class="metric"><span class="metric-label">Next fill</span><span class="metric-value">{{nextfill}}</span></div>
+            </div>
+          </section>
+
+          
         </aside>
 
         <main class="main-stack">
