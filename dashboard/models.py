@@ -457,9 +457,9 @@ class Depense(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=2000)
     type = models.CharField(max_length=2000, default='', null=True, blank=True)  # e.g., "task", "idea"
-    imglink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
-    videolink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
-    ytlink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
+    imglink = models.TextField(null=True, blank=True)  # e.g., "task", "idea"
+    videolink = models.TextField(null=True, blank=True)  # e.g., "task", "idea"
+    ytlink = models.TextField(null=True, blank=True)  # e.g., "task", "idea"
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="node_images/", blank=True, null=True)
     x = models.FloatField(default=100)  # position on board
