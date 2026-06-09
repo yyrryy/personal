@@ -358,8 +358,8 @@ class Profile(models.Model):
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True, default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     class Meta:
         ordering = ['-created_at']
