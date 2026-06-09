@@ -336,21 +336,60 @@ class Essance(models.Model):
     
 
 class Profile(models.Model):
-    balance=models.FloatField()
-    birthday=models.DateTimeField()
-    name=models.CharField(default=None, max_length=500, null=True, blank=True)
-    idnumber=models.CharField(default=None, max_length=500, null=True, blank=True)
-    idimage1=models.CharField(default=None, max_length=500, null=True, blank=True)
-    idimage2=models.CharField(default=None, max_length=500, null=True, blank=True)
+    """Extended user profile with role-based access control"""
+    
+    USER_TYPE_CHOICES = [
+        ('superadmin', 'Super Admin'),
+        ('admin', 'Admin'),
+        ('client', 'Client'),
+    ]
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='client')
+    balance = models.FloatField(default=0.0)
+    birthday = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(default=None, max_length=500, null=True, blank=True)
+    idnumber = models.CharField(default=None, max_length=500, null=True, blank=True)
+    idimage1 = models.CharField(default=None, max_length=500, null=True, blank=True)
+    idimage2 = models.CharField(default=None, max_length=500, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    company_name = models.CharField(max_length=500, null=True, blank=True)
+    company_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of business (e.g., Restaurant, Boutique, etc.)")
+    address = models.TextField(null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} ({self.get_user_type_display()})"
+    
     def age(self):
+        if not self.birthday:
+            return None
         now = timezone.now()
         delta = relativedelta(now, self.birthday)
         age = delta.years
         return age
+    
     def age_in_days(self):
+        if not self.birthday:
+            return None
         now = timezone.now()
         delta = now - self.birthday
         return delta.days
+    
+    def is_superadmin(self):
+        return self.user_type == 'superadmin'
+    
+    def is_admin(self):
+        return self.user_type == 'admin'
+    
+    def is_client(self):
+        return self.user_type == 'client'
 # raisons of out of balance
 class Outraisons(models.Model):
     raison=models.TextField()

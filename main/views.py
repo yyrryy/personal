@@ -4,6 +4,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from dashboard.models import Profile, Outraisons, Inraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected
 from django.http import JsonResponse
@@ -17,6 +18,41 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 def home(request):
     return render(request, 'main/home5.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            
+            # Get user profile to check user type
+            try:
+                profile = user.profile
+                if profile.user_type == 'client':
+                    return redirect('main:client_dashboard')
+                elif profile.user_type in ['admin', 'superadmin']:
+                    return redirect('main:admin_dashboard')
+            except Profile.DoesNotExist:
+                # If no profile exists, create one with default client type
+                Profile.objects.create(user=user, user_type='client')
+                return redirect('main:client_dashboard')
+            
+            # Fallback to main if user type is unexpected
+            return redirect('main')
+        else:
+            context = {'error': 'اسم المستخدم أو كلمة المرور غير صحيح'}
+            return render(request, 'main/login.html', context)
+    
+    return render(request, 'main/login.html')
+
+def logout_view(request):
+    """Logout user and redirect to home"""
+    logout(request)
+    return redirect('main:home')
+
 CACHE_KEY = "hosting_sizes"
 CACHE_TIMEOUT = 60 * 60 * 12  # 12 hours
 def get_env_float(name, default=None):
@@ -42,6 +78,44 @@ def get_env_value(name):
 
 def choose_package(request):
     return render(request, 'main/choose_package.html')
+
+@login_required(login_url='login')
+def client_dashboard(request):
+    """Client dashboard view"""
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        # Create profile if it doesn't exist
+        profile = Profile.objects.create(user=request.user, user_type='client')
+    
+    # Get client subscriptions or relevant data
+    context = {
+        'user': request.user,
+        'profile': profile,
+    }
+    return render(request, 'dashboard/client_dashboard.html', context)
+
+@login_required(login_url='login')
+def admin_dashboard(request):
+    """Admin/SuperAdmin dashboard view"""
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect('client_dashboard')
+    
+    # Check if user is admin or superadmin
+    if profile.user_type not in ['admin', 'superadmin']:
+        return redirect('client_dashboard')
+    
+    # Get admin stats
+    from dashboard.models import Subscription, Client
+    context = {
+        'user': request.user,
+        'profile': profile,
+        'is_superadmin': profile.user_type == 'superadmin',
+        'is_admin': profile.user_type == 'admin',
+    }
+    return render(request, 'dashboard/admin_dashboard.html', context)
 
 def format_selected_addons(extras):
     if not isinstance(extras, dict):

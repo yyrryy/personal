@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الإدارة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+<!-- HEADER -->
+<header class="bg-white shadow border-b-4 border-orange-500">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+        🔐 لوحة الإدارة
+      </h1>
+      <p class="text-gray-600 text-sm mt-1">مرحبا {{ user.first_name|default:user.username }}</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="px-3 py-1 rounded-full text-sm font-semibold {% if is_superadmin %}bg-red-100 text-red-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+        {% if is_superadmin %}
+          مسؤول فائق
+        {% else %}
+          مسؤول
+        {% endif %}
+      </span>
+      <a href="/logout" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
+        تسجيل الخروج
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+
+  <!-- STATS SECTION -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    
+    <!-- Total Clients -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-blue-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">إجمالي العملاء</p>
+        <p class="text-4xl font-extrabold text-blue-600 mt-2">0</p>
+        <p class="text-gray-500 text-xs mt-2">عميل مسجل</p>
+      </div>
+    </div>
+
+    <!-- Active Subscriptions -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-green-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">الاشتراكات النشطة</p>
+        <p class="text-4xl font-extrabold text-green-600 mt-2">0</p>
+        <p class="text-gray-500 text-xs mt-2">اشتراك حالي</p>
+      </div>
+    </div>
+
+    <!-- Monthly Revenue -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-purple-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">الإيرادات الشهرية</p>
+        <p class="text-4xl font-extrabold text-purple-600 mt-2">0</p>
+        <p class="text-gray-500 text-xs mt-2">درهم مغربي</p>
+      </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-yellow-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">الطلبات المعلقة</p>
+        <p class="text-4xl font-extrabold text-yellow-600 mt-2">0</p>
+        <p class="text-gray-500 text-xs mt-2">طلب قيد الانتظار</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ADMIN SECTIONS -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-8">
+        <h3 class="text-lg font-bold mb-4">قائمة الإدارة</h3>
+        <nav class="space-y-2">
+          <a href="#clients" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            👥 إدارة العملاء
+          </a>
+          <a href="#subscriptions" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            📦 الاشتراكات
+          </a>
+          <a href="#invoices" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            💵 الفواتير والدفع
+          </a>
+          <a href="#support" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            💬 طلبات الدعم
+          </a>
+          {% if is_superadmin %}
+            <hr class="my-3">
+            <a href="#admins" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+              🔐 إدارة المسؤولين
+            </a>
+            <a href="#settings" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+              ⚙️ إعدادات النظام
+            </a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="lg:col-span-3 space-y-8">
+
+      <!-- Clients Management -->
+      <section id="clients" class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">👥 إدارة العملاء</h3>
+          <a href="#" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+            + عميل جديد
+          </a>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">الاسم</th>
+                <th class="px-4 py-3 text-right font-bold">البريد الإلكتروني</th>
+                <th class="px-4 py-3 text-right font-bold">التاريخ</th>
+                <th class="px-4 py-3 text-right font-bold">الحالة</th>
+                <th class="px-4 py-3 text-right font-bold">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                  لا توجد بيانات عملاء حاليا
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Subscriptions Management -->
+      <section id="subscriptions" class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">📦 الاشتراكات</h3>
+          <a href="#" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+            + باقة جديدة
+          </a>
+        </div>
+        
+        <div class="text-center py-12 text-gray-500">
+          <p>لا توجد اشتراكات مسجلة</p>
+        </div>
+      </section>
+
+      <!-- Invoices & Payments -->
+      <section id="invoices" class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-2xl font-bold mb-6">💵 الفواتير والدفع</h3>
+        
+        <div class="text-center py-12 text-gray-500">
+          <p>لا توجد فواتير مسجلة</p>
+        </div>
+      </section>
+
+      <!-- Support Requests -->
+      <section id="support" class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-2xl font-bold mb-6">💬 طلبات الدعم</h3>
+        
+        <div class="text-center py-12 text-gray-500">
+          <p>لا توجد طلبات دعم معلقة</p>
+        </div>
+      </section>
+
+      {% if is_superadmin %}
+      <!-- Admin Management (SuperAdmin Only) -->
+      <section id="admins" class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-red-500">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">🔐 إدارة المسؤولين</h3>
+          <a href="#" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
+            + مسؤول جديد
+          </a>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">الاسم</th>
+                <th class="px-4 py-3 text-right font-bold">البريد الإلكتروني</th>
+                <th class="px-4 py-3 text-right font-bold">الدور</th>
+                <th class="px-4 py-3 text-right font-bold">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                  لا توجد مسؤولين مسجلين
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- System Settings (SuperAdmin Only) -->
+      <section id="settings" class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-purple-500">
+        <h3 class="text-2xl font-bold mb-6">⚙️ إعدادات النظام</h3>
+        
+        <div class="space-y-6">
+          <div class="p-4 border rounded-lg">
+            <h4 class="font-bold mb-2">🔧 الإعدادات الأساسية</h4>
+            <p class="text-sm text-gray-600">قم بإدارة الإعدادات العامة للنظام</p>
+          </div>
+          <div class="p-4 border rounded-lg">
+            <h4 class="font-bold mb-2">📧 إعدادات البريد الإلكتروني</h4>
+            <p class="text-sm text-gray-600">قم بتعديل إعدادات البريد والإشعارات</p>
+          </div>
+          <div class="p-4 border rounded-lg">
+            <h4 class="font-bold mb-2">📊 تقارير النظام</h4>
+            <p class="text-sm text-gray-600">عرض تقارير الأداء والإحصائيات</p>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

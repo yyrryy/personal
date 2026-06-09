@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة العميل</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui;
+    }
+    .sidebar-active {
+      @apply bg-blue-100 text-blue-900 border-r-4 border-blue-600;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+<!-- HEADER -->
+<header class="bg-white shadow">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+        👤 لوحة العميل
+      </h1>
+      <p class="text-gray-600 text-sm mt-1">مرحبا {{ user.first_name|default:user.username }}</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+        عميل
+      </span>
+      <a href="/logout" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
+        تسجيل الخروج
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+
+  <!-- CARDS SECTION -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    
+    <!-- Balance Card -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-blue-500">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-gray-600 text-sm font-semibold">الرصيد الحالي</p>
+          <p class="text-4xl font-extrabold text-blue-600 mt-2">
+            {{ profile.balance|floatformat:2 }}
+          </p>
+          <p class="text-gray-500 text-xs mt-2">درهم مغربي</p>
+        </div>
+        <span class="text-4xl">💰</span>
+      </div>
+    </div>
+
+    <!-- Profile Status Card -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-green-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">حالة الحساب</p>
+        {% if profile.is_verified %}
+          <p class="text-lg font-bold text-green-600 mt-2">✓ حساب موثق</p>
+        {% else %}
+          <p class="text-lg font-bold text-yellow-600 mt-2">⚠ في انتظار التوثيق</p>
+        {% endif %}
+        <p class="text-gray-500 text-xs mt-2">{{ profile.user_type|upper }}</p>
+      </div>
+    </div>
+
+    <!-- Company Card -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-purple-500">
+      <div>
+        <p class="text-gray-600 text-sm font-semibold">المتجر</p>
+        <p class="text-lg font-bold text-gray-900 mt-2">
+          {{ profile.company_name|default:"لم يتم تحديده" }}
+        </p>
+        <p class="text-gray-500 text-xs mt-2">
+          {{ profile.company_type|default:"نوع النشاط" }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTIONS -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-8">
+        <h3 class="text-lg font-bold mb-4">الخيارات الرئيسية</h3>
+        <nav class="space-y-2">
+          <a href="#subscriptions" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            📦 الاشتراكات
+          </a>
+          <a href="#invoices" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            📄 الفواتير
+          </a>
+          <a href="#support" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            💬 الدعم الفني
+          </a>
+          <a href="#profile" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            ⚙️ إعدادات الحساب
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="lg:col-span-2 space-y-8">
+
+      <!-- Subscriptions Section -->
+      <section id="subscriptions" class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">📦 اشتراكاتك</h3>
+          <a href="/choose_package" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+            + اشتراك جديد
+          </a>
+        </div>
+        
+        <div class="text-center py-12 text-gray-500">
+          <p>لا توجد اشتراكات نشطة حاليا</p>
+          <p class="text-sm mt-2">اختر باقة مناسبة لنشاطك التجاري</p>
+        </div>
+      </section>
+
+      <!-- Invoices Section -->
+      <section id="invoices" class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-2xl font-bold mb-6">📄 الفواتير الأخيرة</h3>
+        <div class="text-center py-12 text-gray-500">
+          <p>لم تقم بأي عملية شراء حتى الآن</p>
+        </div>
+      </section>
+
+      <!-- Support Section -->
+      <section id="support" class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-2xl font-bold mb-6">💬 الدعم الفني</h3>
+        <div class="space-y-4">
+          <a href="https://wa.me/+212688524320" class="block p-4 border-2 border-green-200 rounded-xl hover:bg-green-50 transition">
+            <p class="font-bold text-green-700">📱 واتساب</p>
+            <p class="text-sm text-gray-600">06 88 52 43 20</p>
+          </a>
+          <div class="p-4 border-2 border-blue-200 rounded-xl bg-blue-50">
+            <p class="font-bold text-blue-700">📧 البريد الإلكتروني</p>
+            <p class="text-sm text-gray-600">support@example.com</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
