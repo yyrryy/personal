@@ -101,11 +101,11 @@ def admin_dashboard(request):
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
-        return redirect('client_dashboard')
+        return redirect('main:client_dashboard')
     
     # Check if user is admin or superadmin
     if profile.user_type not in ['admin', 'superadmin']:
-        return redirect('client_dashboard')
+        return redirect('main:client_dashboard')
     
     # Get admin stats
     from dashboard.models import Subscription, Client
