@@ -74,12 +74,26 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+usesqlite = os.getenv('DEBUG')=='True' or os.getenv('HOME')=='/home/aaliali'
+print("usesqlite=", usesqlite)
+if usesqlite:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'mydb',
+            'USER': 'personal',
+            'PASSWORD': 'gadwad123',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 ENV_PATH = BASE_DIR / ".env"
