@@ -455,11 +455,11 @@ class Depense(models.Model):
         return str(self.date)
     
 class Node(models.Model):
-    title = models.CharField(max_length=200)
-    type = models.CharField(max_length=200, default='', null=True, blank=True)  # e.g., "task", "idea"
-    imglink = models.CharField(max_length=200, default=None, null=True, blank=True)  # e.g., "task", "idea"
-    videolink = models.CharField(max_length=200, default=None, null=True, blank=True)  # e.g., "task", "idea"
-    ytlink = models.CharField(max_length=200, default=None, null=True, blank=True)  # e.g., "task", "idea"
+    title = models.CharField(max_length=2000)
+    type = models.CharField(max_length=2000, default='', null=True, blank=True)  # e.g., "task", "idea"
+    imglink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
+    videolink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
+    ytlink = models.CharField(max_length=2000, default=None, null=True, blank=True)  # e.g., "task", "idea"
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="node_images/", blank=True, null=True)
     x = models.FloatField(default=100)  # position on board
@@ -471,7 +471,7 @@ class Node(models.Model):
 class Connection(models.Model):
     source = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="connections_from")
     target = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="connections_to")
-    label = models.CharField(max_length=200, blank=True)
+    label = models.CharField(max_length=2000, blank=True)
     color = models.CharField(max_length=20, default="#000")  # optional color
 
     def __str__(self):
