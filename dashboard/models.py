@@ -360,7 +360,7 @@ class Outraisons(models.Model):
         return self.raison
 
 # raisons of in of balance
-class Inraisons(models.Model):
+class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_user', default=None, null=True)
     company_name = models.CharField(max_length=300, default=None, null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True, default=None, null=True)
