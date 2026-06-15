@@ -8,7 +8,7 @@ All subscription management models have been created and migrated to the databas
 1. **Software** - Product offerings (e.g., Restaurant Management)
 2. **HostingPlan** - Infrastructure options (Shared, VPS, Dedicated, Cloud)
 3. **Addon** - Optional features (Support, Analytics, Storage, etc.)
-4. **Client** - Customer profiles linked to Django Users
+4. **Inraisons** - Customer profiles linked to Django Users
 5. **Subscription** - Customer subscriptions with billing tracking
 6. **SubscriptionAddon** - Add-on purchases (many-to-many with quantities)
 7. **Invoice** - Billing and payment tracking
@@ -36,7 +36,7 @@ Then visit: `http://localhost:8000/admin/`
 | **Software** | Add products, manage pricing, set emoji icons |
 | **HostingPlan** | Create hosting tiers with resource limits, SLA settings |
 | **Addon** | Define add-on packages with types and pricing |
-| **Client** | Manage customer profiles, verification, company info |
+| **Inraisons** | Manage customer profiles, verification, company info |
 | **Subscription** | Create/manage subscriptions with bulk actions (Activate, Suspend, Cancel) |
 | **Invoice** | Create invoices, track payments, mark as paid/overdue |
 | **SubscriptionHistory** | View immutable audit trail (read-only) |
@@ -58,7 +58,7 @@ Then visit: `http://localhost:8000/admin/`
 - **Invoice Management**: Track payment status and methods
 
 ### 👥 Customer Management
-- **Unified Client Profiles**: One profile per user with company details
+- **Unified Inraisons Profiles**: One profile per user with company details
 - **Active Subscriptions Overview**: See active subscriptions per customer
 - **Verification Tracking**: Mark customers as verified/KYC approved
 
@@ -130,14 +130,14 @@ Addon.objects.create(
 ### Create a Customer Subscription
 ```python
 from django.contrib.auth.models import User
-from dashboard.models import Client, Subscription, SubscriptionAddon, Addon
+from dashboard.models import Inraisons, Subscription, SubscriptionAddon, Addon
 
 # Get or create user and client
 user, _ = User.objects.get_or_create(
     username='customer@example.com',
     email='customer@example.com'
 )
-client, _ = Client.objects.get_or_create(
+client, _ = Inraisons.objects.get_or_create(
     user=user,
     company_name="Acme Corporation"
 )
@@ -213,7 +213,7 @@ SubscriptionHistory.objects.create(
 ```
 Django User
     ↓
-  Client (1:1)
+  Inraisons (1:1)
     ↓
   Subscription (1:Many)
     ├─ Software (Many:1)
@@ -284,7 +284,7 @@ Monthly Cost
 4. Save
 
 ### Create Subscription for Customer
-1. Go to Dashboard Admin → Client
+1. Go to Dashboard Admin → Inraisons
 2. Find or create customer
 3. Go to Dashboard Admin → Subscription
 4. Click "Add Subscription"

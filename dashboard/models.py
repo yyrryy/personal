@@ -91,7 +91,7 @@ class Subscription(models.Model):
         ('yearly', 'Yearly'),
     ]
 
-    client = models.ForeignKey('Client', on_delete=models.CASCADE, related_name='subscriptions')
+    client = models.ForeignKey('Inraisons', on_delete=models.CASCADE, related_name='subscriptions')
     software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='subscriptions')
     hosting_plan = models.ForeignKey(HostingPlan, on_delete=models.PROTECT, related_name='subscriptions')
     
@@ -304,7 +304,7 @@ class Profile(models.Model):
     USER_TYPE_CHOICES = [
         ('superadmin', 'Super Admin'),
         ('admin', 'Admin'),
-        ('client', 'Client'),
+        ('client', 'Inraisons'),
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', default=None, null=True)
@@ -360,7 +360,7 @@ class Outraisons(models.Model):
         return self.raison
 
 # raisons of in of balance
-class Client(models.Model):
+class Inraisons(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_user', default=None, null=True)
     company_name = models.CharField(max_length=300, default=None, null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True, default=None, null=True)
@@ -388,7 +388,7 @@ class Inbalance(models.Model):
     moneyexpected=models.ForeignKey('Moneyexpected', on_delete=models.CASCADE, default=None, null=True, blank=True)
     amount=models.FloatField()
     date=models.DateTimeField(default=None, null=True, blank=True)
-    raison=models.ForeignKey('Client', on_delete=models.CASCADE)
+    raison=models.ForeignKey('Inraisons', on_delete=models.CASCADE)
     note=models.TextField(default=None, null=True, blank=True)
     
         
@@ -483,7 +483,7 @@ class RoadmapItem(models.Model):
     
 class Moneyexpected(models.Model):
     amount=models.FloatField()
-    raison=models.ForeignKey('Client', on_delete=models.CASCADE)
+    raison=models.ForeignKey('Inraisons', on_delete=models.CASCADE)
     # wether I get it or not
     # mode: whether it is monthly or yearly or one time
     mode=models.CharField(max_length=500, default='one time')

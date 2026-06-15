@@ -6,7 +6,7 @@ from urllib.request import Request, urlopen
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from dashboard.models import Profile, Outraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected,Client
+from dashboard.models import Profile, Outraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected,Inraisons
 from django.http import JsonResponse
 from itertools import chain
 from datetime import date, timedelta
@@ -97,7 +97,7 @@ def client_dashboard(request):
     except Profile.DoesNotExist:
         # Create profile if it doesn't exist
         profile = Profile.objects.create(user=request.user, user_type='client')
-    client=Client.objects.get(user=request.user)
+    client=Inraisons.objects.get(user=request.user)
     # Get client subscriptions or relevant data
     context = {
         'user': request.user,
@@ -206,7 +206,7 @@ def api_get_clients(request):
     from django.contrib.auth.models import User
     
     clients = []
-    for client in Client.objects.all():
+    for client in Inraisons.objects.all():
         clients.append({
             'id': client.id,
             'name': client.name,
@@ -244,7 +244,7 @@ def api_create_subscription(request):
         
         try:
             # Get related objects
-            client = Client.objects.get(id=client_id)
+            client = Inraisons.objects.get(id=client_id)
             software = Software.objects.get(id=software_id)
             hosting_plan = HostingPlan.objects.get(id=hosting_plan_id)
             
@@ -302,7 +302,7 @@ def api_subscription_options(request):
     
     # Get clients
     clients = []
-    for client in Client.objects.all():
+    for client in Inraisons.objects.all():
         clients.append({
             'id': client.id,
             'name': client.company_name,
@@ -962,7 +962,7 @@ def main(request):
         'title': 'Dashboard',
         'profile': profile,
         'outraisons': Outraisons.objects.all(),
-        'clients': Client.objects.all(),
+        'clients': Inraisons.objects.all(),
         'releve': releve,
         'thismonthin':totalthismonthin,
         'thismonthout':totalthismonthout,
@@ -985,7 +985,7 @@ def addtobalance(request):
     amountin=request.POST.get('amountin')
     raison=request.POST.get('raisonin')
     Inbalance.objects.create(amount=amountin, raison_id=raison, date=timezone.now())
-    inraisons=Client.objects.get(pk=raison)
+    inraisons=Inraisons.objects.get(pk=raison)
     if inraisons.rest>0:
         inraisons.rest-=float(amountin)
         inraisons.save()
@@ -1096,7 +1096,7 @@ def getsource(request):
     return JsonResponse({
         'trs':render(request, 'main/source.html', {'releve':balancein}).content.decode('utf-8'),
         'total':total['total'],
-        'rest':Client.objects.get(pk=source).rest
+        'rest':Inraisons.objects.get(pk=source).rest
     })
 
 def adjustsold(request):
@@ -1133,7 +1133,7 @@ def receiveexpectedmoney(request):
     id=request.GET.get('id')
     amount=request.GET.get('amount')
     money=Moneyexpected.objects.get(pk=id)
-    # from_reason = Client.objects.get(pk=money.raison_id,)
+    # from_reason = Inraisons.objects.get(pk=money.raison_id,)
     Inbalance.objects.create(moneyexpected=money, amount=amount, raison_id=money.raison_id, note=money.note, date=timezone.now())
     money.rest -= float(amount)
     if money.rest == 0:

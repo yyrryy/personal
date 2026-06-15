@@ -3,7 +3,7 @@
 ## 🎯 Objective Completed
 Built a complete customer dashboard subscription management system with models for:
 - Hosting plans
-- Clients  
+- Inraisonss  
 - Add-ons
 - Subscriptions
 - Invoicing
@@ -20,8 +20,8 @@ Built a complete customer dashboard subscription management system with models f
 | **Software** | Products | Base pricing, emoji icons, active/inactive status |
 | **HostingPlan** | Infrastructure | Tiers (Shared/VPS/Dedicated/Cloud), SLA, resources |
 | **Addon** | Optional Features | Types, required/optional, quantity limits |
-| **Client** | Customers | Linked to Django User, company info, verification |
-| **Subscription** | Core Entity | Client→Software mapping, billing, auto-renewal |
+| **Inraisons** | Customers | Linked to Django User, company info, verification |
+| **Subscription** | Core Entity | Inraisons→Software mapping, billing, auto-renewal |
 | **SubscriptionAddon** | Junction | Many-to-many with quantities, add/remove tracking |
 | **Invoice** | Billing | Tax, discount, payment tracking, status workflow |
 | **SubscriptionHistory** | Audit Trail | Immutable history, before/after values, user attribution |
@@ -43,7 +43,7 @@ Built a complete customer dashboard subscription management system with models f
 - Required flag for mandatory add-ons
 - Quantity limit configuration
 
-✅ **Client Admin**
+✅ **Inraisons Admin**
 - Active subscription count display
 - Verification tracking
 - Geographic and VAT information
@@ -75,7 +75,7 @@ Built a complete customer dashboard subscription management system with models f
 ```
 Django User (auth)
     ↓ (1:1)
-Client
+Inraisons
     ↓ (1:N)
 Subscription
     ├─→ Software (N:1)
@@ -178,7 +178,7 @@ invoice.mark_as_overdue()            # → Set status='overdue'
 addon.deactivate()                   # → Deactivate and record removed_date
 ```
 
-### Client Properties
+### Inraisons Properties
 ```python
 client.active_subscriptions          # → Returns queryset of active subscriptions
 client.monthly_cost                  # → Total monthly cost of all active subs
@@ -201,7 +201,7 @@ client.monthly_cost                  # → Total monthly cost of all active subs
 - Decimal fields for accurate financial calculations
 
 ### Privacy
-- Client profiles linked to users (no duplicate customer records)
+- Inraisons profiles linked to users (no duplicate customer records)
 - Optional fields for non-required data
 - VAT number field for business compliance
 
@@ -276,7 +276,7 @@ Addon.objects.bulk_create([
 
 # Create customer
 user = User.objects.create_user(username='customer@example.com', email='customer@example.com')
-client = Client.objects.create(user=user, company_name="Acme Inc")
+client = Inraisons.objects.create(user=user, company_name="Acme Inc")
 
 # Create subscription
 sub = Subscription.objects.create(
@@ -408,7 +408,7 @@ python manage.py runserver
 1. Add Software products
 2. Add HostingPlans
 3. Add Addons
-4. Create test Clients
+4. Create test Inraisonss
 5. Create test Subscriptions
 6. Create Invoices
 
