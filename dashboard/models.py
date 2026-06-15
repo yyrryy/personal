@@ -506,3 +506,13 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+
+class Todo(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    is_completed = models.BooleanField(default=False)
+    due_date = models.DateTimeField(null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='todos', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.title} - {'Done' if self.is_completed else 'Pending'}"
