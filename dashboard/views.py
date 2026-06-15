@@ -9,7 +9,7 @@ from datetime import timedelta
 from decimal import Decimal
 import json
 
-from .models import Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory, Client, Moneyexpected, Inbalance
+from .models import Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory, Client, Moneyexpected, Inbalance, Todo
 
 
 def get_client_or_none(request):
@@ -480,10 +480,7 @@ def admin_dashboard(request):
     """Admin dashboard overview with key metrics"""
     total_clients = Client.objects.count()
     active_subscriptions = Subscription.objects.filter(status='active').count()
-    total_revenue = sum(
-        Decimal(str(inv.total_amount)) 
-        for inv in Invoice.objects.filter(status='paid')
-    )
+    
     pending_invoices = Invoice.objects.filter(status__in=['pending', 'overdue']).count()
     
     # Recent activity
@@ -497,6 +494,7 @@ def admin_dashboard(request):
         'pending_invoices': pending_invoices,
         'recent_subscriptions': recent_subscriptions,
         'recent_invoices': recent_invoices,
+        'todos': Todo.objects.filter(is_completed=False)
     }
     
     return render(request, 'admin/dashboard.html', context)
