@@ -70,12 +70,14 @@
             </h2>
             <p class="text-blue-100 text-sm mt-1">تطوير تطبيقات ومواقع وبرامج مخصصة</p>
           </div>
+          {% if request.user.is_superuser %}
           <button onclick="openServiceModal('software')" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             إضافة خدمة
           </button>
+          {% endif %}
         </div>
       </div>
       <div class="p-6">
@@ -114,12 +116,14 @@
             </h2>
             <p class="text-purple-100 text-sm mt-1">استضافة مواقع وخوادم وسحابة</p>
           </div>
+          {% if request.user.is_superuser %}
           <button onclick="openServiceModal('hosting')" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             إضافة خدمة
           </button>
+          {% endif %}
         </div>
       </div>
       <div class="p-6">
@@ -171,12 +175,14 @@
             </h2>
             <p class="text-green-100 text-sm mt-1">خدمات استشارية وتسويقية ودعم فني</p>
           </div>
-          <button onclick="openServiceModal('other')" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            إضافة خدمة
-          </button>
+          {% if request.user.is_superuser %}
+            <button onclick="openServiceModal('other')" class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              إضافة خدمة
+            </button>
+          {% endif %}
         </div>
       </div>
       <div class="p-6">
