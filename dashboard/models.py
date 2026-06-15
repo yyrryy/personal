@@ -369,7 +369,7 @@ class Client(models.Model):
     address = models.TextField(blank=True, default=None, null=True)
     vat_number = models.CharField(max_length=50, blank=True, unique=True, null=True, default=None)
     is_verified = models.BooleanField(default=False)
-    name=models.TextField()
+    name=models.TextField(default=None, null=True, blank=True)
     #ch!7al b9a 3ndo
     rest=models.FloatField(default=0.0)
     #ignored means that I will not count it in the total balance(ref 544R34RR), but I want to keep it for record
