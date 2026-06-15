@@ -9,7 +9,7 @@ from datetime import timedelta
 from decimal import Decimal
 import json
 
-from .models import Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory, Inraisons, Moneyexpected, Inbalance
+from .models import Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory, Client, Moneyexpected, Inbalance
 
 
 def get_client_or_none(request):
@@ -17,7 +17,7 @@ def get_client_or_none(request):
     if request.user.is_authenticated:
         try:
             return request.user.client_profile
-        except Inraisons.DoesNotExist:
+        except Client.DoesNotExist:
             return None
     return None
 
@@ -424,7 +424,7 @@ def client_onboarding(request):
     try:
         client = request.user.client_profile
         return redirect('dashboard:dashboard_home')
-    except Inraisons.DoesNotExist:
+    except Client.DoesNotExist:
         pass
     
     if request.method == 'POST':
@@ -438,7 +438,7 @@ def client_onboarding(request):
         state = request.POST.get('state', '')
         
         # Create client profile
-        client = Inraisons.objects.create(
+        client = Client.objects.create(
             user=request.user,
             company_name=company_name,
             phone=phone,
@@ -478,7 +478,7 @@ def staff_required(view_func):
 @staff_required
 def admin_dashboard(request):
     """Admin dashboard overview with key metrics"""
-    total_clients = Inraisons.objects.count()
+    total_clients = Client.objects.count()
     active_subscriptions = Subscription.objects.filter(status='active').count()
     total_revenue = sum(
         Decimal(str(inv.total_amount)) 
@@ -506,7 +506,7 @@ def admin_dashboard(request):
 def admin_clients(request):
     """Manage all clients"""
     search_query = request.GET.get('q', '')
-    clients = Inraisons.objects.all()
+    clients = Client.objects.all()
     
     if search_query:
         clients = clients.filter(
@@ -528,7 +528,7 @@ def admin_clients(request):
 @staff_required
 def admin_client_detail(request, client_id):
     """View and manage specific client"""
-    client = get_object_or_404(Inraisons, id=client_id)
+    client = get_object_or_404(Client, id=client_id)
     subscriptions = client.subscriptions.all()
     invoices = Invoice.objects.filter(subscription__client=client).order_by('-issued_date')
     context = {
@@ -700,7 +700,7 @@ def admin_analytics(request):
     
     # Top clients by revenue
     top_clients = []
-    clients = Inraisons.objects.all()
+    clients = Client.objects.all()
     for client in clients[:10]:
         client_invoices = Invoice.objects.filter(
             subscription__client=client,
@@ -720,7 +720,7 @@ def admin_analytics(request):
         'top_clients': top_clients[:5],
         'total_subscriptions': Subscription.objects.count(),
         'active_subscriptions': Subscription.objects.filter(status='active').count(),
-        'total_clients': Inraisons.objects.count(),
+        'total_clients': Client.objects.count(),
     }
     
     return render(request, 'admin/analytics.html', context)

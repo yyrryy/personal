@@ -63,7 +63,7 @@ Optional add-ons that can be purchased with a subscription (e.g., Email Support,
 
 ---
 
-### 4. **Inraisons**
+### 4. **Client**
 Customer profile linked to Django User account.
 
 **Fields:**
@@ -88,7 +88,7 @@ Customer profile linked to Django User account.
 Represents a customer's subscription to a software + hosting plan combination.
 
 **Fields:**
-- `client` (ForeignKey to Inraisons) - Customer
+- `client` (ForeignKey to Client) - Customer
 - `software` (ForeignKey to Software) - Subscribed software
 - `hosting_plan` (ForeignKey to HostingPlan) - Selected hosting infrastructure
 - `status` (CharField, choices) - Pending, Active, Suspended, Cancelled, Expired
@@ -131,7 +131,7 @@ Junction model linking Subscriptions to Addons with quantity.
 
 **Methods:**
 - `deactivate()` - Deactivate addon and record removal date
-- `__str__()` - Returns "Inraisons - AddonName (x Quantity)"
+- `__str__()` - Returns "Client - AddonName (x Quantity)"
 
 **Usage Example:**
 ```python
@@ -190,7 +190,7 @@ Audit trail tracking all changes to subscriptions for compliance and troubleshoo
 ```
 User (Django)
   ↓
-Inraisons (One-to-One)
+Client (One-to-One)
   ↓
 Subscription (One-to-Many)
   ├─ Software (Many-to-One)
@@ -221,21 +221,21 @@ Subscription (One-to-Many)
 - Filters: Type, Required, Active status
 - Auto-generated slug from name
 
-### Inraisons Admin
+### Client Admin
 - List view: Company name, Email, Phone, Country, Verified status
 - Inline display of active subscriptions count
 - Filters: Verification status, Country, Creation date
 - Search: By company, email, VAT number
 
 ### Subscription Admin
-- List view: Inraisons, Software, Hosting Plan, Status, Billing Cycle, Monthly Cost
+- List view: Client, Software, Hosting Plan, Status, Billing Cycle, Monthly Cost
 - Inline editing of attached addons
 - Display monthly and yearly cost calculations
 - Bulk actions: Activate, Suspend, Cancel subscriptions
 - Filters: Status, Billing cycle, Software, Hosting plan
 
 ### Invoice Admin
-- List view: Invoice number, Inraisons, Status, Total Amount, Dates
+- List view: Invoice number, Client, Status, Total Amount, Dates
 - Bulk actions: Mark as paid, Mark as overdue
 - Status tracking and payment method recording
 
@@ -252,11 +252,11 @@ Subscription (One-to-Many)
 
 ```python
 from django.contrib.auth.models import User
-from dashboard.models import Inraisons, Software, HostingPlan, Subscription, Addon, SubscriptionAddon
+from dashboard.models import Client, Software, HostingPlan, Subscription, Addon, SubscriptionAddon
 
 # Get or create client
 user = User.objects.get(username='customer@example.com')
-client = Inraisons.objects.get(user=user)
+client = Client.objects.get(user=user)
 
 # Get software and hosting plan
 software = Software.objects.get(slug='restaurant-management')
