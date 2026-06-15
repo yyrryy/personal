@@ -361,7 +361,7 @@ class Outraisons(models.Model):
 
 # raisons of in of balance
 class Client(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_user', default=None, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_user', default=None, null=True, blank=True)
     company_name = models.CharField(max_length=300, default=None, null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True, default=None, null=True)
     country = models.CharField(max_length=100, blank=True, default=None, null=True)
