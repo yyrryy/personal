@@ -350,7 +350,7 @@
               <label class="field-label" for="raisonin">Payment Method</label>
               <select id="raisonin" name="raisonin" class="form-select" required>
                 <option value="">Select Payment Method</option>
-                {% for i in inraisons %}
+                {% for i in clients %}
                 <option value="{{i.id}}">{{i}}</option>
                 {% endfor %}
               </select>
@@ -364,9 +364,10 @@
             </div>
 
             <form method="get" action="/addexpectedmoney" class="mini-form">
+              
               <select name="raison" id="raison" class="form-select">
-                {% for i in inraisons %}
-                <option value="{{i.id}}">{{i.raison}}</option>
+                {% for i in clients %}
+                <option value="{{i.id}}">{{i}}</option>
                 {% endfor %}
               </select>
               <input type="number" name="amount" placeholder="Amount" class="form-control">
@@ -474,7 +475,7 @@
                 <div class="studio-kicker mb-2">Ledger Filter</div>
                 <select name="" class="form-select source-select" onchange="getsource(event)">
                   <option value="">Source</option>
-                  {% for i in inraisons %}
+                  {% for i in clients %}
                   <option value="{{i.id}}">{{i}}</option>
                   {% endfor %}
                 </select>

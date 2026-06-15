@@ -9,7 +9,7 @@ from datetime import timedelta
 from decimal import Decimal
 import json
 
-from .models import Client, Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory
+from .models import Subscription, SubscriptionAddon, Addon, Invoice, Software, HostingPlan, SubscriptionHistory, Client, Moneyexpected, Inbalance
 
 
 def get_client_or_none(request):
@@ -24,27 +24,12 @@ def get_client_or_none(request):
 
 @login_required(login_url='login')
 def dashboard_home(request):
-    """Main customer dashboard view"""
-    client = get_client_or_none(request)
-    
-    if not client:
-        return redirect('dashboard:client_onboarding')
-    
-    context = {
-        'client': client,
-        'subscriptions': client.subscriptions.all(),
-        'active_subscriptions': client.active_subscriptions.all(),
-        'invoices': Invoice.objects.filter(
-            subscription__client=client
-        ).order_by('-issued_date')[:5],
-        'total_monthly_cost': client.monthly_cost,
-        'pending_invoices': Invoice.objects.filter(
-            subscription__client=client,
-            status__in=['pending', 'overdue']
-        ).count(),
-    }
-    
-    return render(request, 'dashboard/dashboard_home.html', context)
+    profile = request.user.profile
+    if profile.user_type == 'client':
+        return redirect('main:client_dashboard')
+    else:
+        return redirect('main:admin_dashboard')
+    return redirect('main:login')
 
 
 @login_required(login_url='login')
@@ -531,7 +516,6 @@ def admin_clients(request):
             Q(user__last_name__icontains=search_query)
         )
     
-    clients = clients.order_by('-created_at')
     
     context = {
         'clients': clients,
@@ -547,15 +531,16 @@ def admin_client_detail(request, client_id):
     client = get_object_or_404(Client, id=client_id)
     subscriptions = client.subscriptions.all()
     invoices = Invoice.objects.filter(subscription__client=client).order_by('-issued_date')
-    
     context = {
         'client': client,
+        'expectedmony': Moneyexpected.objects.filter(raison=client),
         'subscriptions': subscriptions,
         'invoices': invoices,
         'total_spending': sum(Decimal(str(inv.total_amount)) for inv in invoices if inv.status == 'paid'),
+        'totalexpectedmoney': sum(Decimal(str(em.rest)) for em in Moneyexpected.objects.filter(raison=client)),
     }
     
-    return render(request, 'admin/client_detail.html', context)
+    return render(request, 'dashboard/client_detail.html', context)
 
 
 @staff_required
@@ -741,3 +726,14 @@ def admin_analytics(request):
     return render(request, 'admin/analytics.html', context)
 
 
+def money_expected_details(request):
+    id=request.GET.get('id')
+    inbalance=Inbalance.objects.filter(moneyexpected_id=id)
+    return JsonResponse(list(inbalance.values()), safe=False)
+
+def services(request):
+    ctx = {
+        'hostings': HostingPlan.objects.filter(is_active=True).order_by('monthly_price'),
+        'addons': Addon.objects.filter(is_active=True).order_by('monthly_price'),
+    }
+    return render(request, 'dashboard/services.html', ctx)

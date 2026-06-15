@@ -5,7 +5,7 @@ urlpatterns = [
     # Dashboard main
     path('', views.dashboard_home, name='dashboard_home'),
     path('onboarding/', views.client_onboarding, name='client_onboarding'),
-    
+    path('services/', views.services, name='services'),
     # Subscriptions
     path('subscriptions/', views.subscriptions_list, name='subscriptions_list'),
     path('subscription/<int:subscription_id>/', views.subscription_detail, name='subscription_detail'),
@@ -35,5 +35,7 @@ urlpatterns = [
     path('admin/invoices/', views.admin_invoices, name='admin_invoices'),
     path('admin/invoice/<int:invoice_id>/', views.admin_invoice_detail, name='admin_invoice_detail'),
     path('admin/analytics/', views.admin_analytics, name='admin_analytics'),
+    # === API ROUTES ===
+    path('api/admin/money_expected_details', views.money_expected_details, name='money_expected_details'),
 ]
 

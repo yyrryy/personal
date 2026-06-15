@@ -1,46 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة الإدارة</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: ui-sans-serif, system-ui;
-    }
-  </style>
-</head>
+{% extends 'dashboard/adminbase.html' %}
 
-<body class="bg-gray-50 text-gray-900">
-
-<!-- HEADER -->
-<header class="bg-white shadow border-b-4 border-orange-500">
-  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
-    <div>
-      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
-        🔐 لوحة الإدارة
-      </h1>
-      <p class="text-gray-600 text-sm mt-1">مرحبا {{ user.first_name|default:user.username }}</p>
-    </div>
-    <div class="flex items-center gap-4">
-      <span class="px-3 py-1 rounded-full text-sm font-semibold {% if is_superadmin %}bg-red-100 text-red-700{% else %}bg-orange-100 text-orange-700{% endif %}">
-        {% if is_superadmin %}
-          مسؤول فائق
-        {% else %}
-          مسؤول
-        {% endif %}
-      </span>
-      <a href="/logout" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
-        تسجيل الخروج
-      </a>
-    </div>
-  </div>
-</header>
-
-<!-- MAIN CONTENT -->
-<div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
-
+{% block content %}
   <!-- STATS SECTION -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
     
@@ -48,7 +8,7 @@
     <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-blue-500">
       <div>
         <p class="text-gray-600 text-sm font-semibold">إجمالي العملاء</p>
-        <p class="text-4xl font-extrabold text-blue-600 mt-2">0</p>
+        <p class="text-4xl font-extrabold text-blue-600 mt-2" id="total-clients">0</p>
         <p class="text-gray-500 text-xs mt-2">عميل مسجل</p>
       </div>
     </div>
@@ -56,9 +16,10 @@
     <!-- Active Subscriptions -->
     <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-green-500">
       <div>
-        <p class="text-gray-600 text-sm font-semibold">الاشتراكات النشطة</p>
-        <p class="text-4xl font-extrabold text-green-600 mt-2">0</p>
-        <p class="text-gray-500 text-xs mt-2">اشتراك حالي</p>
+        <p class="text-gray-600 text-sm font-semibold">money expecter</p>
+        <p class="text-4xl font-extrabold text-green-600 mt-2" id="active-subscriptions">
+          {{totalmoneyexpected}} Dh
+        </p>
       </div>
     </div>
 
@@ -66,7 +27,7 @@
     <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-purple-500">
       <div>
         <p class="text-gray-600 text-sm font-semibold">الإيرادات الشهرية</p>
-        <p class="text-4xl font-extrabold text-purple-600 mt-2">0</p>
+        <p class="text-4xl font-extrabold text-purple-600 mt-2" id="monthly-revenue">0</p>
         <p class="text-gray-500 text-xs mt-2">درهم مغربي</p>
       </div>
     </div>
@@ -75,7 +36,7 @@
     <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-yellow-500">
       <div>
         <p class="text-gray-600 text-sm font-semibold">الطلبات المعلقة</p>
-        <p class="text-4xl font-extrabold text-yellow-600 mt-2">0</p>
+        <p class="text-4xl font-extrabold text-yellow-600 mt-2" id="pending-requests">0</p>
         <p class="text-gray-500 text-xs mt-2">طلب قيد الانتظار</p>
       </div>
     </div>
@@ -95,6 +56,12 @@
           </a>
           <a href="#subscriptions" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
             📦 الاشتراكات
+          </a>
+          <a href="#hosting-plans" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            🖥️ خطط الاستضافة
+          </a>
+          <a href="#addons" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
+            ⭐ الإضافات
           </a>
           <a href="#invoices" class="block px-4 py-3 rounded-lg hover:bg-gray-100 transition font-semibold text-gray-700">
             💵 الفواتير والدفع
@@ -122,28 +89,30 @@
       <section id="clients" class="bg-white rounded-2xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold">👥 إدارة العملاء</h3>
-          <a href="#" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+          <button onclick="openClientModal()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
             + عميل جديد
-          </a>
+          </button>
         </div>
         
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="bg-gray-100 border-b">
               <tr>
-                <th class="px-4 py-3 text-right font-bold">الاسم</th>
-                <th class="px-4 py-3 text-right font-bold">البريد الإلكتروني</th>
-                <th class="px-4 py-3 text-right font-bold">التاريخ</th>
-                <th class="px-4 py-3 text-right font-bold">الحالة</th>
-                <th class="px-4 py-3 text-right font-bold">الإجراءات</th>
+                <th class="px-4 py-3 text-right font-bold">client</th>
+                <th class="px-4 py-3 text-right font-bold">amount </th>
+                <th class="px-4 py-3 text-right font-bold">rest</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="clients-table-body">
+              {% for i in expectedmoney %}
               <tr>
-                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
-                  لا توجد بيانات عملاء حاليا
+                <td class="px-4 py-3">
+                  <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick='location.href="admin/client/{{ i.raison.id}}/"'>{{ i.raison.name }}</button>
                 </td>
+                <td class="px-4 py-3">{{ i.amount }}</td>
+                <td class="px-4 py-3">{{ i.rest }}</td>
               </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
@@ -153,13 +122,30 @@
       <section id="subscriptions" class="bg-white rounded-2xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold">📦 الاشتراكات</h3>
-          <a href="#" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
-            + باقة جديدة
-          </a>
+          <button onclick="openSubscriptionModal()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+            + اشتراك جديد
+          </button>
         </div>
         
-        <div class="text-center py-12 text-gray-500">
-          <p>لا توجد اشتراكات مسجلة</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">العميل</th>
+                <th class="px-4 py-3 text-right font-bold">البرنامج</th>
+                <th class="px-4 py-3 text-right font-bold">السعر</th>
+                <th class="px-4 py-3 text-right font-bold">التاريخ</th>
+                <th class="px-4 py-3 text-right font-bold">الحالة</th>
+              </tr>
+            </thead>
+            <tbody id="subscriptions-table-body">
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                  جاري التحميل...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -181,14 +167,76 @@
         </div>
       </section>
 
+      <!-- Hosting Plans Management -->
+      <section id="hosting-plans" class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">🖥️ خطط الاستضافة</h3>
+          <button onclick="openHostingPlanModal()" class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-semibold transition">
+            + خطة جديدة
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">الاسم</th>
+                <th class="px-4 py-3 text-right font-bold">المستوى</th>
+                <th class="px-4 py-3 text-right font-bold">السعر</th>
+                <th class="px-4 py-3 text-right font-bold">التخزين</th>
+                <th class="px-4 py-3 text-right font-bold">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="hosting-plans-table-body">
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                  جاري التحميل...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Addons Management -->
+      <section id="addons" class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">⭐ الإضافات</h3>
+          <button onclick="openAddonModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition">
+            + إضافة جديدة
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 border-b">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">الاسم</th>
+                <th class="px-4 py-3 text-right font-bold">النوع</th>
+                <th class="px-4 py-3 text-right font-bold">السعر</th>
+                <th class="px-4 py-3 text-right font-bold">الحالة</th>
+                <th class="px-4 py-3 text-right font-bold">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="addons-table-body">
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                  جاري التحميل...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {% if is_superadmin %}
       <!-- Admin Management (SuperAdmin Only) -->
       <section id="admins" class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-red-500">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold">🔐 إدارة المسؤولين</h3>
-          <a href="#" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
+          <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition">
             + مسؤول جديد
-          </a>
+          </button>
         </div>
         
         <div class="overflow-x-auto">
@@ -237,7 +285,682 @@
 
   </div>
 
+
+
+<!-- CREATE CLIENT MODAL -->
+<div id="clientModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold">إنشاء عميل جديد</h3>
+      <button onclick="closeClientModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+
+    <form id="clientForm" onsubmit="submitClientForm(event)" class="space-y-4">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2">اسم المستخدم</label>
+        <input type="text" name="username" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="اسم المستخدم">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">البريد الإلكتروني</label>
+        <input type="email" name="email" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="البريد الإلكتروني">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">كلمة المرور</label>
+        <input type="password" name="password" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="كلمة المرور">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الاسم الكامل</label>
+        <input type="text" name="full_name" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="الاسم الكامل">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">رقم الهاتف</label>
+        <input type="tel" name="phone" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="رقم الهاتف">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">اسم المتجر</label>
+        <input type="text" name="company_name" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="اسم المتجر">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">نوع النشاط</label>
+        <input type="text" name="company_type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none" placeholder="مثال: مطعم، بوتيك، الخ">
+      </div>
+
+      <div id="clientMessage" class="p-3 rounded-lg hidden"></div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeClientModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100 transition">
+          إلغاء
+        </button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+          إنشاء
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
-</body>
-</html>
+<!-- CREATE SUBSCRIPTION MODAL -->
+<div id="subscriptionModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold">إنشاء اشتراك جديد</h3>
+      <button onclick="closeSubscriptionModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+
+    <form id="subscriptionForm" onsubmit="submitSubscriptionForm(event)" class="space-y-4">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2">اختر العميل</label>
+        <select name="client" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+          <option value="">-- اختر عميل --</option>
+          <option value="">جاري التحميل...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">اختر البرنامج</label>
+        <select name="software" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+          <option value="">-- اختر برنامج --</option>
+          <option value="">جاري التحميل...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">اختر خطة الاستضافة</label>
+        <select name="hosting_plan" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+          <option value="">-- اختر خطة --</option>
+          <option value="">جاري التحميل...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">تاريخ البدء</label>
+        <input type="date" name="start_date" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+
+      <div id="subscriptionMessage" class="p-3 rounded-lg hidden"></div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeSubscriptionModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100 transition">
+          إلغاء
+        </button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition">
+          إنشاء
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CREATE/UPDATE HOSTING PLAN MODAL -->
+<div id="hostingPlanModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold" id="hostingPlanModalTitle">إنشاء خطة استضافة جديدة</h3>
+      <button onclick="closeHostingPlanModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+
+    <form id="hostingPlanForm" onsubmit="submitHostingPlanForm(event)" class="space-y-4">
+      {% csrf_token %}
+      
+      <input type="hidden" id="hostingPlanId" name="hosting_plan_id" value="">
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الاسم</label>
+        <input type="text" name="name" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="مثال: خادم مشترك أساسي">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">المستوى</label>
+        <select name="tier" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none">
+          <option value="">-- اختر المستوى --</option>
+          <option value="shared">Shared Hosting</option>
+          <option value="vps">VPS</option>
+          <option value="dedicated">Dedicated Server</option>
+          <option value="cloud">Cloud</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الوصف</label>
+        <textarea name="description" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="وصف الخطة" rows="3"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">السعر (د.م)</label>
+        <input type="number" name="price" step="0.01" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="0.00">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">التخزين (GB)</label>
+        <input type="number" name="storage_gb" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="100">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">النطاق الترددي (GB)</label>
+        <input type="number" name="bandwidth_gb" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="1000">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الحد الأقصى للمستخدمين</label>
+        <input type="number" name="max_users" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="اترك فارغاً = غير محدود">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">نسبة التوفر (SLA %)</label>
+        <input type="number" name="uptime_sla" step="0.01" value="99.90" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 outline-none" placeholder="99.90">
+      </div>
+
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="is_active" checked class="w-4 h-4">
+          <span class="text-sm font-semibold">نشط</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="is_recommended" class="w-4 h-4">
+          <span class="text-sm font-semibold">موصى به</span>
+        </label>
+      </div>
+
+      <div id="hostingPlanMessage" class="p-3 rounded-lg hidden"></div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeHostingPlanModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100 transition">
+          إلغاء
+        </button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-semibold transition">
+          حفظ
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CREATE/UPDATE ADDON MODAL -->
+<div id="addonModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold" id="addonModalTitle">إنشاء إضافة جديدة</h3>
+      <button onclick="closeAddonModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+
+    <form id="addonForm" onsubmit="submitAddonForm(event)" class="space-y-4">
+      {% csrf_token %}
+      
+      <input type="hidden" id="addonId" name="addon_id" value="">
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الاسم</label>
+        <input type="text" name="name" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none" placeholder="مثال: الدعم الأولوي">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">النوع</label>
+        <select name="addon_type" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none">
+          <option value="">-- اختر النوع --</option>
+          <option value="support">الدعم</option>
+          <option value="feature">الميزة</option>
+          <option value="integration">التكامل</option>
+          <option value="security">الأمان</option>
+          <option value="analytics">التحليلات</option>
+          <option value="storage">التخزين</option>
+          <option value="other">أخرى</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الوصف</label>
+        <textarea name="description" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none" placeholder="وصف الإضافة" rows="3"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">السعر (د.م)</label>
+        <input type="number" name="price" step="0.01" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none" placeholder="0.00">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الرمز التعبيري</label>
+        <input type="text" name="emoji" value="⭐" maxlength="2" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none" placeholder="⭐">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-2">الحد الأقصى للكمية</label>
+        <input type="number" name="max_quantity" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none" placeholder="اترك فارغاً = غير محدود">
+      </div>
+
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="is_active" checked class="w-4 h-4">
+          <span class="text-sm font-semibold">نشط</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="is_required" class="w-4 h-4">
+          <span class="text-sm font-semibold">مطلوب</span>
+        </label>
+      </div>
+
+      <div id="addonMessage" class="p-3 rounded-lg hidden"></div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeAddonModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100 transition">
+          إلغاء
+        </button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition">
+          حفظ
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+// CSRF Token
+function getCsrfToken() {
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+// Hosting Plan Modal Functions
+function openHostingPlanModal(planId = null) {
+  document.getElementById('hostingPlanModal').classList.add('active');
+  document.getElementById('hostingPlanForm').reset();
+  document.getElementById('hostingPlanMessage').classList.add('hidden');
+  document.getElementById('hostingPlanId').value = planId || '';
+  
+  if (planId) {
+    document.getElementById('hostingPlanModalTitle').textContent = 'تحديث خطة الاستضافة';
+    // Load plan data
+    loadHostingPlanData(planId);
+  } else {
+    document.getElementById('hostingPlanModalTitle').textContent = 'إنشاء خطة استضافة جديدة';
+  }
+}
+
+function closeHostingPlanModal() {
+  document.getElementById('hostingPlanModal').classList.remove('active');
+  document.getElementById('hostingPlanForm').reset();
+  document.getElementById('hostingPlanMessage').classList.add('hidden');
+}
+
+function submitHostingPlanForm(event) {
+  event.preventDefault();
+  
+  const formData = new FormData(document.getElementById('hostingPlanForm'));
+  const messageDiv = document.getElementById('hostingPlanMessage');
+  const planId = document.getElementById('hostingPlanId').value;
+  
+  const isCreate = !planId;
+  const url = isCreate ? '/api/admin/create-hosting-plan/' : '/api/admin/update-hosting-plan/';
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      messageDiv.className = 'p-3 rounded-lg bg-green-100 text-green-700';
+      messageDiv.textContent = isCreate ? '✓ تم إنشاء الخطة بنجاح!' : '✓ تم تحديث الخطة بنجاح!';
+      messageDiv.classList.remove('hidden');
+      
+      setTimeout(() => {
+        closeHostingPlanModal();
+        loadHostingPlans();
+      }, 1500);
+    } else {
+      messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+      messageDiv.textContent = data.error || 'حدث خطأ ما';
+      messageDiv.classList.remove('hidden');
+    }
+  })
+  .catch(error => {
+    messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+    messageDiv.textContent = 'خطأ في الاتصال';
+    messageDiv.classList.remove('hidden');
+  });
+}
+
+function loadHostingPlanData(planId) {
+  // This would load plan data via API if needed for editing
+}
+
+// Addon Modal Functions
+function openAddonModal(addonId = null) {
+  document.getElementById('addonModal').classList.add('active');
+  document.getElementById('addonForm').reset();
+  document.getElementById('addonMessage').classList.add('hidden');
+  document.getElementById('addonId').value = addonId || '';
+  
+  if (addonId) {
+    document.getElementById('addonModalTitle').textContent = 'تحديث الإضافة';
+    // Load addon data
+    loadAddonData(addonId);
+  } else {
+    document.getElementById('addonModalTitle').textContent = 'إنشاء إضافة جديدة';
+  }
+}
+
+function closeAddonModal() {
+  document.getElementById('addonModal').classList.remove('active');
+  document.getElementById('addonForm').reset();
+  document.getElementById('addonMessage').classList.add('hidden');
+}
+
+function submitAddonForm(event) {
+  event.preventDefault();
+  
+  const formData = new FormData(document.getElementById('addonForm'));
+  const messageDiv = document.getElementById('addonMessage');
+  const addonId = document.getElementById('addonId').value;
+  
+  const isCreate = !addonId;
+  const url = isCreate ? '/api/admin/create-addon/' : '/api/admin/update-addon/';
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      messageDiv.className = 'p-3 rounded-lg bg-green-100 text-green-700';
+      messageDiv.textContent = isCreate ? '✓ تم إنشاء الإضافة بنجاح!' : '✓ تم تحديث الإضافة بنجاح!';
+      messageDiv.classList.remove('hidden');
+      
+      setTimeout(() => {
+        closeAddonModal();
+        loadAddons();
+      }, 1500);
+    } else {
+      messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+      messageDiv.textContent = data.error || 'حدث خطأ ما';
+      messageDiv.classList.remove('hidden');
+    }
+  })
+  .catch(error => {
+    messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+    messageDiv.textContent = 'خطأ في الاتصال';
+    messageDiv.classList.remove('hidden');
+  });
+}
+
+function loadAddonData(addonId) {
+  // This would load addon data via API if needed for editing
+}
+
+// Load Data Functions
+function loadHostingPlans() {
+  fetch('/api/admin/hosting-plans/')
+    .then(response => response.json())
+    .then(data => {
+      const tbody = document.getElementById('hosting-plans-table-body');
+      if (data.hosting_plans.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">لا توجد خطط استضافة مسجلة</td></tr>';
+      } else {
+        tbody.innerHTML = data.hosting_plans.map(plan => `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3">${plan.name}</td>
+            <td class="px-4 py-3">${plan.tier}</td>
+            <td class="px-4 py-3">${plan.price}د.م</td>
+            <td class="px-4 py-3">${plan.storage_gb}GB</td>
+            <td class="px-4 py-3">
+              <button onclick="openHostingPlanModal(${plan.id})" class="text-blue-500 hover:text-blue-700 font-semibold text-xs">تعديل</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    })
+    .catch(error => console.error('Error loading hosting plans:', error));
+}
+
+function loadAddons() {
+  fetch('/api/admin/addons/')
+    .then(response => response.json())
+    .then(data => {
+      const tbody = document.getElementById('addons-table-body');
+      if (data.addons.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">لا توجد إضافات مسجلة</td></tr>';
+      } else {
+        tbody.innerHTML = data.addons.map(addon => `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3">${addon.emoji} ${addon.name}</td>
+            <td class="px-4 py-3">${addon.addon_type}</td>
+            <td class="px-4 py-3">${addon.price}د.م</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 rounded-full text-xs font-semibold ${addon.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                ${addon.is_active ? 'نشط' : 'معطل'}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <button onclick="openAddonModal(${addon.id})" class="text-blue-500 hover:text-blue-700 font-semibold text-xs">تعديل</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    })
+    .catch(error => console.error('Error loading addons:', error));
+}
+
+
+
+// Client Modal Functions
+function openClientModal() {
+  document.getElementById('clientModal').classList.add('active');
+}
+
+function closeClientModal() {
+  document.getElementById('clientModal').classList.remove('active');
+  document.getElementById('clientForm').reset();
+  document.getElementById('clientMessage').classList.add('hidden');
+}
+
+function submitClientForm(event) {
+  event.preventDefault();
+  
+  const formData = new FormData(document.getElementById('clientForm'));
+  const messageDiv = document.getElementById('clientMessage');
+  
+  fetch('/api/admin/create-client/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      messageDiv.className = 'p-3 rounded-lg bg-green-100 text-green-700';
+      messageDiv.textContent = '✓ تم إنشاء العميل بنجاح!';
+      messageDiv.classList.remove('hidden');
+      
+      setTimeout(() => {
+        closeClientModal();
+        loadClients();
+      }, 1500);
+    } else {
+      messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+      messageDiv.textContent = data.error || 'حدث خطأ ما';
+      messageDiv.classList.remove('hidden');
+    }
+  })
+  .catch(error => {
+    messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+    messageDiv.textContent = 'خطأ في الاتصال';
+    messageDiv.classList.remove('hidden');
+  });
+}
+
+// Subscription Modal Functions
+function openSubscriptionModal() {
+  document.getElementById('subscriptionModal').classList.add('active');
+  loadSubscriptionOptions();
+}
+
+function closeSubscriptionModal() {
+  document.getElementById('subscriptionModal').classList.remove('active');
+  document.getElementById('subscriptionForm').reset();
+  document.getElementById('subscriptionMessage').classList.add('hidden');
+}
+
+function submitSubscriptionForm(event) {
+  event.preventDefault();
+  
+  const formData = new FormData(document.getElementById('subscriptionForm'));
+  const messageDiv = document.getElementById('subscriptionMessage');
+  
+  fetch('/api/admin/create-subscription/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      messageDiv.className = 'p-3 rounded-lg bg-green-100 text-green-700';
+      messageDiv.textContent = '✓ تم إنشاء الاشتراك بنجاح!';
+      messageDiv.classList.remove('hidden');
+      
+      setTimeout(() => {
+        closeSubscriptionModal();
+        loadSubscriptions();
+      }, 1500);
+    } else {
+      messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+      messageDiv.textContent = data.error || 'حدث خطأ ما';
+      messageDiv.classList.remove('hidden');
+    }
+  })
+  .catch(error => {
+    messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+    messageDiv.textContent = 'خطأ في الاتصال';
+    messageDiv.classList.remove('hidden');
+  });
+}
+
+// Load Data Functions
+function loadClients() {
+  fetch('/api/admin/clients/')
+    .then(response => response.json())
+    .then(data => {
+      const tbody = document.getElementById('clients-table-body');
+      if (data.clients.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">لا توجد عملاء مسجلين</td></tr>';
+      } else {
+        tbody.innerHTML = data.clients.map(client => `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3">${client.name}</td>
+            <td class="px-4 py-3">${client.email}</td>
+            <td class="px-4 py-3">${client.phone || '--'}</td>
+            <td class="px-4 py-3">
+              <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick='location.href="admin/client/${client.id}/"'>عرض</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      document.getElementById('total-clients').textContent = data.clients.length;
+    })
+    .catch(error => console.error('Error loading clients:', error));
+}
+
+function loadSubscriptions() {
+  fetch('/api/admin/subscriptions/')
+    .then(response => response.json())
+    .then(data => {
+      const tbody = document.getElementById('subscriptions-table-body');
+      if (data.subscriptions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">لا توجد اشتراكات مسجلة</td></tr>';
+      } else {
+        tbody.innerHTML = data.subscriptions.map(sub => `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3">${sub.client_name}</td>
+            <td class="px-4 py-3">${sub.software_name}</td>
+            <td class="px-4 py-3">${sub.price}</td>
+            <td class="px-4 py-3">${new Date(sub.created_at).toLocaleDateString('ar-MA')}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 rounded-full text-xs font-semibold ${sub.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                ${sub.status}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      }
+      document.getElementById('active-subscriptions').textContent = data.subscriptions.filter(s => s.status === 'active').length;
+    })
+    .catch(error => console.error('Error loading subscriptions:', error));
+}
+
+function loadSubscriptionOptions() {
+  fetch('/api/admin/subscription-options/')
+    .then(response => response.json())
+    .then(data => {
+      // Load clients
+      const clientSelect = document.querySelector('select[name="client"]');
+      clientSelect.innerHTML = '<option value="">-- اختر عميل --</option>' + 
+        data.clients.map(c => `<option value="${c.id}">${c.name || c.username}</option>`).join('');
+      
+      // Load software
+      const softwareSelect = document.querySelector('select[name="software"]');
+      softwareSelect.innerHTML = '<option value="">-- اختر برنامج --</option>' + 
+        data.software.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      
+      // Load hosting plans
+      const hostingSelect = document.querySelector('select[name="hosting_plan"]');
+      hostingSelect.innerHTML = '<option value="">-- اختر خطة --</option>' + 
+        data.hosting_plans.map(h => `<option value="${h.id}">${h.name} - ${h.price}د.م</option>`).join('');
+    })
+    .catch(error => console.error('Error loading options:', error));
+}
+
+// Initialize on page load
+window.addEventListener('load', () => {
+  // loadClients();
+  //loadSubscriptions();
+  // loadHostingPlans();
+  // loadAddons();
+});
+
+// Close modal when clicking outside
+document.getElementById('clientModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('clientModal')) {
+    closeClientModal();
+  }
+});
+
+document.getElementById('subscriptionModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('subscriptionModal')) {
+    closeSubscriptionModal();
+  }
+});
+
+document.getElementById('hostingPlanModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('hostingPlanModal')) {
+    closeHostingPlanModal();
+  }
+});
+
+document.getElementById('addonModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('addonModal')) {
+    closeAddonModal();
+  }
+});
+</script>
+{% endblock %}

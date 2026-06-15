@@ -15,7 +15,7 @@ Represents a software product that customers can subscribe to (e.g., Restaurant 
 - `slug` (SlugField, unique) - URL-friendly identifier
 - `description` (TextField) - Product description
 - `emoji` (CharField) - Icon for UI display
-- `base_price` (DecimalField) - Base monthly price
+- `base_price` (FloatField) - Base monthly price
 - `is_active` (BooleanField) - Active status
 - `created_at`, `updated_at` - Timestamps
 
@@ -31,11 +31,11 @@ Different hosting infrastructure options available with a subscription.
 - `name` (CharField) - Plan name
 - `tier` (CharField, choices) - Plan tier: Shared, VPS, Dedicated, Cloud
 - `description` (TextField) - Plan description
-- `price` (DecimalField) - Monthly hosting price
+- `price` (FloatField) - Monthly hosting price
 - `storage_gb` (IntegerField) - Storage capacity in GB
 - `bandwidth_gb` (IntegerField) - Bandwidth in GB
 - `max_users` (IntegerField, nullable) - Max concurrent users
-- `uptime_sla` (DecimalField) - Service level agreement % (default 99.9)
+- `uptime_sla` (FloatField) - Service level agreement % (default 99.9)
 - `is_active` (BooleanField) - Active status
 - `is_recommended` (BooleanField) - Highlighted in UI
 - `created_at`, `updated_at` - Timestamps
@@ -52,7 +52,7 @@ Optional add-ons that can be purchased with a subscription (e.g., Email Support,
 - `slug` (SlugField, unique) - URL identifier
 - `addon_type` (CharField, choices) - Type: Support, Feature, Integration, Security, Analytics, Storage, Other
 - `description` (TextField) - Addon description
-- `price` (DecimalField) - Monthly price
+- `price` (FloatField) - Monthly price
 - `emoji` (CharField) - Icon for UI
 - `is_active` (BooleanField) - Active status
 - `is_required` (BooleanField) - Must be purchased with subscription
@@ -96,8 +96,8 @@ Represents a customer's subscription to a software + hosting plan combination.
 - `start_date` (DateTimeField) - Subscription start
 - `end_date` (DateTimeField, optional) - Subscription end
 - `next_billing_date` (DateTimeField, optional) - Next billing date
-- `custom_software_price` (DecimalField, optional) - Override software base price
-- `discount_percentage` (DecimalField) - Discount 0-100%
+- `custom_software_price` (FloatField, optional) - Override software base price
+- `discount_percentage` (FloatField) - Discount 0-100%
 - `is_auto_renew` (BooleanField) - Auto-renew on expiry
 - `notes` (TextField, optional) - Internal notes
 - `created_at`, `updated_at` - Timestamps
@@ -150,11 +150,11 @@ Billing invoice for subscription charges.
 - `subscription` (ForeignKey to Subscription) - Associated subscription
 - `invoice_number` (CharField, unique) - Invoice number (e.g., INV-2024-001)
 - `status` (CharField, choices) - Draft, Pending, Paid, Overdue, Cancelled
-- `subtotal` (DecimalField) - Amount before tax/discount
-- `tax_percentage` (DecimalField) - Tax rate %
-- `tax_amount` (DecimalField) - Calculated tax amount
-- `discount_amount` (DecimalField) - Discount amount
-- `total_amount` (DecimalField) - Final amount due
+- `subtotal` (FloatField) - Amount before tax/discount
+- `tax_percentage` (FloatField) - Tax rate %
+- `tax_amount` (FloatField) - Calculated tax amount
+- `discount_amount` (FloatField) - Discount amount
+- `total_amount` (FloatField) - Final amount due
 - `issued_date` (DateTimeField) - Invoice creation date
 - `due_date` (DateTimeField) - Payment deadline
 - `paid_date` (DateTimeField, optional) - Payment date

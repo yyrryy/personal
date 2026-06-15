@@ -12,7 +12,7 @@ class Software(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField()
     emoji = models.CharField(max_length=10, default='💻')  # For UI display
-    base_price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Base price per month")
+    base_price = models.FloatField(default=0.0, help_text="Base price per month")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -25,32 +25,23 @@ class Software(models.Model):
 
 
 class HostingPlan(models.Model):
-    """Different hosting options (e.g., Shared, VPS, Dedicated)"""
-    TIER_CHOICES = [
-        ('shared', 'Shared Hosting'),
-        ('vps', 'VPS'),
-        ('dedicated', 'Dedicated Server'),
-        ('cloud', 'Cloud'),
-    ]
-
     name = models.CharField(max_length=200)
-    tier = models.CharField(max_length=20, choices=TIER_CHOICES)
+    tier = models.CharField(max_length=29)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    monthly_price = models.FloatField(default=0.0)
+    yearly_price = models.FloatField(default=0.0)
     storage_gb = models.IntegerField(help_text="Storage in GB")
     bandwidth_gb = models.IntegerField(help_text="Bandwidth in GB")
     max_users = models.IntegerField(null=True, blank=True, help_text="Max concurrent users, null=unlimited")
-    uptime_sla = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('99.90'), help_text="Uptime SLA percentage")
+    uptime_sla = models.FloatField(default=0.0, help_text="Uptime SLA percentage")
     is_active = models.BooleanField(default=True)
     is_recommended = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['price']
+        ordering = ['monthly_price']
 
     def __str__(self):
-        return f"{self.name} - €{self.price}/mo"
+        return f"{self.name} - €{self.monthly_price}/mo"
 
 
 class Addon(models.Model):
@@ -69,7 +60,8 @@ class Addon(models.Model):
     slug = models.SlugField(unique=True)
     addon_type = models.CharField(max_length=20, choices=ADDON_TYPE_CHOICES)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Additional price per month")
+    monthly_price = models.FloatField(default=0.0, help_text="Additional price per month")
+    yearly_price = models.FloatField(default=0.0, help_text="Additional price per year")
     emoji = models.CharField(max_length=10, default='⭐')
     is_active = models.BooleanField(default=True)
     is_required = models.BooleanField(default=False, help_text="Must be purchased with subscription")
@@ -82,35 +74,6 @@ class Addon(models.Model):
 
     def __str__(self):
         return f"{self.emoji} {self.name}"
-
-
-class Client(models.Model):
-    """Customer profile linked to Django User"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_profile')
-    company_name = models.CharField(max_length=300)
-    phone = models.CharField(max_length=20, blank=True)
-    country = models.CharField(max_length=100, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    address = models.TextField(blank=True)
-    vat_number = models.CharField(max_length=50, blank=True, unique=True, null=True)
-    is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.company_name} ({self.user.email})"
-
-    @property
-    def active_subscriptions(self):
-        return self.subscriptions.filter(status='active')
-
-    @property
-    def monthly_cost(self):
-        """Calculate total monthly cost of all active subscriptions"""
-        total = Decimal('0')
-        for subscription in self.active_subscriptions:
-            total += subscription.get_monthly_cost()
-        return total
 
 
 class Subscription(models.Model):
@@ -128,7 +91,7 @@ class Subscription(models.Model):
         ('yearly', 'Yearly'),
     ]
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='subscriptions')
+    client = models.ForeignKey('Client', on_delete=models.CASCADE, related_name='subscriptions')
     software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='subscriptions')
     hosting_plan = models.ForeignKey(HostingPlan, on_delete=models.PROTECT, related_name='subscriptions')
     
@@ -139,8 +102,8 @@ class Subscription(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     next_billing_date = models.DateTimeField(null=True, blank=True)
     
-    custom_software_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Override base price if needed")
-    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Discount percentage (0-100)")
+    custom_software_price = models.FloatField(default=0.0, null=True, blank=True, help_text="Override base price if needed")
+    discount_percentage = models.FloatField(default=0.0, help_text="Discount percentage (0-100)")
     
     is_auto_renew = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
@@ -157,10 +120,10 @@ class Subscription(models.Model):
 
     def get_monthly_cost(self):
         """Calculate monthly cost including hosting, software, and active addons"""
-        software_price = self.custom_software_price or self.software.base_price
-        hosting_price = self.hosting_plan.price
+        software_price = self.custom_software_price or self.software.monthly_price
+        hosting_price = self.hosting_plan.monthly_price
         addons_price = sum(
-            sa.addon.price * sa.quantity 
+            sa.addon.monthly_price * sa.quantity 
             for sa in self.addons.filter(is_active=True)
         )
         
@@ -241,11 +204,11 @@ class Invoice(models.Model):
     
     status = models.CharField(max_length=20, choices=INVOICE_STATUS_CHOICES, default='draft')
     
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
-    tax_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    tax_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    subtotal = models.FloatField(default=0.0)
+    tax_percentage = models.FloatField(default=0.0)
+    tax_amount = models.FloatField(default=0.0)
+    discount_amount = models.FloatField(default=0.0)
+    total_amount = models.FloatField(default=0.0)
     
     issued_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
@@ -397,26 +360,35 @@ class Outraisons(models.Model):
         return self.raison
 
 # raisons of in of balance
-class Inraisons(models.Model):
-    raison=models.TextField()
+class Client(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_user', default=None, null=True)
+    company_name = models.CharField(max_length=300, default=None, null=True, blank=True)
+    phone = models.CharField(max_length=20, blank=True, default=None, null=True)
+    country = models.CharField(max_length=100, blank=True, default=None, null=True)
+    city = models.CharField(max_length=100, blank=True, default=None, null=True)
+    address = models.TextField(blank=True, default=None, null=True)
+    vat_number = models.CharField(max_length=50, blank=True, unique=True, null=True, default=None)
+    is_verified = models.BooleanField(default=False)
+    name=models.TextField()
     #ch!7al b9a 3ndo
     rest=models.FloatField(default=0.0)
     #ignored means that I will not count it in the total balance(ref 544R34RR), but I want to keep it for record
     ignored=models.BooleanField(default=False)
     def __str__(self) -> str:
-        return self.raison
+        return self.name
 
 class Outbalance(models.Model):
     amount=models.FloatField()
-    date=models.DateTimeField()
+    date=models.DateTimeField(default=None, null=True, blank=True)
     raison=models.ForeignKey(Outraisons, on_delete=models.CASCADE)
     note=models.TextField(default=None, null=True, blank=True)
     def __str__(self) -> str:
         return str(self.date)
 class Inbalance(models.Model):
+    moneyexpected=models.ForeignKey('Moneyexpected', on_delete=models.CASCADE, default=None, null=True, blank=True)
     amount=models.FloatField()
-    date=models.DateTimeField()
-    raison=models.ForeignKey(Inraisons, on_delete=models.CASCADE)
+    date=models.DateTimeField(default=None, null=True, blank=True)
+    raison=models.ForeignKey('Client', on_delete=models.CASCADE)
     note=models.TextField(default=None, null=True, blank=True)
     
         
@@ -511,9 +483,26 @@ class RoadmapItem(models.Model):
     
 class Moneyexpected(models.Model):
     amount=models.FloatField()
-    raison=models.ForeignKey(Inraisons, on_delete=models.CASCADE)
+    raison=models.ForeignKey('Client', on_delete=models.CASCADE)
     # wether I get it or not
+    # mode: whether it is monthly or yearly or one time
+    mode=models.CharField(max_length=500, default='one time')
+    date=models.DateTimeField(default=None, null=True, blank=True)
     paid=models.BooleanField(default=False)
     note=models.TextField(default=None, null=True, blank=True)
+    rest=models.FloatField(default=0.0)
     def __str__(self) -> str:
-        return f"{self.amount} expected from {self.raison.raison}"
+        return f"{self.amount} expected from {self.raison.name}"
+
+class Service(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    monthly_price = models.FloatField()
+    yearly_price = models.FloatField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

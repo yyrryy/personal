@@ -1,0 +1,527 @@
+{% extends 'dashboard/adminbase.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  
+  <!-- Back Button -->
+  <div class="mb-6">
+    <a href="/dashboard/admin" class="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4-3-9s1.34-9 3-9"></path>
+      </svg>
+      عودة إلى قائمة العملاء
+    </a>
+  </div>
+
+  <!-- Client Profile Header -->
+    <!-- <div class="bg-gradient-to-l from-blue-600 to-blue-800 rounded-2xl shadow-lg p-6 mb-8 text-white">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+            <span class="text-4xl">👤</span>
+            </div>
+            <div>
+            <p class="text-blue-100 mt-1">@{{ client.username }}</p>
+            <div class="flex flex-wrap gap-2 mt-2">
+                {% if client.is_active %}
+                <span class="px-3 py-1 bg-green-500 text-white text-sm rounded-full">نشط</span>
+                {% else %}
+                <span class="px-3 py-1 bg-red-500 text-white text-sm rounded-full">معطل</span>
+                {% endif %}
+                <span class="px-3 py-1 bg-white/20 text-sm rounded-full">عميل منذ {{ client.date_joined|date:"Y/m/d" }}</span>
+            </div>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="editClient()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            تعديل
+            </button>
+            <button onclick="toggleClientStatus()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition flex items-center gap-2">
+            {% if client.is_active %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                </svg>
+                تعطيل
+            {% else %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                تفعيل
+            {% endif %}
+            </button>
+        </div>
+        </div>
+    </div> -->
+
+  <!-- Stats Cards Row -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-r-4 border-blue-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">إجمالي الفواتير</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{ total_invoices|default:"0" }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-r-4 border-green-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">expected money</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{ totalexpectedmoney|default:"0" }} د.م</p>
+        </div>
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-r-4 border-purple-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">الاشتراكات النشطة</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{ active_subscriptions_count|default:"0" }}</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-6 border-r-4 border-yellow-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">المدفوعات المعلقة</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{ pending_payments|default:"0" }}</p>
+        </div>
+        <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column - Personal Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Contact Information -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          معلومات الاتصال
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">البريد الإلكتروني</span>
+            <span class="font-medium dir-ltr">{{ client.email }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">رقم الهاتف</span>
+            <span class="font-medium">{{ client.phone|default:"غير مسجل" }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">الاسم الكامل</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">آخر تسجيل دخول</span>
+            <span class="font-medium">{{ client.last_login|date:"Y/m/d H:i"|default:"--" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Information -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          العنوان
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">العنوان</span>
+            <span class="font-medium">{{ client.address|default:"غير مسجل" }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">المدينة</span>
+            <span class="font-medium">{{ client.city|default:"غير مسجل" }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">الرمز البريدي</span>
+            <span class="font-medium">{{ client.postal_code|default:"غير مسجل" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Business Information -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          معلومات المتجر
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">اسم المتجر</span>
+            <span class="font-medium">{{ client.company_name|default:"غير مسجل" }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+            <span class="text-gray-500">نوع النشاط</span>
+            <span class="font-medium">{{ client.company_type|default:"غير مسجل" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Subscriptions & Invoices -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Active Subscription -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+             expected money
+          </h3>
+          
+        </div>
+        
+        {% for i in expectedmony %}
+        <div class="bg-gradient-to-l from-blue-50 to-white rounded-xl p-4 mb-4 border-l-4 border-blue-500">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-gray-500 text-sm">amount</p>
+              <p class="font-bold text-lg">{{ i.amount }}</p>
+              <!-- button to see paiment of this expected money in a popup -->
+               
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">rest</p>
+              <p class="font-bold text-lg">{{ i.rest }}</p>
+            </div>
+            <div>
+              <!-- input and button -->
+                <form action="{% url 'main:receiveexpectedmoney' %}" method="get" class="flex gap-2">
+                    <input type="hidden" name="id" value="{{ i.id }}">
+                    <input type="number" name="amount" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="المبلغ المستلم" required>
+                    <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                    تأكيد
+                    </button>
+                </form>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">details</p>
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">{{ i.note }}</span>
+            </div>
+            <div>
+              <button onclick="viewPayments('{{ i.id }}')" class="mt-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition">
+                عرض المدفوعات
+                </button>
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm">تاريخ النهاية</p>
+              <p class="font-medium">{{ subscription.end_date|date:"Y/m/d" }}</p>
+            </div>
+          </div>
+        </div>
+        
+        {% endfor %}
+      </div>
+
+      <!-- Recent Invoices -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            الفواتير الأخيرة
+          </h3>
+          <a href="{% url 'dashboard:admin_invoices' %}?client={{ client.id }}" class="text-blue-500 text-sm hover:underline">عرض الكل</a>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100 rounded-lg">
+              <tr>
+                <th class="px-4 py-3 text-right font-bold">رقم الفاتورة</th>
+                <th class="px-4 py-3 text-right font-bold">التاريخ</th>
+                <th class="px-4 py-3 text-right font-bold">المبلغ</th>
+                <th class="px-4 py-3 text-right font-bold">الحالة</th>
+                <th class="px-4 py-3 text-right font-bold"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for invoice in recent_invoices %}
+              <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 font-mono">{{ invoice.number }}</td>
+                <td class="px-4 py-3">{{ invoice.created_at|date:"Y/m/d" }}</td>
+                <td class="px-4 py-3 font-bold">{{ invoice.amount }} د.م</td>
+                <td class="px-4 py-3">
+                  <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                    {% if invoice.status == 'paid' %}bg-green-100 text-green-700
+                    {% elif invoice.status == 'pending' %}bg-yellow-100 text-yellow-700
+                    {% elif invoice.status == 'overdue' %}bg-red-100 text-red-700
+                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                    {{ invoice.get_status_display }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <button onclick="viewInvoice('{{ invoice.id }}')" class="text-blue-500 hover:text-blue-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">لا توجد فواتير مسجلة</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          النشاطات الأخيرة
+        </h3>
+        
+        <div class="space-y-4">
+          {% for activity in activities %}
+          <div class="flex gap-3 items-start">
+            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <span class="text-blue-600 text-sm">
+                {% if activity.type == 'subscription' %}📦
+                {% elif activity.type == 'payment' %}💰
+                {% elif activity.type == 'invoice' %}📄
+                {% else %}🔔{% endif %}
+              </span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium">{{ activity.title }}</p>
+              <p class="text-gray-500 text-sm">{{ activity.description }}</p>
+              <p class="text-xs text-gray-400 mt-1">{{ activity.created_at|timesince }} مضت</p>
+            </div>
+          </div>
+          {% empty %}
+          <div class="text-center py-8 text-gray-500">
+            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <p>لا توجد نشاطات حديثة</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Client Modal -->
+<div id="editClientModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold">تعديل بيانات العميل</h3>
+      <button onclick="closeEditClientModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+    <form id="editClientForm" onsubmit="submitEditClientForm(event)" class="space-y-4">
+      {% csrf_token %}
+      <input type="hidden" name="client_id" value="{{ client.id }}">
+      <div>
+        <label class="block text-sm font-semibold mb-2">الاسم الكامل</label>
+        <input type="text" name="full_name" value="{{ client.name }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">البريد الإلكتروني</label>
+        <input type="email" name="email" value="{{ client.email }}" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">رقم الهاتف</label>
+        <input type="tel" name="phone" value="{{ client.phone }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">اسم المتجر</label>
+        <input type="text" name="company_name" value="{{ client.company_name }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+      <div id="editClientMessage" class="p-3 rounded-lg hidden"></div>
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeEditClientModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100">إلغاء</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Subscription Modal -->
+<div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold">إنشاء اشتراك جديد</h3>
+      <button onclick="closeSubscriptionModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+    </div>
+    <form id="subscriptionForm" onsubmit="submitSubscriptionForm(event)" class="space-y-4">
+      {% csrf_token %}
+      <input type="hidden" name="client_id" value="{{ client.id }}">
+      <div>
+        <label class="block text-sm font-semibold mb-2">اختر البرنامج</label>
+        <select name="software_id" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+          <option value="">-- اختر برنامج --</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">اختر خطة الاستضافة</label>
+        <select name="hosting_plan_id" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+          <option value="">-- اختر خطة --</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">تاريخ البدء</label>
+        <input type="date" name="start_date" required class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 outline-none">
+      </div>
+      <div id="subscriptionMessage" class="p-3 rounded-lg hidden"></div>
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeSubscriptionModal()" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-100">إلغاء</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold">إنشاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    function viewPayments(expectedMoneyId) {
+        fetch(`/dashboard/api/admin/money_expected_details?id=${expectedMoneyId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                let paymentsHtml = '';
+                if (data.length > 0) {
+                    paymentsHtml = '<ul class="space-y-2">';
+                    data.forEach(payment => {
+                        paymentsHtml += `<li class="p-2 border rounded-lg">
+                            <strong>المبلغ:</strong> ${payment.amount} د.م<br>
+                            <strong>التاريخ:</strong> ${new Date(payment.date).toLocaleDateString()}<br>
+                            <strong>ملاحظة:</strong> ${payment.note || 'لا توجد ملاحظات'}
+                        </li>`;
+                    });
+                    paymentsHtml += '</ul>';
+                } else {
+                    paymentsHtml = '<p class="text-gray-500">لا توجد مدفوعات لهذا المبلغ المتوقع.</p>';
+                }
+
+                const modalContent = `
+                    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 p-4">
+                        <div class="bg-white rounded-2xl max-w-md w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">المدفوعات للمبلغ المتوقع</h3>
+                                <button onclick="closePaymentsModal()" class="text-gray-500 hover:text-gray-700 text-xl">✕</button>
+                            </div>
+                            ${paymentsHtml}
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modalContent);
+            });
+    }
+    function closePaymentsModal() {
+        const modal = document.querySelector('.fixed.inset-0.bg-black.bg-opacity-50.z-50');
+        if (modal) {
+            modal.remove();
+        }
+    }
+function getCsrfToken() {
+  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function editClient() {
+  document.getElementById('editClientModal').classList.add('flex');
+  document.getElementById('editClientModal').classList.remove('hidden');
+}
+
+function closeEditClientModal() {
+  document.getElementById('editClientModal').classList.add('hidden');
+  document.getElementById('editClientModal').classList.remove('flex');
+}
+
+function submitEditClientForm(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const messageDiv = document.getElementById('editClientMessage');
+  
+  fetch('/api/admin/update-client/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCsrfToken() },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      messageDiv.className = 'p-3 rounded-lg bg-green-100 text-green-700';
+      messageDiv.textContent = '✓ تم تحديث البيانات بنجاح!';
+      messageDiv.classList.remove('hidden');
+      setTimeout(() => location.reload(), 1500);
+    } else {
+      messageDiv.className = 'p-3 rounded-lg bg-red-100 text-red-700';
+      messageDiv.textContent = data.error || 'حدث خطأ';
+      messageDiv.classList.remove('hidden');
+    }
+  });
+}
+
+function toggleClientStatus() {
+  
+}
+
+function openSubscriptionModal() {
+  document.getElementById('subscriptionModal').classList.add('flex');
+  document.getElementById('subscriptionModal').classList.remove('hidden');
+  loadSubscriptionOptions();
+}
+
+function closeSubscriptionModal() {
+  document.getElementById('subscriptionModal').classList.add('hidden');
+  document.getElementById('subscriptionModal').classList.remove('flex');
+}
+
+function loadSubscriptionOptions() {
+  fetch('/api/admin/subscription-options/')
+    .then(response => response.json())
+    .then(data => {
+      const softwareSelect = document.querySelector('select[name="software_id"]');
+      softwareSelect.innerHTML = '<option value="">-- اختر برنامج --</option>' + 
+        data.software.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      
+      const hostingSelect = document.querySelector('select[name="hosting_plan_id"]');
+      hostingSelect.innerHTML = '<option value="">-- اختر خطة --</option>' + 
+        data.hosting_plans.map(h => `<option value="${h.id}">${h.name} - ${h.price}د.م</option>`).join('');
+    });
+}
+</script>
+{% endblock %}
