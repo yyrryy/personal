@@ -374,7 +374,8 @@ class Client(models.Model):
     rest=models.FloatField(default=0.0)
     #ignored means that I will not count it in the total balance(ref 544R34RR), but I want to keep it for record
     ignored=models.BooleanField(default=False)
-
+    def __str__(self) -> str:
+        return self.name if self.name else '00'
 class Outbalance(models.Model):
     amount=models.FloatField()
     date=models.DateTimeField(default=None, null=True, blank=True)
