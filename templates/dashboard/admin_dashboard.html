@@ -98,9 +98,10 @@
           <table class="w-full text-sm">
             <thead class="bg-gray-100 border-b">
               <tr>
-                <th class="px-4 py-3 text-right font-bold">client</th>
-                <th class="px-4 py-3 text-right font-bold">amount </th>
-                <th class="px-4 py-3 text-right font-bold">rest</th>
+                <th class="px-4 py-3 font-bold">client</th>
+                <!-- <th class="px-4 py-3 font-bold">amount </th> -->
+                <th class="px-4 py-3 font-bold">rest</th>
+                <th class="px-4 py-3 font-bold">note</th>
               </tr>
             </thead>
             <tbody id="clients-table-body">
@@ -109,8 +110,9 @@
                 <td class="px-4 py-3">
                   <button class="text-blue-500 hover:text-blue-700 font-semibold" onclick='location.href="admin/client/{{ i.raison.id}}/"'>{{ i.raison.name }}</button>
                 </td>
-                <td class="px-4 py-3">{{ i.amount }}</td>
+                <!-- <td class="px-4 py-3">{{ i.amount }}</td> -->
                 <td class="px-4 py-3">{{ i.rest }}</td>
+                <td class="px-4 py-3">{{ i.note }}</td>
               </tr>
               {% endfor %}
             </tbody>
