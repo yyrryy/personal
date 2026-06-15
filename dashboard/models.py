@@ -389,7 +389,8 @@ class Inbalance(models.Model):
     date=models.DateTimeField(default=None, null=True, blank=True)
     raison=models.ForeignKey('Client', on_delete=models.CASCADE)
     note=models.TextField(default=None, null=True, blank=True)
-    
+    def __str__(self) -> str:
+        return str(self.raison) + " - " + str(self.amount)
         
 class Activity(models.Model):
     date=models.DateField(default=timezone.now, null=True)
