@@ -6,7 +6,7 @@ from urllib.request import Request, urlopen
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from dashboard.models import Profile, Outraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected,Client
+from dashboard.models import Profile, Outraisons, Inbalance, Outbalance, Activity, Depense, Essance, Node, Moneyexpected,Client, Subscription, HostingPlan, Addon, Todo
 from django.http import JsonResponse
 from itertools import chain
 from datetime import date, timedelta
@@ -126,7 +126,8 @@ def admin_dashboard(request):
         'is_superadmin': profile.user_type == 'superadmin',
         'is_admin': profile.user_type == 'admin',
         'totalmoneyexpected':expectedmoney.aggregate(total=Sum('rest'))['total'] or 0,
-        'expectedmoney': expectedmoney
+        'expectedmoney': expectedmoney,
+        'todos': Todo.objects.filter(is_completed=False)
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
