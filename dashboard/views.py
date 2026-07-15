@@ -531,7 +531,7 @@ def admin_client_detail(request, client_id):
     invoices = Invoice.objects.filter(subscription__client=client).order_by('-issued_date')
     context = {
         'client': client,
-        'expectedmony': Moneyexpected.objects.filter(raison=client),
+        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by(-rest),
         'subscriptions': subscriptions,
         'invoices': invoices,
         'total_spending': sum(Decimal(str(inv.total_amount)) for inv in invoices if inv.status == 'paid'),
