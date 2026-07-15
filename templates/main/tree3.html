@@ -197,9 +197,7 @@
           <span id="zoomLabel">100%</span>
           <button id="zoomInBtn" class="icon-btn" title="Zoom in"><i class="bi bi-plus-lg"></i></button>
         </div>
-        {% if request.user_is_staff %}
         <button id="connectBtn" class="mode-btn" title="Connect two nodes"><i class="bi bi-bezier2"></i><span>Connect</span></button>
-        {%endif%}
       </div>
     </header>
 
@@ -209,7 +207,7 @@
         <div id="emptyState" class="empty"><strong>No nodes loaded</strong>Add a node from the side panel or reload the graph.</div>
       </section>
     </main>
-    {% if request.user_is_staff %}
+
     <aside class="side">
       <section class="section">
         <div class="section-title"><div><h1>Create Node</h1><span>Add an idea, person, claim, source, or clue</span></div></div>
@@ -253,7 +251,7 @@
         <div id="connectiondata" class="connections-list"></div>
       </section>
     </aside>
-    {%endif%}
+
     <div class="stats">
       <span class="pill"><i class="bi bi-record-circle"></i><span id="nodeCount">0</span> nodes</span>
       <span class="pill"><i class="bi bi-bezier2"></i><span id="linkCount">0</span> links</span>
