@@ -22,7 +22,7 @@ def get_client_or_none(request):
     return None
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def dashboard_home(request):
     profile = request.user.profile
     if profile.user_type == 'client':
@@ -32,7 +32,7 @@ def dashboard_home(request):
     return redirect('main:login')
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def subscriptions_list(request):
     """List all subscriptions for customer"""
     client = get_client_or_none(request)
@@ -59,7 +59,7 @@ def subscriptions_list(request):
     return render(request, 'dashboard/subscriptions_list.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def subscription_detail(request, subscription_id):
     """View subscription details"""
     client = get_client_or_none(request)
@@ -88,9 +88,9 @@ def subscription_detail(request, subscription_id):
     return render(request, 'dashboard/subscription_detail.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 @require_http_methods(["POST"])
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def add_addon(request, subscription_id):
     """Add an addon to subscription"""
     client = get_client_or_none(request)
@@ -140,7 +140,7 @@ def add_addon(request, subscription_id):
     return redirect('dashboard:subscription_detail', subscription_id=subscription_id)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 @require_http_methods(["POST"])
 def remove_addon(request, subscription_id, addon_id):
     """Remove an addon from subscription"""
@@ -168,7 +168,7 @@ def remove_addon(request, subscription_id, addon_id):
     return redirect('dashboard:subscription_detail', subscription_id=subscription_id)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 @require_http_methods(["POST"])
 def update_addon_quantity(request, subscription_id, addon_id):
     """Update addon quantity"""
@@ -208,7 +208,7 @@ def update_addon_quantity(request, subscription_id, addon_id):
     return redirect('dashboard:subscription_detail', subscription_id=subscription_id)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def invoices_list(request):
     """List all invoices for customer"""
     client = get_client_or_none(request)
@@ -236,7 +236,7 @@ def invoices_list(request):
     return render(request, 'dashboard/invoices_list.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def invoice_detail(request, invoice_id):
     """View invoice details"""
     client = get_client_or_none(request)
@@ -263,7 +263,7 @@ def invoice_detail(request, invoice_id):
     return render(request, 'dashboard/invoice_detail.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def profile_settings(request):
     """Customer profile settings"""
     client = get_client_or_none(request)
@@ -296,7 +296,7 @@ def profile_settings(request):
     return render(request, 'dashboard/profile_settings.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def upgrade_plan(request, subscription_id):
     """Upgrade subscription hosting plan"""
     client = get_client_or_none(request)
@@ -347,7 +347,7 @@ def upgrade_plan(request, subscription_id):
     return render(request, 'dashboard/upgrade_plan.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def usage_analytics(request):
     """Usage and spending analytics"""
     client = get_client_or_none(request)
@@ -417,7 +417,7 @@ def usage_analytics(request):
     return render(request, 'dashboard/usage_analytics.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required(login_url='login')
 def client_onboarding(request):
     """Onboarding for new clients"""
     # Check if client already exists
@@ -531,7 +531,7 @@ def admin_client_detail(request, client_id):
     invoices = Invoice.objects.filter(subscription__client=client).order_by('-issued_date')
     context = {
         'client': client,
-        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by(-rest),
+        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by('-rest'),
         'subscriptions': subscriptions,
         'invoices': invoices,
         'total_spending': sum(Decimal(str(inv.total_amount)) for inv in invoices if inv.status == 'paid'),
