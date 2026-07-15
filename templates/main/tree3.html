@@ -197,8 +197,9 @@
           <span id="zoomLabel">100%</span>
           <button id="zoomInBtn" class="icon-btn" title="Zoom in"><i class="bi bi-plus-lg"></i></button>
         </div>
-        
+        {% if request.user_is_staff %}
         <button id="connectBtn" class="mode-btn" title="Connect two nodes"><i class="bi bi-bezier2"></i><span>Connect</span></button>
+        {% endif %}
       </div>
     </header>
 
@@ -268,7 +269,7 @@
     <div id="minimap" class="minimap"><div id="miniView" class="mini-view"></div></div>
     <div id="toast" class="toast"></div>
   </div>
-
+  {% if request.user_is_staff %}
   <script>
     const workspace = document.getElementById('workspace');
     const board = document.getElementById('board');
@@ -904,5 +905,6 @@
     window.addEventListener('resize', () => { minimapNeedsDots = true; updateEverything(); });
     loadBoard().catch(() => showToast('Could not load graph'));
   </script>
+  {%endif%}
 </body>
 </html>
