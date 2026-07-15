@@ -90,7 +90,7 @@ def get_env_value(name):
 def choose_package(request):
     return render(request, 'main/choose_package.html')
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def client_dashboard(request):
     """Client dashboard view"""
     try:
@@ -108,7 +108,7 @@ def client_dashboard(request):
     }
     return render(request, 'dashboard/client_dashboard.html', context)
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def admin_dashboard(request):
     """Admin/SuperAdmin dashboard view"""
     try:
@@ -134,7 +134,7 @@ def admin_dashboard(request):
 
 # API Endpoints for AJAX
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_create_client(request):
     """Create a new client via AJAX"""
@@ -194,7 +194,7 @@ def api_create_client(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def api_get_clients(request):
     """Get list of all clients via AJAX"""
     try:
@@ -222,7 +222,7 @@ def api_get_clients(request):
     
     return JsonResponse({'success': True, 'clients': clients})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_create_subscription(request):
     """Create a new subscription via AJAX"""
@@ -264,7 +264,7 @@ def api_create_subscription(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def api_get_subscriptions(request):
     """Get list of all subscriptions via AJAX"""
     try:
@@ -290,7 +290,7 @@ def api_get_subscriptions(request):
     
     return JsonResponse({'success': True, 'subscriptions': subscriptions})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def api_subscription_options(request):
     """Get options for creating subscription (clients, software, hosting plans)"""
     try:
@@ -337,7 +337,7 @@ def api_subscription_options(request):
         'hosting_plans': hosting_plans
     })
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_create_hosting_plan(request):
     """Create a new hosting plan via AJAX"""
@@ -385,7 +385,7 @@ def api_create_hosting_plan(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_update_hosting_plan(request):
     """Update a hosting plan via AJAX"""
@@ -431,7 +431,7 @@ def api_update_hosting_plan(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def api_get_hosting_plans(request):
     """Get list of all hosting plans via AJAX"""
     try:
@@ -463,7 +463,7 @@ def api_get_hosting_plans(request):
     
     return JsonResponse({'success': True, 'hosting_plans': hosting_plans})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_create_addon(request):
     """Create a new addon via AJAX"""
@@ -515,7 +515,7 @@ def api_create_addon(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 @csrf_exempt
 def api_update_addon(request):
     """Update an addon via AJAX"""
@@ -559,7 +559,7 @@ def api_update_addon(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-@login_required(login_url='login')
+@login_required(login_url='login_view')
 def api_get_addons(request):
     """Get list of all addons via AJAX"""
     try:
