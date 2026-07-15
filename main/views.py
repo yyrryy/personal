@@ -16,6 +16,7 @@ from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
+
 def home(request):
     return render(request, 'main/home5.html')
 
@@ -102,7 +103,7 @@ def client_dashboard(request):
     context = {
         'user': request.user,
         'profile': profile,
-        'expectedmony': Moneyexpected.objects.filter(raison=client),
+        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by(-rest),
         'totalexpectedmoney': sum(em.rest for em in Moneyexpected.objects.filter(raison=client)),
     }
     return render(request, 'dashboard/client_dashboard.html', context)
@@ -886,7 +887,8 @@ def hosting_plans(request):
             {"error": str(exc)},
             status=502
         )
-@login_required(login_url='login')
+
+@staff_member_required(login_url='login_view')
 def main(request):
     thismonth=date.today().month
     thisyear=date.today().year
