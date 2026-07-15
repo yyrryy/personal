@@ -103,7 +103,7 @@ def client_dashboard(request):
     context = {
         'user': request.user,
         'profile': profile,
-        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by(-rest),
+        'expectedmony': Moneyexpected.objects.filter(raison=client).order_by('-rest'),
         'totalexpectedmoney': sum(em.rest for em in Moneyexpected.objects.filter(raison=client)),
     }
     return render(request, 'dashboard/client_dashboard.html', context)
