@@ -14,7 +14,7 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
-
+from django.contrib.admin.views.decorators import staff_member_required
 # Create your views here.
 
 def home(request):
