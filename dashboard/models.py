@@ -513,6 +513,6 @@ class Todo(models.Model):
     is_completed = models.BooleanField(default=False)
     due_date = models.DateTimeField(null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='todos', null=True, blank=True)
-
+    source=models.ForeignKey(Moneyexpected, on_delete=models.CASCADE, related_name='source', null=True, blank=True)
     def __str__(self):
         return f"{self.title} - {'Done' if self.is_completed else 'Pending'}"
