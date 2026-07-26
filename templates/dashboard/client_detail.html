@@ -251,7 +251,9 @@
                       {% endfor %}
                   </ul>
               {% else %}
-                  <span class="text-gray-500">{{i.note}}</span>
+                <ul class="list-disc ml-5 space-y-1">
+                  <li>{{i.note}}</li>
+                </ul>
               {% endif %}
               <!-- <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">{{ i.note }}</span> -->
             </div>
