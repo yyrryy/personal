@@ -167,19 +167,40 @@
                
             </div>
             
-            <div>
-              <p class="text-gray-500 text-sm">details</p>
-              <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">{{ i.note }}</span>
-            </div>
+            
             <div>
               <button onclick="viewPayments('{{ i.id }}')" class="mt-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition">
                 عرض المدفوعات
                 </button>
             </div>
-            <div>
-              <p class="text-gray-500 text-sm">تاريخ النهاية</p>
-              <p class="font-medium">{{ subscription.end_date|date:"Y/m/d" }}</p>
+            <div class="mt-3">
+              <p class="font-semibold text-gray-700 mb-2">Details:</p>
+  
+              {% if i.todos.all %}
+                  <ul class="list-disc ml-5 space-y-1">
+                      {% for todo in i.todos.all %}
+                          <li>
+                              <span class="{% if todo.is_completed %}text-green-600{% else %}text-red-600{% endif %}">
+                                  {{ todo.title }}
+                              </span>
+  
+                              {% if todo.amount %}
+                                  - {{ todo.amount }} Dh
+                              {% endif %}
+  
+                              <!-- {% if todo.is_completed %}
+                                  ✓
+                              {% else %}
+                                  ✗
+                              {% endif %} -->
+                          </li>
+                      {% endfor %}
+                  </ul>
+              {% else %}
+                  <span class="text-gray-500">No tasks.</span>
+              {% endif %}
             </div>
+            
           </div>
         </div>
         
